@@ -1,4 +1,4 @@
-# $Id$
+# $Id: RepeatMasker.pm,v 1.20 2003/06/02 18:13:43 heikki Exp $
 # BioPerl module for RepeatMasker
 #
 # Cared for by Shawn Hoon <shawnh@fugu-sg.org>

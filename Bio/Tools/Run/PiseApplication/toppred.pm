@@ -1,4 +1,4 @@
-# $Id$
+# $Id: toppred.pm,v 1.4 2003/06/14 06:05:24 letondal Exp $
 # BioPerl module for Bio::Tools::Run::PiseApplication::toppred
 #
 # Cared for by Catherine Letondal <letondal@pasteur.fr>

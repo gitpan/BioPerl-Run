@@ -1,4 +1,4 @@
-# $Id$
+# $Id: AnalysisFactory.pm,v 1.6 2003/06/04 08:48:26 heikki Exp $
 #
 # BioPerl module for Bio::Tools::Run::AnalysisFactory
 #
@@ -149,7 +149,7 @@ use Bio::Factory::AnalysisI;
 
 
 BEGIN {
-    $Revision = q$Id$;
+    $Revision = q$Id: AnalysisFactory.pm,v 1.6 2003/06/04 08:48:26 heikki Exp $;
 }
 
 # -----------------------------------------------------------------------------

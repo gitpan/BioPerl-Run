@@ -1,4 +1,4 @@
-# $Id$
+# $Id: tranalign.pm,v 1.2 2003/06/14 06:05:24 letondal Exp $
 # BioPerl module for Bio::Tools::Run::PiseApplication::tranalign
 #
 # Cared for by Catherine Letondal <letondal@pasteur.fr>

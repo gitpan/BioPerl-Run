@@ -1,4 +1,4 @@
-# $Id$
+# $Id: PiseApplication.pm,v 1.6 2003/05/21 12:41:59 letondal Exp $
 #
 # BioPerl modules for Pise
 #

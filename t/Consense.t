@@ -1,6 +1,6 @@
 # -*-Perl-*-
 ## Bioperl Test Harness Script for Modules
-## $Id$
+## $Id: Consense.t,v 1.4 2003/04/01 05:27:43 jerm Exp $
 
 use strict;
 use vars qw($DEBUG);

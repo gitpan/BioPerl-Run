@@ -1,4 +1,4 @@
-# $Id$
+# $Id: clustalw.pm,v 1.3 2003/06/05 19:15:18 letondal Exp $
 # BioPerl module for Bio::Tools::Run::PiseApplication::clustalw
 #
 # Cared for by Catherine Letondal <letondal@pasteur.fr>

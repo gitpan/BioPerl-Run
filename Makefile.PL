@@ -1,6 +1,6 @@
 ## --Makefile.PL for Bioperl-pipeline distribution--##
 ## ----------------------------------------------------##
-## $Id$
+## $Id: Makefile.PL,v 1.10 2003/11/19 23:37:57 jason Exp $
 ##----------------------------------------------------
 
 #
@@ -73,7 +73,7 @@ my $NAME     = 'Bio';
 my $DISTNAME = "bioperl-run";
 my $VERSION  = "1.2.2";
 
-my $proceed = prompt("Do you want to run the Pise tests (requires a network connection) y/n",'n');
+my $proceed = "n";
 if( $proceed =~ /^[yY]/) {
     my $address = prompt("Enter your email address (no default)",'');
    

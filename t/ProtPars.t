@@ -1,6 +1,6 @@
 # -*-Perl-*-
 ## Bioperl Test Harness Script for Modules
-## $Id$
+## $Id: ProtPars.t,v 1.7 2002/11/14 14:03:00 shawnh Exp $
 
 use vars qw($DEBUG );
 $DEBUG = $ENV{'BIOPERLDEBUG'} || 0;

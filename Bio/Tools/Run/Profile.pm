@@ -1,4 +1,4 @@
-# $Id$
+# $Id: Profile.pm,v 1.10 2003/05/26 04:02:47 shawnh Exp $
 # BioPerl module for Profile
 # Copyright Balamurugan Kumarasamy
 #

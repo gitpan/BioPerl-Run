@@ -1,4 +1,4 @@
-# $Id$
+# $Id: ProtPars.pm,v 1.17 2003/03/28 22:42:08 jason Exp $
 # BioPerl module for Bio::Tools::Run::Phylo::Phylip::ProtPars
 #
 # Created by Shawn Hoon 

@@ -1,6 +1,6 @@
 # -*-Perl-*-
 ## Bioperl Test Harness Script for Modules
-## $Id$
+## $Id: TCoffee.t,v 1.22 2002/11/29 17:04:20 jason Exp $
 
 use strict;
 use vars qw($NUMTESTS);

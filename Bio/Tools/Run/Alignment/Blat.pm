@@ -131,7 +131,7 @@ sub new {
 	$value =  shift @args;
 	next if( $attr =~ /^-/ ); # don't want named parameters
 	if ($attr =~/PROGRAM/i) {
-	    $self->executable($value);
+	    $self->executable(Bio::Root::IO->catfile($value,$self->program_name));
 	    next;
 	}
 	$self->$attr($value);
@@ -218,16 +218,19 @@ sub _database() {
 
 sub _run {
      my ($self)= @_;
-     my ($tfh,$outfile) = $self->io->tempfile(-dir=>$self->tempdir);
+     my ($tfh,$outfile) = $self->io->tempfile(-dir=>$Bio::Root::IO::TEMPDIR);
      # this is because we only want a unique filename
      close($tfh);
      undef $tfh;
-     my $str= $self->executable;
+
+
+     my $str= Bio::Root::IO->catfile($self->executable,$self->program_name);
 
      $str.=' -out=blast '.$self->DB .' '.$self->_input.' '.$outfile;
-     if ($self->quiet() || $self->verbose() < 0) { 
-	 $str .= '  >/dev/null 2>/dev/null';
-     }
+#this is shell specific, please fix
+#     if ($self->quiet() || $self->verbose() < 0) { 
+#	 $str .= '  >/dev/null 2>/dev/null';
+#     }
      $self->debug($str ."\n") if( $self->verbose > 0 );
 
      my $status = system($str);
@@ -235,12 +238,13 @@ sub _run {
      
      my $blat_obj;
      if (ref ($outfile) !~ /GLOB/) {
-	 $blat_obj = Bio::SearchIO->new(-format  => 'blast',
+	 $blat_obj = Bio::SearchIO->new(-format  => 'psl',
 					-file    => $outfile);
      } else {
-	 $blat_obj = Bio::SearchIO->new(-format  => 'blast',
+	 $blat_obj = Bio::SearchIO->new(-format  => 'psl',
 					-fh    => $outfile);
      }
+system('cp',$outfile,'/tmp/blat.out');
      $self->cleanup();     
      return $blat_obj;
 }
@@ -258,7 +262,8 @@ sub _run {
 
 sub _writeSeqFile {
     my ($self,$seq) = @_;
-    my ($tfh,$inputfile) = $self->io->tempfile(-dir=>$self->tempdir());
+    #my ($tfh,$inputfile) = $self->io->tempfile(-dir=>$self->tempdir());
+    my ($tfh,$inputfile) = $self->io->tempfile(-dir=>$Bio::Root::IO::TEMPDIR);
     my $in  = Bio::SeqIO->new(-fh => $tfh , '-format' => 'fasta');
     $in->write_seq($seq);
     $in->close();

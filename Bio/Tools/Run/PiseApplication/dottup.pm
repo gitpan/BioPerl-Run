@@ -1,4 +1,4 @@
-# $Id$
+# $Id: dottup.pm,v 1.3 2003/06/06 08:31:55 letondal Exp $
 # BioPerl module for Bio::Tools::Run::PiseApplication::dottup
 #
 # Cared for by Catherine Letondal <letondal@pasteur.fr>

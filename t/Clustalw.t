@@ -1,6 +1,6 @@
 # -*-Perl-*-
 ## Bioperl Test Harness Script for Modules
-## $Id$
+## $Id: Clustalw.t,v 1.30 2003/01/04 21:09:09 jason Exp $
 
 use strict;
 BEGIN {

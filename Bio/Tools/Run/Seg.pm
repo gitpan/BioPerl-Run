@@ -1,4 +1,4 @@
-# $Id$
+# $Id: Seg.pm,v 1.9 2003/03/28 22:42:07 jason Exp $
 # Copyright Balamurugan Kumarasamy
 # You may distribute this module under the same terms as perl itself
 #  POD documentation - main docs before the code

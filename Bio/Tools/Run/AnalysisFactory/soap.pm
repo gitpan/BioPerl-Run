@@ -1,4 +1,4 @@
-# $Id$
+# $Id: soap.pm,v 1.3 2003/06/04 08:48:26 heikki Exp $
 #
 # BioPerl module Bio::Tools::Run::AnalysisFactory::soap.pm
 #
@@ -107,7 +107,7 @@ use SOAP::Lite
 @ISA = qw(Bio::Tools::Run::AnalysisFactory);
 
 BEGIN {
-    $Revision = q$Id$;
+    $Revision = q$Id: soap.pm,v 1.3 2003/06/04 08:48:26 heikki Exp $;
 
     # where to go...
     $DEFAULT_LOCATION = 'http://industry.ebi.ac.uk/soap/soaplab';

@@ -1,6 +1,6 @@
 # -*-Perl-*-
 ## Bioperl Test Harness Script for Modules
-## $Id$
+## $Id: SeqBoot.t,v 1.2 2003/03/28 22:40:52 jason Exp $
 
 use strict;
 use vars qw($DEBUG);

@@ -1,6 +1,6 @@
 # -*-Perl-*-
 ## Bioperl Test Harness Script for Modules
-## $Id$
+## $Id: Neighbor.t,v 1.7 2002/12/18 13:43:45 shawnh Exp $
 
 use strict;
 use vars qw($DEBUG);

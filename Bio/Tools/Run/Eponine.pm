@@ -1,4 +1,4 @@
-# $Id$
+# $Id: Eponine.pm,v 1.10 2003/06/02 18:13:43 heikki Exp $
 #
 # Cared for by Tania Oh
 #

@@ -1,4 +1,4 @@
-# $Id$
+# $Id: Pise.pm,v 1.5 2003/06/02 18:13:43 heikki Exp $
 # BioPerl modules for Pise
 #
 # Cared for by Catherine Letondal <letondal@pasteur.fr>

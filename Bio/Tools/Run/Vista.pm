@@ -46,6 +46,8 @@ Wrapper for Vista
                                         'end'=>1500,
                                         'tickdist'=>100,
                                         'bases'=>1000,
+                                        'java_param'=>"-Xmx128m",
+                                        'num_pages'=>1
                                         'color'=> {'EXON'=>'100 0 0',
                                                    'CNS'=>'0 0 100'},
                                         'quiet'=>1);
@@ -153,10 +155,11 @@ BEGIN {
                       'title'   => 'VISTA PLOT',
                       'numwindows'=>4);
 
-    @VISTA_PARAMS=qw(JAVA OUTFILE MIN_PERC_ID QUIET VERBOSE ANNOTATION_FORMAT
-                     REGION_FILE SCORE_FILE ALIGNMENT_FILE CONTIGS_FILE DIFFS PLOTFILE
-                     MIN_LENGTH PLOTMIN ANNOTATION BASES TICKDIST RESOLUTION TITLE
-                     WINDOW NUMWINDOWS START END NUM_PLOT_LINES LEGEND FILENAME 
+    @VISTA_PARAMS=qw(JAVA JAVA_PARAM OUTFILE MIN_PERC_ID QUIET VERBOSE ANNOTATION_FORMAT
+                     REGION_FILE REGION_FILE_DIR SCORE_FILE SCORE_FILE_DIR ALIGNMENT_FILE_DIR
+                     ALIGNMENT_FILE CONTIGS_FILE DIFFS PLOTFILE
+                     MIN_LENGTH PLOTMIN ANNOTATION BASES TICKDIST RESOLUTION TITLE PAPER
+                     WINDOW NUMWINDOWS START END NUM_PLOT_LINES LEGEND FILENAME NUM_PAGES
                      AXIS_LABEL TICKS_FILE COLOR USE_ORDER GAPS SNPS_FILE REPEATS_FILE 
                      FILTER_REPEATS);
 
@@ -323,15 +326,18 @@ sub _mf2bin {
   my %base_code = ('-' => 0, 'A' => 1, 'C' => 2, 'T' => 3, 'G' => 4, 'N' => 5,
                 'a' => 1, 'c' => 2, 't' => 3, 'g' => 4, 'n' => 5);
 
-  my @files;
+ my @files;
 
-  my @ref= (split ('',$reference->seq));
-  my @pairs;
+ my @ref= (split ('',$reference->seq));
+ my @pairs;
+
   foreach my $seq2(@seq){
       my ($tfh1,$outfile) = $self->io->tempfile(-dir=>$self->tempdir);
       my @seq2= (split('', $seq2->seq)); 
       foreach my $index(0..$#ref){
-        print $tfh1 pack("H2",$base_code{$ref[$index]}.$base_code{$seq2[$index]});
+        unless($ref[$index] eq '-' && $seq2[$index] eq '-'){
+          print $tfh1 pack("H2",$base_code{$ref[$index]}.$base_code{$seq2[$index]});
+        }
       }
       close ($tfh1);
       undef ($tfh1);
@@ -357,9 +363,25 @@ sub _make_plotfile {
     print $tfh1 " REGIONS ".$self->min_perc_id." ".$self->min_length."\n";
     print $tfh1 " MIN ".$self->plotmin."\n";
     print $tfh1 " DIFFS ". $self->diffs ."\n\n" if $self->diffs;
-    print $tfh1 " REGION_FILE ". $self->region_file ."/".$pairs->[$index]->[0]."_".$pairs->[$index]->[1].".aln\n\n" if $self->region_file;
-    print $tfh1 " SCORE_FILE ". $self->score_file ."/".$pairs->[$index]->[0]."_".$pairs->[$index]->[1].".score\n\n" if $self->score_file;
-    print $tfh1 " ALIGNMENT_FILE ". $self->alignment_file ."/".$pairs->[$index]->[0]."_".$pairs->[$index]->[1].".alignment\n\n" if $self->alignment_file;
+    if($self->region_file||$self->region_file_dir){
+      my $file = " REGION_FILE ";
+      $file.=$self->region_file_dir."/" if $self->region_file_dir;
+      $file.=$pairs->[$index]->[0]."_".$pairs->[$index]->[1].".region\n\n";
+      print $tfh1 $file;
+    }
+    if($self->score_file || $self->score_file_dir){
+      my $file = " SCORE_FILE ";
+      $file.=$self->score_file_dir."/" if $self->score_file_dir;
+      $file.=$pairs->[$index]->[0]."_".$pairs->[$index]->[1].".score\n\n";
+      print $tfh1 $file;
+    }
+    if($self->alignment_file || $self->alignment_file_dir){
+      my $file = " ALIGNMENT_FILE ";
+      $file.=$self->alignment_file_dir."/" if $self->alignment_file_dir;
+      $file.=$pairs->[$index]->[0]."_".$pairs->[$index]->[1].".alignment\n\n";
+      print $tfh1 $file;
+    }
+       
     print $tfh1 " CONTIGS_FILE ". $self->contigs_file ."\n\n" if $self->contigs_file;
     print $tfh1 " USE_ORDER ". $self->use_order."\n\n" if $self->use_order;
     print $tfh1 "END \n\n";
@@ -386,7 +408,8 @@ sub _make_plotfile {
   print $tfh1 "TICKS_FILE ".$self->ticks_file ."\n\n" if $self->ticks_file;
   print $tfh1 "GAPS ".$self->gaps ."\n\n"if $self->gaps;
   print $tfh1 "REPEATS_FILE ".$self->repeats_file ."\n\n" if $self->repeats_file;
-  print $tfh1 "FILTER_REPEATS".$self->filter_repeats ."\n\n" if $self->filter_repeats;
+  print $tfh1 "FILTER_REPEATS ".$self->filter_repeats ."\n\n" if $self->filter_repeats;
+  print $tfh1 "NUM_PAGES ".$self->num_pages ."\n\n" if $self->num_pages;
   print $tfh1 "START ".$self->start ."\n\n" if $self->start;
   print $tfh1 "END ".$self->end ."\n\n" if $self->end;
   my $color = $self->color;
@@ -410,9 +433,8 @@ sub _make_plotfile {
 sub _dump2gff {
   my ($self,$feat) = @_;
   my ($tfh1,$file) = $self->io->tempfile(-dir=>$self->tempdir);
-  my @CDS = grep {$_->primary_tag eq 'CDS'}@$feat;
-  foreach my $cds(@CDS){
-    print $tfh1 $cds->gff_string."\n";
+  foreach my $f(@$feat){
+    print $tfh1 $f->gff_string."\n";
   }
   close ($tfh1);
   undef $tfh1;
@@ -426,10 +448,11 @@ sub _run_Vista {
     $self->debug( "Running Vista\n");
     my $java = $self->java;
     
-    my $cmd  =   $self->java.' Vista ';
+    my $cmd  =   $self->java." ".$self->java_param.' Vista ';
     $cmd .= " -q " if $self->quiet || $self->verbose < 0;
     $cmd .= " -d " if $self->debug;
     $cmd .= $infile;
+    $self->debug($cmd);
 	 my $status = system ($cmd);
 
    $self->throw("Problem running Vista: $? \n") if $status != 0;

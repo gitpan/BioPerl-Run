@@ -1,4 +1,4 @@
-# $Id$
+# $Id: grailclnt.pm,v 1.5 2003/06/06 08:31:55 letondal Exp $
 # BioPerl module for Bio::Tools::Run::PiseApplication::grailclnt
 #
 # Cared for by Catherine Letondal <letondal@pasteur.fr>

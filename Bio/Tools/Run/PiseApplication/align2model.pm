@@ -1,4 +1,4 @@
-# $Id$
+# $Id: align2model.pm,v 1.3 2003/06/05 19:15:18 letondal Exp $
 # BioPerl module for Bio::Tools::Run::PiseApplication::align2model
 #
 # Cared for by Catherine Letondal <letondal@pasteur.fr>

@@ -1,4 +1,4 @@
-# $Id$
+# $Id: TCoffee.pm,v 1.32 2003/06/02 18:13:43 heikki Exp $
 #
 # BioPerl module for Bio::Tools::Run::Alignment::TCoffee
 #

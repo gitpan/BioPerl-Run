@@ -1,4 +1,4 @@
-# $Id$
+# $Id: trimseq.pm,v 1.3 2003/06/14 06:05:24 letondal Exp $
 # BioPerl module for Bio::Tools::Run::PiseApplication::trimseq
 #
 # Cared for by Catherine Letondal <letondal@pasteur.fr>

@@ -1,4 +1,4 @@
-# $Id$
+# $Id: EMBOSSacd.pm,v 1.2 2002/10/23 15:30:48 heikki Exp $
 #
 # BioPerl module for Bio::Tools::Run::EMBOSSacd
 #

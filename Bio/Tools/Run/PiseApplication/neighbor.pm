@@ -1,4 +1,4 @@
-# $Id$
+# $Id: neighbor.pm,v 1.5 2003/06/11 17:05:26 letondal Exp $
 # BioPerl module for Bio::Tools::Run::PiseApplication::neighbor
 #
 # Cared for by Catherine Letondal <letondal@pasteur.fr>

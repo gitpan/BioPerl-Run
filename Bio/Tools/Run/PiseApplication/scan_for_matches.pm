@@ -1,4 +1,4 @@
-# $Id$
+# $Id: scan_for_matches.pm,v 1.3 2003/06/14 06:05:24 letondal Exp $
 # BioPerl module for Bio::Tools::Run::PiseApplication::scan_for_matches
 #
 # Cared for by Catherine Letondal <letondal@pasteur.fr>

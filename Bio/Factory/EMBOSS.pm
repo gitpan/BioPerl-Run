@@ -1,4 +1,4 @@
-# $Id$
+# $Id: EMBOSS.pm,v 1.1 2003/03/19 16:44:24 heikki Exp $
 #
 # BioPerl module for Bio::Factory::EMBOSS
 #

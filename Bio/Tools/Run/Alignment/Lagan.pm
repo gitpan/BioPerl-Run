@@ -12,8 +12,7 @@
 
 =head1 NAME
 
-Bio::Tools::Run::Alignment::Lagan - Object for the local execution of the LAGAN suite
-of tools (including MLAGAN for multiple sequence alignments)
+Bio::Tools::Run::Alignment::Lagan - Object for the local execution of the LAGAN suite of tools (including MLAGAN for multiple sequence alignments)
 
 =head1 SYNOPSIS
 
@@ -120,7 +119,7 @@ Internal methods are usually preceded with a _
 
 package Bio::Tools::Run::Alignment::Lagan;
 
-use vars qw(@ISA $PROGRAM_DIR @LAGAN_PARAMS @MLAGAN_PARAMS @LAGAN_SWITCHES
+use vars qw(@ISA $PROGRAM_DIR @LAGAN_PARAMS @MLAGAN_PARAMS @LAGAN_SWITCHES @OTHER_PARAMS
 	    %OK_FIELD $AUTOLOAD);
 
 use strict;
@@ -140,6 +139,7 @@ BEGIN {
 
     @LAGAN_PARAMS = qw(chaos order recurse mfa out lazy maskedonly
                        usebounds rc translate draft info fastreject);
+    @OTHER_PARAMS = qw(outfile);
     @LAGAN_SWITCHES = qw(silent quiet);
     @MLAGAN_PARAMS = qw(nested postir translate lazy verbose tree match mismatch
                         gapstart gapend gapcont out version);
@@ -148,7 +148,7 @@ BEGIN {
     #should be used in setting only standard ones
 
     #Authorize Attribute fields
-    foreach my $attr (@LAGAN_PARAMS, @LAGAN_SWITCHES, @MLAGAN_PARAMS) {
+    foreach my $attr (@LAGAN_PARAMS, @LAGAN_SWITCHES, @MLAGAN_PARAMS,@OTHER_PARAMS) {
         $OK_FIELD{$attr}++;
     }
 
@@ -160,16 +160,16 @@ BEGIN {
 sub new {
     my($class, @args) = @_;
     my $self = $class->SUPER::new(@args);
-
-    my ($tfh, $tempfile) = $self->io->tempfile();
-    close($tfh);
-    undef $tfh;
-    $self->out($tempfile);
     while (@args) {
         my $attr = shift @args;
         my $value = shift @args;
         $self->$attr($value);
     }
+    my ($tfh, $tempfile) = $self->io->tempfile();
+    my $outfile = $self->out || $self->outfile || $tempfile;
+    $self->out($outfile);
+    close($tfh);
+    undef $tfh;
     return $self;
 }
 
@@ -200,7 +200,6 @@ sub lagan {
 		
     #my (undef, $tempfile) = $self->io->tempfile();
     #$self->out($tempfile);
-
     my ($infile1, $infile2) = $self->_setinput($executable, $input1, $input2);
     my $lagan_report = &_generic_lagan(	$self,
                                         $executable,
@@ -220,7 +219,8 @@ sub mlagan {
     my ($self, $input1, $tree) = @_;
     $self->io->_io_cleanup();
     my $executable = 'mlagan';
-    my ($infiles, $tree) = $self->_setinput($executable, $input1, $tree);
+    my $infiles;
+    ($infiles, $tree) = $self->_setinput($executable, $input1, $tree);
     my $lagan_report = &_generic_lagan (	$self,
 						$executable,
 						$infiles,
@@ -392,7 +392,6 @@ sub _runlagan {
             $command_string .= " -tree " . "\"" . $input2 . "\"";
         }	
         $command_string .= " " . $param_string;
-        print $command_string;
     }
 
     if (($self->silent ||  $self->quiet) &&
@@ -404,7 +403,6 @@ sub _runlagan {
     $self->debug("$command_string\n");
     my $status = system($command_string);
     my $outfile = $self->out();
-	
     my $align = Bio::AlignIO->new(	'-file' => $outfile,
 					'-format' => 'fasta' );
     my $aln = $align->next_aln();

@@ -1,4 +1,4 @@
-# $Id$
+# $Id: hmoment.pm,v 1.3 2003/06/10 09:33:20 letondal Exp $
 # BioPerl module for Bio::Tools::Run::PiseApplication::hmoment
 #
 # Cared for by Catherine Letondal <letondal@pasteur.fr>

@@ -1,7 +1,7 @@
 
 # -*-Perl-*-
 ## Bioperl Test Harness Script for Modules
-## $Id$
+## $Id: EMBOSS.t,v 1.10 2003/01/18 16:30:03 jason Exp $
 
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.t'

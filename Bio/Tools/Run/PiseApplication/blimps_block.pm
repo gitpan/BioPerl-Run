@@ -1,4 +1,4 @@
-# $Id$
+# $Id: blimps_block.pm,v 1.3 2003/06/05 19:15:18 letondal Exp $
 # BioPerl module for Bio::Tools::Run::PiseApplication::blimps_block
 #
 # Cared for by Catherine Letondal <letondal@pasteur.fr>

@@ -1,6 +1,6 @@
 # -*-Perl-*-
 ## Bioperl Test Harness Script for Modules
-## $Id$
+## $Id: DrawTree.t,v 1.1 2002/11/30 01:51:01 jason Exp $
 
 use strict;
 use vars qw($DEBUG);

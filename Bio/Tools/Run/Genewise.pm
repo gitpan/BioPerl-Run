@@ -1,4 +1,4 @@
-# $Id$
+# $Id: Genewise.pm,v 1.19 2003/06/02 18:13:43 heikki Exp $
 #
 # Cared for by
 #

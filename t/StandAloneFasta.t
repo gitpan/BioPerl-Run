@@ -1,6 +1,6 @@
 # -*-Perl-*-
 ## Bioperl Test Harness Script for Modules
-## $Id$
+## $Id: StandAloneFasta.t,v 1.4 2003/02/24 15:20:16 jason Exp $
 #
 
 use strict;

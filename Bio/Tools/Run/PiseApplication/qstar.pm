@@ -1,4 +1,4 @@
-# $Id$
+# $Id: qstar.pm,v 1.3 2003/06/11 17:05:26 letondal Exp $
 # BioPerl module for Bio::Tools::Run::PiseApplication::qstar
 #
 # Cared for by Catherine Letondal <letondal@pasteur.fr>

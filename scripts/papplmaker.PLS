@@ -6,7 +6,7 @@
 #   senger@ebi.ac.uk
 #   July 2002
 #
-#   $Id$
+#   $Id: papplmaker.PLS,v 1.3 2003/05/30 15:43:22 jason Exp $
 #-----------------------------------------------------------------------------
 
 use strict;
@@ -61,8 +61,8 @@ BEGIN {
 
 
     # set the version for version checking
-    $VERSION = do { my @r = (q$Revision$ =~ /\d+/g); sprintf "%d.%-02d", @r };
-    $Revision = q$Id$;
+    $VERSION = do { my @r = (q$Revision: 1.3 $ =~ /\d+/g); sprintf "%d.%-02d", @r };
+    $Revision = q$Id: papplmaker.PLS,v 1.3 2003/05/30 15:43:22 jason Exp $;
 
     # help wanted?
     if ($opt_h) {

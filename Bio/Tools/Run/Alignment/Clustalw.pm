@@ -1,4 +1,4 @@
-# $Id$
+# $Id: Clustalw.pm,v 1.36 2003/06/02 18:13:43 heikki Exp $
 #
 # BioPerl module for Bio::Tools::Run::Alignment::Clustalw
 #
