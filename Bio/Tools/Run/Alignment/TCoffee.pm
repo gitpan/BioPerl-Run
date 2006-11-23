@@ -1,4 +1,4 @@
-# $Id: TCoffee.pm,v 1.32 2003/06/02 18:13:43 heikki Exp $
+# $Id: TCoffee.pm,v 1.44 2006/11/16 09:03:18 sendu Exp $
 #
 # BioPerl module for Bio::Tools::Run::Alignment::TCoffee
 #
@@ -51,6 +51,33 @@ alignments using the TCoffee program
 Note: this DESCRIPTION only documents the (Bio)perl interface to
 TCoffee.
 
+=head2 Helping the module find your executable 
+
+You will need to enable TCoffee to find the t_coffee program. This
+can be done in (at least) three ways:
+
+ 1. Make sure the t_coffee executable is in your path so that
+    which t_coffee
+    returns a t_cofee executable on your system.
+
+ 2. Define an environmental variable TCOFFEEDIR which is a dir 
+    which contains the 't_coffee' app:
+    In bash 
+    export TCOFFEEDIR=/home/username/progs/T-COFFEE_distribution_Version_1.37/bin
+    In csh/tcsh
+    setenv TCOFFEEDIR /home/username/progs/T-COFFEE_distribution_Version_1.37/bin
+
+ 3. Include a definition of an environmental variable TCOFFEEDIR in
+    every script that will use this TCoffee wrapper module.
+    BEGIN { $ENV{TCOFFEDIR} = '/home/username/progs/T-COFFEE_distribution_Version_1.37/bin' }
+    use Bio::Tools::Run::Alignment::TCoffee;
+
+If you are running an application on a webserver make sure the
+webserver environment has the proper PATH set or use the options 2 or
+3 to set the variables.
+
+=head1 PARAMETERS FOR ALIGNMENT COMPUTATION
+
 There are a number of possible parameters one can pass in TCoffee.
 One should really read the online manual for the best explaination of
 all the features.  See
@@ -58,8 +85,6 @@ http://igs-server.cnrs-mrs.fr/~cnotred/Documentation/t_coffee/t_coffee_doc.html
 
 These can be specified as parameters when instantiating a new TCoffee
 object, or through get/set methods of the same name (lowercase).
-
-=head1 PARAMETERS FOR ALIGNMENT COMPUTATION
 
 =head2 IN
 
@@ -314,7 +339,7 @@ object, or through get/set methods of the same name (lowercase).
  Default     : no file
  Description : Indicates the name of the new tree to compute. The
                default will be <sequence_name>.dnd, or <run_name.dnd>.
-               Format is Phylips tree format
+               Format is Phylip/Newick tree format
 
 =head2 USETREE
 
@@ -468,21 +493,19 @@ User feedback is an integral part of the evolution of this and other
 Bioperl modules. Send your comments and suggestions preferably to one
 of the Bioperl mailing lists.  Your participation is much appreciated.
 
-  bioperl-l@bioperl.org          - General discussion
-  http://bio.perl.org/MailList.html             - About the mailing lists
+  bioperl-l@bioperl.org                  - General discussion
+  http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
 
 =head2 Reporting Bugs
 
 Report bugs to the Bioperl bug tracking system to help us keep track
- the bugs and their resolution.  Bug reports can be submitted via
- email or the web:
+the bugs and their resolution.  Bug reports can be submitted via the web:
 
-  bioperl-bugs@bio.perl.org
-  http://bio.perl.org/bioperl-bugs/
+ http://bugzilla.open-bio.org/
 
 =head1 AUTHOR -  Jason Stajich, Peter Schattner
 
-Email jason@bioperl.org, schattner@alum.mit.edu
+Email jason-at-bioperl-dot-org, schattner@alum.mit.edu
 
 =head1 APPENDIX
 
@@ -493,19 +516,19 @@ methods. Internal methods are usually preceded with a _
 
 package Bio::Tools::Run::Alignment::TCoffee;
 
-use vars qw($AUTOLOAD @ISA $PROGRAMNAME $PROGRAM %DEFAULTS
+use vars qw($AUTOLOAD @ISA $PROGRAM_NAME $PROGRAM_DIR %DEFAULTS
             @TCOFFEE_PARAMS @TCOFFEE_SWITCHES @OTHER_SWITCHES %OK_FIELD
             );
 use strict;
+use Cwd;
 use Bio::Seq;
 use Bio::SeqIO;
 use Bio::SimpleAlign;
 use Bio::AlignIO;
-use Bio::Root::Root;
 use Bio::Root::IO;
 use Bio::Factory::ApplicationFactoryI;
-use  Bio::Tools::Run::WrapperBase;
-@ISA = qw(Bio::Root::Root Bio::Tools::Run::WrapperBase 
+use Bio::Tools::Run::WrapperBase;
+@ISA = qw(Bio::Tools::Run::WrapperBase 
           Bio::Factory::ApplicationFactoryI);
 
 # You will need to enable TCoffee to find the tcoffee program. This can be done
@@ -518,6 +541,8 @@ use  Bio::Tools::Run::WrapperBase;
 #	BEGIN {$ENV{TCOFFEEDIR} = '/home/progs/tcoffee'; }
 
 BEGIN {
+    $PROGRAM_NAME = 't_coffee';
+    $PROGRAM_DIR = $ENV{'TCOFFEEDIR'};
     %DEFAULTS = ( 'MATRIX' => 'blosum',
                   'OUTPUT' => 'clustalw',
                   'AFORMAT'=> 'msf',
@@ -545,7 +570,7 @@ BEGIN {
 =head2 program_name
 
  Title   : program_name
- Usage   : $factory>program_name()
+ Usage   : $factory->program_name()
  Function: holds the program name
  Returns:  string
  Args    : None
@@ -553,7 +578,7 @@ BEGIN {
 =cut
 
 sub program_name {
-        return 't_coffee';
+    return $PROGRAM_NAME;
 }
 
 =head2 program_dir
@@ -567,27 +592,26 @@ sub program_name {
 =cut
 
 sub program_dir {
-        return Bio::Root::IO->catfile($ENV{TCOFFEEDIR}) if $ENV{TCOFFEEDIR};
+    return $PROGRAM_DIR;
 }
 
 sub new {
-    my ($class,@args) = @_;
-    my $self = $class->SUPER::new(@args);
-    my ($attr, $value);    
-    
-    while (@args)  {
-	$attr =   shift @args;
-	$value =  shift @args;
-	next if( $attr =~ /^-/); # don't want named parameters
-	$self->$attr($value);	
-    }
-    $self->matrix($DEFAULTS{'MATRIX'}) unless( $self->matrix );
-    $self->output($DEFAULTS{'OUTPUT'}) unless( $self->output );
-#    $self->aformat($DEFAULTS{'AFORMAT'}) unless $self->aformat;
+	my ($class,@args) = @_;
+	my $self = $class->SUPER::new(@args);
+	my ($attr, $value);
 
-    $self->methods($DEFAULTS{'METHODS'}) unless $self->methods;
+	while (@args) {
+		$attr =   shift @args;
+		$value =  shift @args;
+		next if( $attr =~ /^-/); # don't want named parameters
+		$self->$attr($value);
+	}
+	$self->matrix($DEFAULTS{'MATRIX'}) unless( $self->matrix );
+	$self->output($DEFAULTS{'OUTPUT'}) unless( $self->output );
+	$self->methods($DEFAULTS{'METHODS'}) unless $self->methods;
+	# $self->aformat($DEFAULTS{'AFORMAT'}) unless $self->aformat;
 
-    return $self;
+	return $self;
 }
 
 sub AUTOLOAD {
@@ -673,7 +697,7 @@ sub run{
    if( $type =~ /align/i ) {
        return $self->align($seq);
    } elsif( $type =~ /profile/i ) {
-       return $self->profile_align($seq,$profile);
+       return $self->profile_align($profile,$seq);
    } else { 
        $self->warn("unrecognized alignment type $type\n");
    }
@@ -684,13 +708,13 @@ sub run{
 
  Title   : align
  Usage   :
-	$inputfilename = 't/cysprot.fa';
+	$inputfilename = 't/data/cysprot.fa';
 	$aln = $factory->align($inputfilename);
 or
-	$seq_array_ref = \@seq_array; @seq_array is array of Seq objs
+	$seq_array_ref = \@seq_array; 
+        # @seq_array is array of Seq objs
 	$aln = $factory->align($seq_array_ref);
  Function: Perform a multiple sequence alignment
- Example :
  Returns : Reference to a SimpleAlign object containing the
            sequence alignment.
  Args    : Name of a file containing a set of unaligned fasta sequences
@@ -794,9 +818,14 @@ sub _run {
 	my ($type1,$type2);
 	($infile1,$type1) = @$in1;
 	($infile2,$type2) = @$in2;
-	$instring = '-in='.join(',',($type1.$infile1, $type2.$infile2,
-				     'X'.$self->matrix,
-				     $self->methods));	
+	unless (($self->matrix =~ /none/i) || ($self->matrix =~ /null/i) ) {
+	    $instring = '-in='.join(',',($type2.$infile2),'X'.$self->matrix,
+				    $self->methods);
+	    $instring .= ' -profile='.$infile1;
+	} else {
+	  $instring = '-in='.join(',',($type1.$infile1, $type2.$infile2,
+				       $self->methods));	
+	}
     }
     my $param_string = shift;
 #    my ($paramfh,$parameterFile) = $self->io->tempfile;
@@ -811,11 +840,10 @@ sub _run {
     my $status = system($commandstring);
     my $outfile = $self->outfile(); 
 
-    $self->throw( "TCoffee call crashed: $? [command $commandstring]\n") 
-	if( !-e $outfile || -z $outfile );
-
-#    unlink ($parameterFile);
-
+    if( !-e $outfile || -z $outfile ) {
+	$self->warn( "TCoffee call crashed: $? [command $commandstring]\n");
+	return undef;
+    }
 
     # retrieve alignment (Note: MSF format for AlignIO = GCG format of
     # tcoffee)
@@ -875,12 +903,36 @@ sub _setinput {
 	    $header =~ /clustal/i ) { # phylip
 	    $type = 'A';
 	}
+    
+    # On some systems, having filenames with / in them (ie. a file in a
+    # directory) causes t-coffee to completely fail. It warns on all systems.
+    # The -no_warning option solves this, but there is still some strange
+    # bug when doing certain profile-related things. This is magically solved
+    # by copying the profile file to a temp file in the current directory, so
+    # it its filename supplied to t-coffee contains no /
+    # (It's messy here - I just do this to /all/ input files to most easily
+    #  catch all variants of providing a profile - it may only be the last
+    #  form (isa("Bio::PrimarySeqI")) that causes a problem?)
+    
+    my (undef, undef, $adjustedfilename) = File::Spec->splitpath($infilename);
+    if ($adjustedfilename ne $infilename) {
+        my ($fh, $tempfile) = $self->io->tempfile(-dir => cwd());
+        seek(IN, 0, 0);
+        while (<IN>) {
+            print $fh $_;
+        }
+        close($fh);
+        (undef, undef, $tempfile) = File::Spec->splitpath($tempfile);
+        $infilename = $tempfile;
+    }
+    
 	close(IN);
 	return ($infilename,$type);
     } elsif (ref($input) =~ /ARRAY/i ) { #  $input may be an
 	                                 #  array of BioSeq objects...
         #  Open temporary file for both reading & writing of array
-	($tfh,$infilename) = $self->io->tempfile();
+	($tfh,$infilename) = $self->io->tempfile(-dir => cwd());
+    (undef, undef, $infilename) = File::Spec->splitpath($infilename);
 	if( ! ref($input->[0]) ) {
 	    $self->warn("passed an array ref which did not contain objects to _setinput");
 	    return undef;
@@ -925,7 +977,8 @@ sub _setinput {
     #  $input may be a SimpleAlign object.
     } elsif ( $input->isa("Bio::Align::AlignI") ) {
 	#  Open temporary file for both reading & writing of SimpleAlign object
-	($tfh, $infilename) = $self->io->tempfile();
+	($tfh, $infilename) = $self->io->tempfile(-dir => cwd());
+    (undef, undef, $infilename) = File::Spec->splitpath($infilename);
 	$temp =  Bio::AlignIO->new(-fh=>$tfh,
 				   '-format' => 'clustalw');
 	$temp->write_aln($input);
@@ -938,7 +991,8 @@ sub _setinput {
     # a previous alignment)
     elsif ( $input->isa("Bio::PrimarySeqI")) {
         #  Open temporary file for both reading & writing of BioSeq object
-	($tfh,$infilename) = $self->io->tempfile();
+	($tfh,$infilename) = $self->io->tempfile(-dir => cwd());
+    (undef, undef, $infilename) = File::Spec->splitpath($infilename);
 	$temp =  Bio::SeqIO->new(-fh=> $tfh, '-format' =>'Fasta');
 	$temp->write_seq($input);
 	$temp->close();
@@ -998,6 +1052,13 @@ sub _setparams {
     }
 
     if ($self->quiet() || $self->verbose < 0) { $param_string .= ' -quiet';}
+    
+    # -no_warning is required on some systems with certain versions or failure
+    # is guaranteed
+    if ($self->version >= 4 && $self->version < 4.7) {
+        $param_string .= ' -no_warning';
+    }
+    
     return $param_string;
 }
 

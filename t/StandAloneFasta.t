@@ -1,6 +1,6 @@
 # -*-Perl-*-
 ## Bioperl Test Harness Script for Modules
-## $Id: StandAloneFasta.t,v 1.4 2003/02/24 15:20:16 jason Exp $
+## $Id: StandAloneFasta.t,v 1.5 2006/11/08 09:48:37 sendu Exp $
 #
 
 use strict;
@@ -19,6 +19,7 @@ END {
 	skip('Fasta or env variables not installed correctly',1);
     }
     unlink('blastreport.out');
+	unlink('resultfile');
 }
 
 use Bio::Tools::Run::Alignment::StandAloneFasta;
@@ -30,7 +31,7 @@ my $verbose = -1;
 my $version = '34';
 my @params = ( 'b' =>'15', 
 	       'd' => 0,
-	       'O' =>'resultfile', 
+	       'O' =>'resultfile',
 	       'm'=>'9',
 	       "program"=>"fasta$version");
 my $factory = Bio::Tools::Run::Alignment::StandAloneFasta->new

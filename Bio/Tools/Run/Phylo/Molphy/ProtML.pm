@@ -1,8 +1,8 @@
-# $Id: ProtML.pm,v 1.9 2003/07/11 18:42:35 jason Exp $
+# $Id: ProtML.pm,v 1.14 2006/07/04 22:23:33 mauricio Exp $
 #
 # BioPerl module for Bio::Tools::Run::Phylo::Molphy::ProtML
 #
-# Cared for by Jason Stajich <jason@bioperl.org>
+# Cared for by Jason Stajich <jason-AT-bioperl_DOT_org>
 #
 # Copyright Jason Stajich
 #
@@ -21,11 +21,11 @@ Bio::Tools::Run::Phylo::Molphy::ProtML - A wrapper for the Molphy pkg app ProtML
   use Bio::Tools::Run::Phylo::Molphy::ProtML;
 
   my %args = ( 'models' => 'jtt',
-  	     'search' => 'quick',
-  	     "other" => [ '-information', '-w']);
+               'search' => 'quick',
+               'other'  => [ '-information', '-w'] );
   my $verbose = 0; # change to 1 if you want some debugging output
   my $protml = new Bio::Tools::Run::Phylo::Molphy::ProtML(-verbose => $verbose,
-  							   -flags => \%args);
+  							  -flags   => \%args);
 
   die("cannot find the protml executable") unless $protml->executable;
 
@@ -61,13 +61,11 @@ Bio::Tools::Run::Phylo::Molphy::ProtML - A wrapper for the Molphy pkg app ProtML
 
 This is a wrapper for the exe from the Molphy (MOLecular
 PHYlogenetics) package by Jun Adachi & Masami Hasegawa.  The software
-can be downloaded from
-http://www.ism.ac.jp/software/ismlib/softother.e.html or
-http://ftp.ism.ac.jp:8000/ISMLIB/MOLPHY/ websites.  Note that the
-PHYLIP (Joe Felsenstein) also provides a version of the protml which
-this module is currently NOT prepared to handle.  Use the package
+can be downloaded from L<http://www.ism.ac.jp/ismlib/softother.e.html>.
+Note that PHYLIP (Joe Felsenstein) also provides a version of protml
+which this module is currently NOT prepared to handle.  Use the package
 available directly from MOLPHY authors if you want to use the module
-in its present implementation, (extensions are welcomed!).
+in its present implementation (extensions are welcomed!).
 
 The main components are the protml and nucml executables which are
 used to build maximum likelihood (ML) phylogenetic trees based on
@@ -75,15 +73,13 @@ either protein or nucleotide sequences.
 
 Here are the valid input parameters, we have added a longhand version
 of the parameters to help you understand what each one does.  Either
-the longhand or the original Molphy parameter will work.
-
-on the left while the Molphy parameter is on the
+the longhand or the original Molphy parameter will work. 
 
   Bioperl      Molphy           Description
   Longhand     parameter
   Model (one of these):
   ---------------
-   jtt             j            Jones, Taylor & Thornton (1992)
+  jtt              j            Jones, Taylor & Thornton (1992)
   jtt-f            jf           JTT w/ frequencies
   dayhoff          d            Dahoff et al. (1978)
   dayhoff-f        d            dayhoff w/ frequencies
@@ -91,21 +87,20 @@ on the left while the Molphy parameter is on the
   mtrev24-f        mf           mtREV24 w/ frequencies
   poisson          p            Poisson
   proportional     pf           Proportional
-    rsr            r            Relative Substitution Rate
-   rsr-f           rf           RSR w/ frequencies
+  rsr              r            Relative Substitution Rate
+  rsr-f            rf           RSR w/ frequencies
   frequencies      f            data frequencies
 
   Search Strategy (one of these):
   ----------------
   usertrees        u            User trees (must also supply a tree)
   rearrangement    R            Local rearrangement
-      lbp          RX           Local boostrap prob
+  lbp              RX           Local boostrap prob
   exhaustive       e            Exhaustive search
-     star          s            Star decomposition search (may not be ML)
-     quick         q            Quick Add OTU search (may not be ML)
-   distance        D            ML Distance matrix --> NJDIST (need to supply
-  							     NJDIST tree)
-
+  star             s            Star decomposition search (may not be ML)
+  quick            q            Quick Add OTU search (may not be ML)
+  distance         D            ML Distance matrix --> NJDIST (need to supply
+  							       NJDIST tree)
 
   Others (can be some or all of these):
   ---------------
@@ -118,8 +113,8 @@ on the left while the Molphy parameter is on the
 
   verbose          v            Verbose messages directed to STDERR
   information      i            Output some information (tree vals)
-  		 w            More some extra information (transition
-  							   matricies, etc)
+  		   w            More some extra information (transition
+                                                             matricies, etc)
 
 
 =head1 FEEDBACK
@@ -130,21 +125,20 @@ User feedback is an integral part of the evolution of this and other
 Bioperl modules. Send your comments and suggestions preferably to
 the Bioperl mailing list.  Your participation is much appreciated.
 
-  bioperl-l@bioperl.org              - General discussion
-  http://bioperl.org/MailList.shtml  - About the mailing lists
+  bioperl-l@bioperl.org                  - General discussion
+  http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
 
 =head2 Reporting Bugs
 
 Report bugs to the Bioperl bug tracking system to help us keep track
-of the bugs and their resolution. Bug reports can be submitted via
-email or the web:
+of the bugs and their resolution. Bug reports can be submitted via the
+web:
 
-  bioperl-bugs@bioperl.org
-  http://bioperl.org/bioperl-bugs/
+  http://bugzilla.open-bio.org/
 
 =head1 AUTHOR - Jason Stajich
 
-Email jason@bioperl.org
+Email jason-AT-bioperl_DOT_org
 
 =head1 CONTRIBUTORS
 

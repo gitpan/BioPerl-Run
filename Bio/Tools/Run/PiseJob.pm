@@ -1,4 +1,4 @@
-# $Id: PiseJob.pm,v 1.10 2003/07/04 03:36:01 shawnh Exp $
+# $Id: PiseJob.pm,v 1.17 2006/11/23 19:48:58 sendu Exp $
 # BioPerl modules for Pise
 #
 # Cared for by Catherine Letondal <letondal@pasteur.fr>
@@ -99,17 +99,16 @@ User feedback is an integral part of the evolution of this and other
 Bioperl modules. Send your comments and suggestions preferably to
 the Bioperl mailing list.  Your participation is much appreciated.
 
-  bioperl-l@bioperl.org              - General discussion
-  http://bioperl.org/MailList.shtml  - About the mailing lists
+  bioperl-l@bioperl.org                  - General discussion
+  http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
 
 =head2 Reporting Bugs
 
 Report bugs to the Bioperl bug tracking system to help us keep track
-of the bugs and their resolution. Bug reports can be submitted via
-email or the web:
+of the bugs and their resolution. Bug reports can be submitted via the
+web:
 
-  bioperl-bugs@bioperl.org
-  http://bioperl.org/bioperl-bugs/
+  http://bugzilla.open-bio.org/
 
 =head1 AUTHOR
 
@@ -138,7 +137,6 @@ Bio::Tools::Run::PiseApplication
 
 package Bio::Tools::Run::PiseJob;
 
-use vars qw(@ISA $VERSION);
 use strict;
 use Bio::Root::Root;
 use Bio::AlignIO;
@@ -147,10 +145,11 @@ use XML::Parser::PerlSAX;
 use LWP::UserAgent;
 use HTTP::Request::Common;
 use POSIX;
+use Bio::Root::Version;
 
-@ISA = qw(Bio::Root::Root);
+use base qw(Bio::Root::Root);
 
-$VERSION = '1.0';
+our $VERSION = ${Bio::Root::Version::VERSION};
 
 =head2 new
 
@@ -530,9 +529,9 @@ sub save {
 	    my $res = $ua->request(GET $url);
 	    
 	    if ($res->is_success) {
-		open(FILE,"> $file") || die "cannot open $file: $!";
-		print FILE $res->content;
-		close FILE;
+		open(my $FILE,"> $file") || die "cannot open $file: $!";
+		print $FILE $res->content;
+		close $FILE;
 		return $file;
 	    } else {
 		$self->{ERROR} = 1;
@@ -609,7 +608,6 @@ sub content {
 
 sub stdout {
     my $self = shift;
-
     if (! $self->{JOBID}) {
 	$self->throw("Bio::Tools::Run::PiseJob::stdout: your job has no jobid");
     }
@@ -698,7 +696,7 @@ sub fh {
 	if ($self->{DEBUG}) {
 	    print STDERR "DEBUG> Bio::Tools::Run::PiseJob fh: $url (",$self->{PROGRAM},")\n";
 	}
-	if ($url =~ /$file/) {
+	if ($url =~ /$file/ or $file =~ /$url/ or $file==$url) {
 	    if ($self->{DEBUG}) {
 		print STDERR "Bio::Tools::Run::PiseJob::fh: this one ($file)!\n";
 	    }
@@ -1140,6 +1138,24 @@ sub TIEHANDLE {
   return bless {pisejob => shift}, $class;
 }
 
+=head2 CLOSE()
+
+ Title   : CLOSE()
+ Usage   : 
+ Function: Internal - see perltie.
+ Example :
+ Returns : 
+
+=cut
+
+# Note: this partly fixes Bug 2126
+sub CLOSE {
+    my $self = shift;
+    my $fh = $self->fh;
+    return if (!$fh  || \*STDOUT == $fh || \*STDERR == $fh || \$STDIN == $fh);
+    close $fh;
+}
+    
 =head2 _clean_content
 
  Title   : _clean_content()
@@ -1193,6 +1209,5 @@ sub _clean_content {
     return $content;
 
 }
-
 
 1;

@@ -18,7 +18,7 @@ Wrapper for Vista
   use Bio::Tools::Run::Alignment::Lagan;
   use Bio::AlignIO;
 
-  my $sio = Bio::SeqIO->new(-file=>$ARGV[0],-format=>'fasta');
+  my $sio = Bio::SeqIO->new(-file=>$ARGV[0],-format=>'genbank');
   my @seq;
   my $reference = $sio->next_seq;
   push @seq, $reference;
@@ -32,7 +32,7 @@ Wrapper for Vista
   my $aln = $lagan->mlagan(\@seq,'(fugu (mouse human))');
 
 
-  my $vis = Bio::Tools::Run::Vista->new('outfile'=>$out,
+  my $vis = Bio::Tools::Run::Vista->new('outfile'=>"outfile.pdf",
                                         'title' => "My Vista Plot",
                                         'annotation'=>\@features,
                                         'annotation_format'=>'GFF',
@@ -47,13 +47,17 @@ Wrapper for Vista
                                         'tickdist'=>100,
                                         'bases'=>1000,
                                         'java_param'=>"-Xmx128m",
-                                        'num_pages'=>1
+                                        'num_pages'=>1,
                                         'color'=> {'EXON'=>'100 0 0',
                                                    'CNS'=>'0 0 100'},
                                         'quiet'=>1);
 
   my $referenceid= 'human';
   $vis->run($aln,$referenceid); 
+
+  #alternative one can choose pairwise alignments to plot
+  #where the second id in each pair is the reference sequence
+  $vis->run($aln,([mouse,human],[fugu,human],[mouse,fugu]));
 
 =head1 DESCRIPTION
 
@@ -91,17 +95,16 @@ User feedback is an integral part of the evolution of this and other
 Bioperl modules. Send your comments and suggestions preferably to one
 of the Bioperl mailing lists.  Your participation is much appreciated.
 
-  bioperl-l@bioperl.org               - General discussion
-  http://bio.perl.org/MailList.html   - About the mailing lists
+  bioperl-l@bioperl.org                  - General discussion
+  http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
 
 =head2 Reporting Bugs
 
 Report bugs to the Bioperl bug tracking system to help us keep track
-the bugs and their resolution.  Bug reports can be submitted via email
-or the web:
+the bugs and their resolution.  Bug reports can be submitted via the
+web:
 
-  bioperl-bugs@bio.perl.org
-  http://bio.perl.org/bioperl-bugs/
+  http://bugzilla.open-bio.org/
 
 =head1 AUTHOR
 
@@ -123,6 +126,7 @@ use vars qw($AUTOLOAD @ISA %DEFAULT_VALUES %EPONINE_PARAMS
 use strict;
 
 use Bio::Root::Root;
+use Bio::Seq;
 use Bio::Root::IO;
 use Bio::Tools::Run::WrapperBase;
 use File::Copy;
@@ -294,21 +298,72 @@ sub run{
 
 sub _setinput {
     my ($self,$sim_aln,$ref) = @_;
-    ($sim_aln && $sim_aln->isa("Bio::Align::AlignI")) || $self->throw("Expecting a Bio::Align::AlignI");
     my($pairs,$files) = $self->_mf2bin($sim_aln,$ref);
     my $plotfile = $self->_make_plotfile($sim_aln,$pairs,$files);
     return $plotfile;
 }
 
+sub _parse_multi_fasta {
+  my ($self,$file) = @_;
+  my %seq;
+  open(FASTA, $file) || $self->throw("Couldn't open $file");
+  my $last;
+  my $count = 0;
+  while (my $line = <FASTA>) {
+    chomp $line;
+    next if $line=~/^$/;
+    if (substr($line, 0, 1) eq ">") {
+        $_ = substr($line, 1);
+        /\w+/g;
+        $seq{$&} = "";
+        $last = $&;
+    } else {
+        $seq{$last}.=$line;
+    }
+    print STDERR $count."\n";
+    $count++;
+  }
+  my @seq;
+
+  foreach my $key(keys %seq){
+    my $seq = Bio::Seq->new(-id=>$key,-seq=>$seq{$key});
+    push @seq,$seq;
+  }
+  return @seq;
+}
+
 #adapted from mlagan utils  mf2bin.pl 
 sub _mf2bin {
   my ($self,$sim,$ref)= @_;
-  my @seq = $sim->each_seq;
+  my @seq;
+  if(!ref $sim){
+    @seq = $self->_parse_multi_fasta($sim);
+  }
+  else {
+    ($sim && $sim->isa("Bio::Align::AlignI")) || $self->throw("Expecting a Bio::Align::AlignI");
+    @seq = $sim->each_seq;
+  }
   my $reference;
+  my @files;
+  my @pairs;
+  if(ref($ref) eq 'ARRAY'){
+    my @ref;
+    foreach my $set(@$ref){
+      my ($reference) = grep{$_->id eq $set->[1]}@seq;
+      my ($other) = grep{$_->id eq $set->[0]}@seq;
+      my ($pair,$file) = $self->_pack_bin($reference,$other);
+      push @pairs, @$pair;
+      push @files, @$file;
+      push @ref,$set->[1];
+    }
+    $self->_coordinate(\@ref);
+    return \@pairs,\@files;
 
+  }
   #figure out the reference sequence
-  if($ref =~/\d+/){ #its a rank index
+  elsif($ref =~/\d+/){ #its a rank index
     $reference = $seq[$ref-1];
+    $ref = $reference->id;
     splice @seq,($ref-1),1;
   }
   else { #its an id
@@ -320,16 +375,15 @@ sub _mf2bin {
       }
     }
   }
+  $self->_coordinate([$ref]);
 
   # pack bin
   # format from Alex Poliakov's glass2bin.pl script
   my %base_code = ('-' => 0, 'A' => 1, 'C' => 2, 'T' => 3, 'G' => 4, 'N' => 5,
                 'a' => 1, 'c' => 2, 't' => 3, 'g' => 4, 'n' => 5);
 
- my @files;
 
  my @ref= (split ('',$reference->seq));
- my @pairs;
 
   foreach my $seq2(@seq){
       my ($tfh1,$outfile) = $self->io->tempfile(-dir=>$self->tempdir);
@@ -344,6 +398,29 @@ sub _mf2bin {
       push @files, $outfile;
       push @pairs,[$reference->id,$seq2->id];
   }
+  return \@pairs,\@files;
+}
+
+sub _pack_bin {
+  my ($self,$first,$sec) = @_;
+  my @first = (split('',$first->seq));
+  my @sec = (split('',$sec->seq));
+  # pack bin
+  # format from Alex Poliakov's glass2bin.pl script
+  my %base_code = ('-' => 0, 'A' => 1, 'C' => 2, 'T' => 3, 'G' => 4, 'N' => 5,
+                'a' => 1, 'c' => 2, 't' => 3, 'g' => 4, 'n' => 5);
+  my @files;
+  my @pairs;
+  my ($tfh1,$outfile) = $self->io->tempfile(-dir=>$self->tempdir);
+  foreach my $index(0..$#first){
+    unless($first[$index] eq '-' && $sec[$index] eq '-'){
+      print $tfh1 pack("H2",$base_code{$first[$index]}.$base_code{$sec[$index]});
+    }
+  }
+  close ($tfh1);
+  undef ($tfh1);
+  push @files, $outfile;
+  push @pairs,[$first->id,$sec->id];
   return \@pairs,\@files;
 }
 
@@ -397,7 +474,7 @@ sub _make_plotfile {
   $annotation_file .= " GFF" if $self->annotation_format=~/GFF/i;
   print $tfh1 "GENES ".$annotation_file." \n\n" if $annotation_file;
   print $tfh1 "LEGEND on\n\n";
-  print $tfh1 "COORDINATE ".$pairs->[0]->[0]."\n\n";
+  print $tfh1 "COORDINATE ".join(" ",@{$self->_coordinate})."\n\n";
   print $tfh1 "PAPER letter\n\n";
   print $tfh1 "BASES ".$self->bases."\n\n";
   print $tfh1 "TICK_DIST ".$self->tickdist."\n\n";
@@ -406,6 +483,7 @@ sub _make_plotfile {
   print $tfh1 "NUM_WINDOWS ".$self->numwindows."\n\n";
   print $tfh1 "AXIS_LABEL ".$self->axis_label ."\n\n" if $self->axis_label;
   print $tfh1 "TICKS_FILE ".$self->ticks_file ."\n\n" if $self->ticks_file;
+  print $tfh1 "SNPS_FILE"." ".$self->snps_file."\n\n" if $self->snps_file;
   print $tfh1 "GAPS ".$self->gaps ."\n\n"if $self->gaps;
   print $tfh1 "REPEATS_FILE ".$self->repeats_file ."\n\n" if $self->repeats_file;
   print $tfh1 "FILTER_REPEATS ".$self->filter_repeats ."\n\n" if $self->filter_repeats;
@@ -459,6 +537,13 @@ sub _run_Vista {
    
    return 1;
 
+}
+sub _coordinate {
+  my ($self,$val) = @_;
+  if($val){
+    $self->{'_coordinate'} = $val;
+  }
+  return $self->{'_coordinate'};
 }
 
 =head2 outfile

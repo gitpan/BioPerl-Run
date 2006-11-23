@@ -1,6 +1,6 @@
 # -*-Perl-*-
 ## Bioperl Test Harness Script for Modules
-## $Id: ProtPars.t,v 1.7 2002/11/14 14:03:00 shawnh Exp $
+## $Id: ProtPars.t,v 1.8 2005/09/30 01:21:02 jason Exp $
 
 use vars qw($DEBUG );
 $DEBUG = $ENV{'BIOPERLDEBUG'} || 0;
@@ -64,8 +64,8 @@ my $tree;
 $tree = $tree_factory->create_tree($inputfilename);
 
 # have to sort the since there is polytomy here.
-my @nodes = sort { defined $a->id && defined $b->id && $a->id cmp $b->id } $tree->get_nodes();
-ok ($nodes[3]->id, 'SINFRUP002', 
+my @nodes = sort { $a->id cmp $b->id } grep { $_->id } $tree->get_nodes();
+ok ($nodes[2]->id, 'SINFRUP002', 
     "failed creating tree by protpars");
 
 $inputfilename = Bio::Root::IO->catfile("t","data","cysprot.fa");

@@ -1,4 +1,4 @@
-# $Id: Mdust.pm,v 1.6 2003/10/03 17:55:45 djackson Exp $
+# $Id: Mdust.pm,v 1.9 2006/07/04 22:23:31 mauricio Exp $
 #
 # BioPerl module for Bio::Tools::SiRNA
 #
@@ -23,26 +23,24 @@ Mdust - Perl extension for Mdust nucleotide filtering
 
 =head1 DESCRIPTION
 
-Perl wrapper for the nucleic acid complexity filtering program mdust as 
-available from TIGR (http://www.tigr.org/tdb/tgi/software/).  Takes a 
-bioperl primary seq object of type DNA as input. Returns a Bio::Seq 
-object with the low-complexity regions changed to Ns OR a 
+Perl wrapper for the nucleic acid complexity filtering program B<mdust> as 
+available from TIGR via L<http://www.tigr.org/tdb/tgi/software/>.  Takes a 
+Bio::PrimarySeq object of type DNA as input. Returns a Bio::Seq 
+object with the low-complexity regions changed to Ns, or a 
 Bio::Seq::RichSeq object with the low-complexity regions identified as 
-a SeqFeature::Generic with primary tag = 'Excluded'.
+a Bio::SeqFeature::Generic with primary tag = 'Excluded'.
 
 This module uses the environment variable MDUSTDIR to find the mdust 
-program. Set MDUSTDIR to the directory containing the mdust binary 
-(example: if mdust is installed as /usr/local/bin/mdust, set MDUSTDIR 
-to '/usr/local/bin').
-
-
-=head2 EXPORT
-
-None
+program. Set MDUSTDIR to the directory containing the mdust binary.
+For example, if mdust is installed as I</usr/local/bin/mdust>, set MDUSTDIR 
+to I</usr/local/bin>.
 
 =head1 SEE ALSO
 
-L<mdust>, L<perl>.
+L<mdust>, 
+L<Bio::PrimarySeq>, 
+L<Bio::Seq::RichSeq>, 
+L<Bio::SeqFeature::Generic>
 
 =head1 FEEDBACK
 
@@ -52,8 +50,8 @@ User feedback is an integral part of the evolution of this and other
 Bioperl modules. Send your comments and suggestions preferably to
 the Bioperl mailing list.  Your participation is much appreciated.
 
-  bioperl-l@bioperl.org              - General discussion
-  http://bioperl.org/MailList.shtml  - About the mailing lists
+  bioperl-l@bioperl.org                  - General discussion
+  http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
 
 =head2 Reporting Bugs
 
@@ -61,15 +59,11 @@ Report bugs to the Bioperl bug tracking system to help us keep track
 of the bugs and their resolution. Bug reports can be submitted via
 the web:
 
-  http://bugzilla.bioperl.org/
+  http://bugzilla.open-bio.org/
 
 =head1 AUTHOR
 
 Donald Jackson (donald.jackson@bms.com)
-
-=head1 CONTRIBUTORS
-
-Additional contributors names and emails here
 
 =head1 APPENDIX
 

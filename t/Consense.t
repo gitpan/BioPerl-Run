@@ -1,6 +1,6 @@
 # -*-Perl-*-
 ## Bioperl Test Harness Script for Modules
-## $Id: Consense.t,v 1.4 2003/04/01 05:27:43 jerm Exp $
+## $Id: Consense.t,v 1.5 2006/10/25 09:22:17 sendu Exp $
 
 use strict;
 use vars qw($DEBUG);
@@ -55,7 +55,7 @@ $sb_factory->quiet($bequiet);  # Suppress protpars messages to terminal
 my $inputfilename = Bio::Root::IO->catfile("t","data","consense.treefile");
 my $tree = $sb_factory->run($inputfilename);
 
-ok $tree->number_nodes, 12;
+ok $tree->number_nodes, 13;
 
 my $node = $tree->find_node('CATH_RAT');
 ok $node->branch_length, "10.0";

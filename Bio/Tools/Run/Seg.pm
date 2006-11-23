@@ -1,4 +1,4 @@
-# $Id: Seg.pm,v 1.9 2003/03/28 22:42:07 jason Exp $
+# $Id: Seg.pm,v 1.16 2006/07/04 22:23:31 mauricio Exp $
 # Copyright Balamurugan Kumarasamy
 # You may distribute this module under the same terms as perl itself
 #  POD documentation - main docs before the code
@@ -21,30 +21,28 @@ Bio::Tools::Run::Seg - Object for identifying low complexity
 
 =head1 DESCRIPTION
 
- Seg is a low complexity region (in protein) identifying program
- developed by Wootton and Federhen at the National Center for
- Biotechnology Information (NCBI)
+Seg is a program which identifies low complexity regions in proteins.
+It was developed by Wootton and Federhen at NCBI.
 
 =head1 FEEDBACK
 
 =head2 Mailing Lists
 
- User feedback is an integral part of the evolution of this and other
- Bioperl modules. Send your comments and suggestions preferably to one
- of the Bioperl mailing lists.  Your participation is much appreciated.
+User feedback is an integral part of the evolution of this and other
+Bioperl modules. Send your comments and suggestions preferably to one
+of the Bioperl mailing lists.  Your participation is much appreciated.
 
- bioperl-l@bioperl.org          - General discussion
- http://bio.perl.org/MailList.html             - About the mailing lists
+  bioperl-l@bioperl.org                  - General discussion
+  http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
 
 
 =head2 Reporting Bugs
 
- Report bugs to the Bioperl bug tracking system to help us keep track
- the bugs and their resolution.  Bug reports can be submitted via
- email or the web:
+Report bugs to the Bioperl bug tracking system to help us keep track
+the bugs and their resolution.  Bug reports can be submitted via the
+web:
 
- bioperl-bugs@bio.perl.org
- http://bio.perl.org/bioperl-bugs/
+  http://bugzilla.open-bio.org/
 
 =head1 AUTHOR - Bala
 
@@ -52,8 +50,8 @@ Bio::Tools::Run::Seg - Object for identifying low complexity
 
 =head1 APPENDIX
 
- The rest of the documentation details each of the object
- methods. Internal methods are usually preceded with a _
+The rest of the documentation details each of the object
+methods. Internal methods are usually preceded with a _
 
 =cut
 
@@ -79,7 +77,7 @@ BEGIN {
 =head2 program_name
 
  Title   : program_name
- Usage   : $factory>program_name()
+ Usage   : $factory->program_name()
  Function: holds the program name
  Returns:  string
  Args    : None
@@ -94,9 +92,9 @@ sub program_name {
 
  Title   : program_dir
  Usage   : $factory->program_dir(@params)
- Function: returns the program directory, obtiained from ENV variable.
- Returns:  string
- Args    :
+ Function: returns the program directory, obtained from ENV variable.
+ Returns : string, or undef if $SEGDIR not in ENV
+ Args    : None
 
 =cut
 
@@ -184,7 +182,7 @@ sub run{
 
         $self->_input($seq);
 
-         @feats = $self->_run();
+        @feats = $self->_run();
 
     }
 
@@ -196,7 +194,7 @@ sub run{
 
  Title   :   _input
  Usage   :   obj->_input($seqFile)
- Function:   Internal(not to be used directly)
+ Function:   Internal (not to be used directly)
  Returns :
  Args    :
 
@@ -215,9 +213,9 @@ sub _input {
 
  Title   :   _run
  Usage   :   $obj->_run()
- Function:   Internal(not to be used directly)
+ Function:   Internal (not to be used directly)
  Returns :   An array of Bio::SeqFeature::Generic objects
- Args    :
+ Args    :   None
 
 =cut
 
@@ -228,7 +226,7 @@ sub _run {
      my $str =$self->executable." ".$self->_input." -l > ".$outfile;
      my $status = system($str);
      $self->throw( "Seg call ($str) crashed: $? \n") unless $status==0;
-
+     
      my $filehandle;
      if (ref ($outfile) !~ /GLOB/) {
         open (SEG, "<".$outfile) or $self->throw ("Couldn't open file ".$outfile.": $!\n");
@@ -258,9 +256,9 @@ sub _run {
 
  Title   :   _writeSeqFile
  Usage   :   obj->_writeSeqFile($seq)
- Function:   Internal(not to be used directly)
- Returns :
- Args    :
+ Function:   Internal (not to be used directly)
+ Returns :   string - Fasta filename to which $seq was written
+ Args    :   Bio::Seq object
 
 =cut
 

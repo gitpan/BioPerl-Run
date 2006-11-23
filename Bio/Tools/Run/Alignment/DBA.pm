@@ -1,6 +1,6 @@
-# BioPerl module for Bio::Tools::Run::Alignment::DBA
+# $Id: DBA.pm,v 1.15 2006/08/18 20:57:58 bosborne Exp $
 #
-# Cared for by
+# BioPerl module for Bio::Tools::Run::Alignment::DBA
 #
 # Copyright Shawn Hoon
 #
@@ -14,33 +14,46 @@ sequences using the DNA Block Aligner program.
 
 =head1 SYNOPSIS
 
+  use Bio::Tools::Run::Alignment::DBA;
+
   #  Build a dba alignment factory
-  my @params = ('matchA' => 0.75, 'matchB' => '0.55','dymem'=>'linear');
-  my  $factory = Bio::Tools::Run::Alignment::DBA->new(@params);
+  my @params = ('matchA' => 0.75, 
+                 'matchB' => '0.55',
+                 'dymem' =>'linear');
+  my $factory = Bio::Tools::Run::Alignment::DBA->new(@params);
 
   #  Pass the factory a filename with 2 sequences to be aligned.
   $inputfilename = 't/data/dbaseq.fa';
-  #@hsps is an array of GenericHSP objects
+  # @hsps is an array of GenericHSP objects
   my @hsps = $factory->align($inputfilename); 
 
   # or
-  $seq_array_ref = \@seq_array;
   my @files = ('t/data/dbaseq1.fa','t/data/dbaseq2.fa');
   my @hsps = $factory->align(\@files);
 
-  # or
-  # where @seq_array is an array of Bio::Seq objects
+  # or where @seq_array is an array of Bio::Seq objects
+  $seq_array_ref = \@seq_array;
   my @hsps = $factory->align($seq_array_ref);
-
-
-  # There are various additional options and input formats available.
-  # See the DESCRIPTION section that follows for additional details.
 
 =head1 DESCRIPTION
 
-DNA Block Aligner program (DBA) is developed by Ewan Birney. DBA is
-part of the Wise package available at
-http://www.sanger.ac.uk/software/wise2.
+DNA Block Aligner program (DBA) was developed by Ewan Birney. DBA
+is part of the Wise package available at
+L<http://www.sanger.ac.uk/software/wise2>.
+
+You will need to enable dba to find the dba program. This can 
+be done in a few different ways:
+
+1. Define an environmental variable WISEDIR:
+
+  export WISEDIR =/usr/local/share/wise2.2.0
+
+2. Include a definition of an environmental variable WISEDIR in
+every script that will use DBA.pm:
+
+  $ENV{WISEDIR} = '/usr/local/share/wise2.2.20';
+
+3. Make sure that the dba application is in your PATH.
 
 =head1 FEEDBACK
 
@@ -50,17 +63,16 @@ User feedback is an integral part of the evolution of this and other
 Bioperl modules. Send your comments and suggestions preferably to one
 of the Bioperl mailing lists.  Your participation is much appreciated.
 
-  bioperl-l@bioperl.org                       - General discussion
-  http://bio.perl.org/MailList.html           - About the mailing lists
+  bioperl-l@bioperl.org                  - General discussion
+  http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
 
 =head2 Reporting Bugs
 
 Report bugs to the Bioperl bug tracking system to help us keep track
- the bugs and their resolution.  Bug reports can be submitted via
- email or the web:
+the bugs and their resolution.  Bug reports can be submitted via the
+web:
 
-  bioperl-bugs@bio.perl.org
-  http://bio.perl.org/bioperl-bugs/
+  http://bugzilla.open-bio.org/
 
 =head1 AUTHOR - Shawn Hoon 
 
@@ -72,7 +84,6 @@ The rest of the documentation details each of the object
 methods. Internal methods are usually preceded with a _
 
 =cut
-
 
 package Bio::Tools::Run::Alignment::DBA;
 use vars qw($AUTOLOAD @ISA $PROGRAM $PROGRAMDIR $PROGRAMNAME
@@ -88,17 +99,6 @@ use Bio::Search::HSP::GenericHSP;
 use Bio::Tools::Run::WrapperBase;
 
 @ISA = qw(Bio::Root::Root Bio::Tools::Run::WrapperBase); 
-
-# You will need to enable dba to find the dba program. This
-# can be done in (at least) two ways:
-#
-# 1. define an environmental variable WISEDIR 
-# export WISEDIR =/usr/local/share/wise2.2.0
-# where the wise2.2.20 package is installed
-#
-# 2. include a definition of an environmental variable WISEDIR in
-# every script that will use DBA.pm
-# $ENV{WISEDIR} = '/usr/local/share/wise2.2.20';
 
 BEGIN {
 

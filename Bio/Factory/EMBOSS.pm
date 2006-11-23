@@ -1,9 +1,8 @@
-# $Id: EMBOSS.pm,v 1.1 2003/03/19 16:44:24 heikki Exp $
+# $Id: EMBOSS.pm,v 1.9 2006/10/21 03:04:50 bosborne Exp $
 #
 # BioPerl module for Bio::Factory::EMBOSS
 #
-#
-# Cared for by Heikki Lehvaslaiho <heikki@ebi.ac.uk>
+# Cared for by Heikki Lehvaslaiho <heikki-at-bioperl-dot-org>
 #
 # Copyright Heikki Lehvaslaiho
 #
@@ -13,7 +12,7 @@
 
 =head1 NAME
 
-Bio::Factory::EMBOSS - EMBOSS appliaction factory class
+Bio::Factory::EMBOSS - EMBOSS application factory class
 
 =head1 SYNOPSIS
 
@@ -23,24 +22,24 @@ Bio::Factory::EMBOSS - EMBOSS appliaction factory class
   # get an EMBOSS application  object from the factory
   $water = $f->program('water');
 
-  # here is an example of running the application
-  # water can compare 1 seq against 1->many sequences
+  # here is an example of running the application -
+  # water can compare 1 sequence against 1 or more sequences
   # in a database using Smith-Waterman
   my $seq_to_test; # this would have a seq here
   my @seqs_to_check; # this would be a list of seqs to compare 
-                     # (could be just 1)
+                       # (could be just 1)
   my $wateroutfile = 'out.water';
-  $water->run({ '-sequencea' => $seq_to_test,
-              '-seqall'    => \@seqs_to_check,
-              '-gapopen'   => '10.0',
-              '-gapextend' => '0.5',
-              '-outfile'   => $wateroutfile});
+  $water->run({-sequencea => $seq_to_test,
+               -seqall    => \@seqs_to_check,
+               -gapopen   => '10.0',
+               -gapextend => '0.5',
+               -outfile   => $wateroutfile});
   # now you might want to get the alignment
   use Bio::AlignIO;
   my $alnin = new Bio::AlignIO(-format => 'emboss',
-			       -file   => $wateroutfile);
+		               	       -file   => $wateroutfile);
 
-  while( my $aln = $alnin->next_aln ) {
+  while ( my $aln = $alnin->next_aln ) {
       # process the alignment -- these will be Bio::SimpleAlign objects
   }
 
@@ -50,7 +49,7 @@ The EMBOSS factory class encapsulates access to EMBOSS programs.  A
 factory object allows creation of only known applications.
 
 If you want to check command line options before sending them to the
-program set $factory-E<gt>verbose to positive integer. The value is
+program set $prog-E<gt>verbose to positive integer. The value is
 passed on to programs objects and the ADC description of the available
 command line options is parsed and compared to input.
 
@@ -65,26 +64,20 @@ User feedback is an integral part of the evolution of this and other
 Bioperl modules. Send your comments and suggestions preferably to the
 Bioperl mailing lists  Your participation is much appreciated.
 
-  bioperl-l@bioperl.org                         - General discussion
-  http://bio.perl.org/MailList.html             - About the mailing lists
+  bioperl-l@bioperl.org                  - General discussion
+  http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
 
 =head2 Reporting Bugs
 
-report bugs to the Bioperl bug tracking system to help us keep track
- the bugs and their resolution.  Bug reports can be submitted via
- email or the web:
+Report bugs to the Bioperl bug tracking system to help us keep track
+the bugs and their resolution.  Bug reports can be submitted via the
+web:
 
-  bioperl-bugs@bio.perl.org
-  http://bugzilla.bioperl.org/
+  http://bugzilla.open-bio.org/
 
 =head1 AUTHOR - Heikki Lehvaslaiho
 
-Email:  heikki@ebi.ac.uk
-Address:
-
-     EMBL Outstation, European Bioinformatics Institute
-     Wellcome Trust Genome Campus, Hinxton
-     Cambs. CB10 1SD, United Kingdom
+Email heikki-at-bioperl-dot-org
 
 =head1 APPENDIX
 
@@ -124,7 +117,6 @@ sub new {
   $self->_program_list; # retrieve info about available programs
 
   return $self;
-
 }
 
 =head2 location
@@ -205,13 +197,8 @@ sub version {
     chop $version;
 
     # compare versions
-    my ($thisv, $embossv);
-    $version =~ /(\d+)\.(\d+)\.(\d+)/;
-    $thisv = "$1.$2$3";
-    $EMBOSSVERSION =~ /(\d+)\.(\d+)\.(\d+)/;
-    $embossv = "$1.$2$3";
-    $self->throw("EMBOSS has to be at least version $EMBOSSVERSION\n")
-	if $thisv < $embossv;
+    $self->throw("EMBOSS has to be at least version $EMBOSSVERSION got $version\n")
+	if $version lt  $EMBOSSVERSION;
 
     return $version;
 }

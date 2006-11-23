@@ -38,12 +38,22 @@ Bio::Tools::Run::Hmmer - Wrapper for local execution of hmmsearch
   #build a hmm using hmmbuild
   my $aio = Bio::AlignIO->new(-file=>"protein.msf",-format=>'msf');
   my $aln = $aio->next_aln;
-  my $factory =  Bio::Tools::Run::Hmmer->new('program'=>'hmmbuild','hmm'=>'model.hmm');
+  my $factory =  Bio::Tools::Run::Hmmer->new('program'=>'hmmbuild',
+                                             'hmm'=>'model.hmm');
   $factory->run($aln);
 
   #calibrate the hmm
-  my $factory =  Bio::Tools::Run::Hmmer->new('program'=>'hmmcalibrate','hmm'=>'model.hmm');
+  my $factory =  Bio::Tools::Run::Hmmer->new('program'=>'hmmcalibrate',
+                                             'hmm'=>'model.hmm');
   $factory->run();
+
+  my $factory =  Bio::Tools::Run::Hmmer->new('program'=>'hmmalign',
+                                             'hmm'=>'model.hmm');
+
+   # Pass the factory a Bio::Seq object or a file name
+
+   # returns a Bio::AlignIO object
+   my $aio = $factory->run($seq);
 
 =head1 DESCRIPTION
 
@@ -57,25 +67,26 @@ User feedback is an integral part of the evolution of this and other
 Bioperl modules. Send your comments and suggestions preferably to one
 of the Bioperl mailing lists.  Your participation is much appreciated.
 
- bioperl-l@bioperl.org          - General discussion
- http://bio.perl.org/MailList.html             - About the mailing lists
+  bioperl-l@bioperl.org                  - General discussion
+  http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
 
 =head2 Reporting Bugs
 
 Report bugs to the Bioperl bug tracking system to help us keep track
-the bugs and their resolution.  Bug reports can be submitted via email
-or the web:
+the bugs and their resolution.  Bug reports can be submitted via the
+web:
 
- bioperl-bugs@bioperl.org
- http://bugzilla.bioperl.org/
+  http://bugzilla.open-bio.org/
 
-=head1 AUTHOR - Shawn
+=head1 AUTHOR - Shawn Hoon
 
- Email: shawnh@gmx.net
+ Email: shawnh-at-gmx.net
 
 =head1 CONTRIBUTORS 
 
- Shawn Hoon shawnh@gmx.net
+ Shawn Hoon shawnh-at-gmx.net
+ Jason Stajich jason -at- bioperl -dot- org
+ Scott Markel scott -at- scitegic -dot com
 
 =head1 APPENDIX
 
@@ -86,7 +97,9 @@ methods. Internal methods are usually preceded with a _
 
 package Bio::Tools::Run::Hmmer;
 
-use vars qw($AUTOLOAD @ISA @HMMER_PARAMS @HMMER_SWITCHES %OK_FIELD);
+use vars qw($AUTOLOAD @ISA @HMMER_PARAMS @HMMER_SWITCHES %DOUBLE_DASH 
+            $DefaultOutFormat
+            %OK_FIELD);
 use strict;
 use Bio::SeqIO;
 use Bio::Root::Root;
@@ -97,9 +110,29 @@ use Bio::Tools::Run::WrapperBase;
 @ISA = qw(Bio::Root::Root Bio::Tools::Run::WrapperBase);
 
 BEGIN {
-       @HMMER_PARAMS=qw(HMM PROGRAM DB N A E T Z );
-       @HMMER_SWITCHES=qw(N);
-       foreach my $attr ( @HMMER_PARAMS,@HMMER_SWITCHES)
+    $DefaultOutFormat = 'msf';
+    @HMMER_PARAMS=qw(HMM hmm PROGRAM program DB db A E T Z 
+		     outformat null pam prior pbswitch 
+		     archpri cfile gapmax idlevel informat pamwgt 
+		     swentry swexit withali mapali
+		     cpu domE domT
+                    );
+    @HMMER_SWITCHES=qw(n q oneline f g s fast hand F
+		       wblosum wgsc wme wpb wvoronoi wnone noeff 
+		       amino nucleic binary pvm xnu null2 acc compat
+		       cut_ga cut_nc cut_tc forward
+		      );
+    %DOUBLE_DASH = map { $_ => 1 } qw(oneline outformat fast hand
+		   null pam prior pbswitch amino nucleic
+		   binary  wblosum wgsc wme wpb wvoronoi 
+		   wnone noeff amino nucleic binary 
+		   archpri cfile gapmax idlevel informat 
+		   pamwgt swentry swexit cpu
+		   mapali withali pvm xnu null2 acc compat
+		   cut_ga cut_nc cut_tc forward domeE domT
+				     );
+
+    foreach my $attr ( @HMMER_PARAMS,@HMMER_SWITCHES)
                         { $OK_FIELD{$attr}++; }
 }
 
@@ -136,8 +169,7 @@ sub AUTOLOAD {
        my $self = shift;
        my $attr = $AUTOLOAD;
        $attr =~ s/.*:://;
-       $attr = uc $attr;
-       $self->throw("Unallowed parameter: $attr !") unless $OK_FIELD{$attr};
+       $self->throw("Unallowed parameter: '$attr' !") unless $OK_FIELD{$attr};
        $self->{$attr} = shift if @_;
        return $self->{$attr};
 }
@@ -148,7 +180,7 @@ sub AUTOLOAD {
  Usage   : $HMMER->new(@params)
  Function: creates a new HMMER factory
  Returns:  Bio::Tools::Run::HMMER
- Args    :
+ Args    : 
 
 =cut
 
@@ -157,11 +189,23 @@ sub new {
        my $self = $class->SUPER::new(@args);
        $self->io->_initialize_io();
        my ($attr, $value);
+       my %set = ('q' => 0, 'outformat' => '');
        while (@args)  {
            $attr =   shift @args;
            $value =  shift @args;
            next if( $attr =~ /^-/ ); # don't want named parameters
            $self->$attr($value);
+	   $set{$attr}++;
+       }
+       # some hardcoding for the time being
+       
+       if( $self->program_name =~ /hmmalign/i ) {
+	   if( ! $set{'q'} ) { 
+	       $self->q(1);
+	   } 
+	   if( ! $set{'outformat'} ) {
+	       $self->outformat($DefaultOutFormat);
+	   }
        }
        return $self;
 }
@@ -180,7 +224,6 @@ sub run{
     my ($self,@seq) = @_;
 
     if  (ref $seq[0] && $seq[0]->isa("Bio::PrimarySeqI") ){# it is an object
-        
         my $infile1 = $self->_writeSeqFile(@seq);
         return  $self->_run($infile1);
     }
@@ -190,8 +233,7 @@ sub run{
     }
     else {
         return  $self->_run(@seq);
-    }
-   
+    }   
 }
 
 =head2 _run
@@ -205,25 +247,43 @@ sub run{
 =cut
 
 sub _run {
-     my ($self,$file)= @_;
+    my ($self,$file)= @_;
 
-     my $str = $self->executable;
-     my $param_str = $self->_setparams;
-     $str.=" $param_str ".$file;
-   
-    $self->debug("HMMER command = $str"); 
+    my $str = $self->executable;
+    my $param_str = $self->arguments." ".$self->_setparams;
+    $str.=" $param_str ".$file;
 
-     if($self->program_name=~/hmmpfam|hmmsearch|hmmalign/){
-       open(HMM,"$str |") || $self->throw("HMMER call ($str) crashed: $?\n");
-       my $searchio= Bio::SearchIO->new(-fh=>\*HMM,-format=>"hmmer");
-       return $searchio; 
-      }
-      else { # for hmmbuild or hmmcalibrate
-        my $status = system($str);
-        $self->throw("HMMER call($str) crashed: $?\n") unless $status==0;
-        return 1;
-      }
-     
+    $self->debug("HMMER command = $str");
+    my $progname = $self->program_name;
+    if($progname=~ /hmmpfam|hmmsearch/i){
+	my $fh;
+	open($fh,"$str |") || $self->throw("HMMER call ($str) crashed: $?\n");
+	
+	return Bio::SearchIO->new(-fh      => $fh, 
+				  -verbose => $self->verbose,
+				  -format  => "hmmer");
+    } elsif ($progname =~ /hmmalign/i ) {
+	my $fh;
+	open($fh,"$str |") || $self->throw("HMMER call ($str) crashed: $?\n");
+	my $alnformat = $self->outformat; # should make this a parameter in the future as cmdline arguments could make this incompatible 
+	my $aln = Bio::AlignIO->new(-fh      => $fh,
+				    -verbose => $self->verbose,
+				    -format  =>$alnformat);
+
+    } else {			
+        # for hmmbuild or hmmcalibrate
+	my $status = open(OUT,"$str | ");
+	my $io;
+	while(<OUT>){
+	    $io .= $_;
+	}
+	close(OUT);
+	$self->warn($io) if $self->verbose > 0;
+	unless( $status ) {
+	    $self->throw("HMMER call($str) crashed: $?\n") unless $status==1;
+	}
+	return 1;
+    }
 }
 
 =head2 _setparams
@@ -244,14 +304,24 @@ sub _setparams {
         next if $attr=~/HMM|PROGRAM|DB/i;
         my $value = $self->$attr();
         next unless (defined $value);
-        my $attr_key = ' -'.(uc $attr);
-        $param_string .= $attr_key.' '.$value;
+        my $attr_key;
+        if( $DOUBLE_DASH{$attr} ) {
+	    $attr_key = ' --'.$attr;
+	} else {
+	    $attr_key = ' -'.$attr;
+	}
+	$param_string .= $attr_key.' '.$value;
     }
     foreach my $attr(@HMMER_SWITCHES){
         my $value = $self->$attr();
         next unless (defined $value);
-        my $attr_key = ' -'.($attr);
-        $param_string .=$attr_key;
+        my $attr_key;
+	if( $DOUBLE_DASH{$attr} ) {
+	    $attr_key = ' --'.$attr;
+	} else {
+	    $attr_key = ' -'.$attr;
+	}
+        $param_string .= $attr_key;
     }
     my ($hmm) = $self->HMM || $self->DB || $self->throw("Need to specify either HMM file or Database");
     $param_string.=' '.$hmm;
@@ -259,6 +329,19 @@ sub _setparams {
     return $param_string;
 }
 
+# hacking to deal with the insanity of autoloading - not sure I like it...-jason
+sub hmm {
+    my $self = shift;
+    $self->HMM(@_);
+}
+sub db { 
+    my $self =shift;
+    $self->DB(@_);
+}
+sub PROGRAM { 
+    my $self = shift;
+    $self->program(@_);
+}
 
 =head2 _writeSeqFile
 
@@ -270,19 +353,18 @@ sub _setparams {
 
 =cut
 
-sub _writeSeqFile{
+sub _writeSeqFile {
     my ($self,@seq) = @_;
     my ($tfh,$inputfile) = $self->io->tempfile(-dir=>$self->tempdir);
     my $in  = Bio::SeqIO->new(-fh => $tfh , '-format' => 'Fasta');
     foreach my $s(@seq){
-      $in->write_seq($s);
+	$in->write_seq($s);
     }
     $in->close();
     $in = undef;
     close($tfh);
     undef $tfh;
     return $inputfile;
-
 }
 
 =head2 _writeAlignFile
@@ -298,7 +380,8 @@ sub _writeSeqFile{
 sub _writeAlignFile{
     my ($self,@align) = @_;
     my ($tfh,$inputfile) = $self->io->tempfile(-dir=>$self->tempdir);
-    my $in  = Bio::AlignIO->new(-fh => $tfh , '-format' => 'msf');
+    my $in  = Bio::AlignIO->new('-fh'     => $tfh , 
+				'-format' => 'msf');
     foreach my $s(@align){
       $in->write_aln($s);
     }

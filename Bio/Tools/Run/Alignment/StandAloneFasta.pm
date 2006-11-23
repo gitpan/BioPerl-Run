@@ -1,4 +1,4 @@
-# $Id: StandAloneFasta.pm,v 1.10 2003/06/02 18:13:43 heikki Exp $
+# $Id: StandAloneFasta.pm,v 1.14 2006/07/04 22:23:32 mauricio Exp $
 #StandAloneFasta.pm v1.00 2002/11/01 
 #
 #Bioperl module for Bio::Tools::Run::Alignment::StandAloneFasta
@@ -81,15 +81,16 @@ User feedback is an integral part of the evolution of this and other
 Bioperl modules. Send your comments and suggestions preferably to one
 of the Bioperl mailing lists.  Your participation is much appreciated.
 
-  bioperl-l@bioperl.org               - General discussion
-  http://bio.perl.org/MailList.html   - About the mailing lists
+  bioperl-l@bioperl.org                  - General discussion
+  http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
 
 =head2 Reporting Bugs
 
 Report bugs to the Bioperl bug tracking system to help us keep track
-the bugs and their resolution.  Bug reports can be submitted via the web:
+the bugs and their resolution.  Bug reports can be submitted via the
+web:
 
-  http://bio.perl.org/bioperl-bugs/
+  http://bugzilla.open-bio.org/
 
 =head1 AUTHOR -  Tiequan Zhang
 

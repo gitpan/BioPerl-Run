@@ -1,9 +1,9 @@
-# $Id: EMBOSSacd.pm,v 1.2 2002/10/23 15:30:48 heikki Exp $
+# $Id: EMBOSSacd.pm,v 1.9 2006/07/04 22:23:31 mauricio Exp $
 #
 # BioPerl module for Bio::Tools::Run::EMBOSSacd
 #
 #
-# Cared for by Heikki Lehvaslaiho <heikki@ebi.ac.uk>
+# Cared for by Heikki Lehvaslaiho <heikki-at-bioperl-dot-org>
 #
 # Copyright Heikki Lehvaslaiho
 #
@@ -34,15 +34,15 @@ Bio::Tools::Run::EMBOSSacd - class for EMBOSS Application qualifiers
   my @seqs_to_check; # this would be a list of seqs to compare 
                      # (could be just 1)
   my $wateroutfile = 'out.water';
-  $water->run({ '-sequencea' => $seq_to_test,
-              '-seqall'    => \@seqs_to_check,
-              '-gapopen'   => '10.0',
-              '-gapextend' => '0.5',
-              '-outfile'   => $wateroutfile});
+  $water->run({ -sequencea => $seq_to_test,
+                -seqall    => \@seqs_to_check,
+                -gapopen   => '10.0',
+                -gapextend => '0.5',
+                -outfile   => $wateroutfile});
   # now you might want to get the alignment
   use Bio::AlignIO;
   my $alnin = new Bio::AlignIO(-format => 'emboss',
-			       -file   => $wateroutfile);
+			                      -file   => $wateroutfile);
 
   while( my $aln = $alnin->next_aln ) {
       # process the alignment -- these will be Bio::SimpleAlign objects
@@ -74,21 +74,20 @@ User feedback is an integral part of the evolution of this and other
 Bioperl modules. Send your comments and suggestions preferably to the
 Bioperl mailing lists  Your participation is much appreciated.
 
-  bioperl-l@bioperl.org                         - General discussion
-  http://bio.perl.org/MailList.html             - About the mailing lists
+  bioperl-l@bioperl.org                  - General discussion
+  http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
 
 =head2 Reporting Bugs
 
 report bugs to the Bioperl bug tracking system to help us keep track
- the bugs and their resolution.  Bug reports can be submitted via
- email or the web:
+the bugs and their resolution.  Bug reports can be submitted via the
+web:
 
-  bioperl-bugs@bio.perl.org
-  http://bio.perl.org/bioperl-bugs/
+  http://bugzilla.open-bio.org/
 
 =head1 AUTHOR - Heikki Lehvaslaiho
 
-Email:  heikki@ebi.ac.uk
+Email:  heikki-at-bioperl-dot-org
 Address:
 
      EMBL Outstation, European Bioinformatics Institute
@@ -117,11 +116,14 @@ BEGIN {
 
     %QUALIFIER_CATEGORIES = 
 	(
-	 'Mandatory qualifiers' => 'mandatory',
-	 'Optional qualifiers' => 'optional',
-	 'Advanced qualifiers' => 'advanced',
-	 'Associated qualifiers' => 'associated',
-	 'General qualifiers' => 'general'
+	 'Mandatory qualifiers'            => 'mandatory',
+	 'Standard (Mandatory) qualifiers' => 'mandatory',
+	 'Optional qualifiers'             => 'optional',
+	 'Additional (Optional) qualifiers'=> 'optional',
+	 'Advanced qualifiers'             => 'advanced',
+	 'Advanced (Unprompted) qualifiers'=> 'advanced',
+	 'Associated qualifiers'           => 'associated',
+	 'General qualifiers'              => 'general',
 	);
     $QUAL;			# qualifier category
 
@@ -156,23 +158,29 @@ sub new {
     # reset global hash
     %OPT = ();
 
-
-    # reading from EMBOSS program acdc stdout
-    my $file = `acdc $prog -help -verbose -acdtable 2>&1`;
-
+    my $version = `embossversion -auto`;
+    my $file;
+    if ($version lt "2.8.0") {
+	# reading from EMBOSS program acdc stdout (prior to version 2.8.0)
+	$file = `acdc $prog -help -verbose -acdtable 2>&1`;
+    } else {
+	# reading from EMBOSS program acdtable stdout (version 2.8.0 or greater)
+	$file = `acdtable $prog -help -verbose 2>&1`;
+    }
+    
     # converting HTML -> XHTML for XML parsing
     $file =~ s/(border)/$1="1"/;
     $file =~ s/=(\d+)/="$1"/g;
     $file =~ s/<br>/<br><\/br>/g;
     $file =~ s/&nbsp;//g;
 
-    my $t= new XML::Twig( TwigHandlers =>
-			  {
-			   '/table/tr' => \&_row  }
-			);
-
+    my $t = new XML::Twig( TwigHandlers =>
+			   {
+			       '/table/tr' => \&_row  }
+			   );
+    
     $t->parse( $file); # results written into global %OPT
-
+    
     my %acd = %OPT; # copy to a private hash
     $acd{'_name'} = $prog;
     bless \%acd, $class;
@@ -188,6 +196,9 @@ sub _row {
     my $namet = $name->text;
     if ($namet =~ /qualifiers$/) { # set category
 	$QUAL = $QUALIFIER_CATEGORIES{$namet};
+	if( ! defined $QUAL ) { 
+	    warn("-- namet is $namet\n");
+	}
 	return;
     }
     my $unnamed = 0;
@@ -270,8 +281,9 @@ sub mandatory {
     my %mand;
     foreach my $key (keys %{$self}) {
 	next unless $key =~ /^-/; #ignore other attributes
+
 	$mand{$key} = $self->{$key}
-	    if $self->{$key}{category} eq 'mandatory';
+	if $self->{$key}{category} eq 'mandatory';
     }
     bless \%mand;
 }

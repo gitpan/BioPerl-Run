@@ -1,8 +1,8 @@
-# $Id: soap.pm,v 1.8 2003/06/04 08:48:26 heikki Exp $
+# $Id: soap.pm,v 1.13 2006/07/04 22:23:32 mauricio Exp $
 #
 # BioPerl module Bio::Tools::Run::Analysis::soap.pm
 #
-# Cared for by Martin Senger <senger@ebi.ac.uk>
+# Cared for by Martin Senger <martin.senger@gmail.com>
 # For copyright and disclaimer see below.
 
 # POD documentation - main docs before the code
@@ -37,21 +37,20 @@ User feedback is an integral part of the evolution of this and other
 Bioperl modules. Send your comments and suggestions preferably to
 the Bioperl mailing list.  Your participation is much appreciated.
 
-  bioperl-l@bioperl.org              - General discussion
-  http://bioperl.org/MailList.shtml  - About the mailing lists
+  bioperl-l@bioperl.org                  - General discussion
+  http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
 
 =head2 Reporting Bugs
 
 Report bugs to the Bioperl bug tracking system to help us keep track
-of the bugs and their resolution. Bug reports can be submitted via
-email or the web:
+of the bugs and their resolution. Bug reports can be submitted via the
+web:
 
-  bioperl-bugs@bioperl.org
-  http://bioperl.org/bioperl-bugs/
+  http://bugzilla.open-bio.org/
 
 =head1 AUTHOR
 
-Martin Senger (senger@ebi.ac.uk)
+Martin Senger (martin.senger@gmail.com)
 
 =head1 COPYRIGHT
 
@@ -71,7 +70,7 @@ This software is provided "as is" without warranty of any kind.
 
 =item *
 
-http://industry.ebi.ac.uk/soaplab/Perl_Client.html
+http://www.ebi.ac.uk/soaplab/Perl_Client.html
 
 =back
 
@@ -104,7 +103,7 @@ use SOAP::Lite
 		"--- SOAP FAULT ---\n" .
 		'faultcode:   ' . $res->faultcode . "\n" .
 		'faultstring: ' . Bio::Tools::Run::Analysis::soap::_clean_msg ($res->faultstring)
-	      : "--- TRANSPORT ERROR ---\n" . $soap->transport->status;
+	      : "--- TRANSPORT ERROR ---\n" . $soap->transport->status . "\n$res\n";
         Bio::Tools::Run::Analysis::soap->throw ($msg);
     }
 ;
@@ -112,10 +111,10 @@ use SOAP::Lite
 @ISA = qw(Bio::Tools::Run::Analysis);
 
 BEGIN { 
-    $Revision = q$Id: soap.pm,v 1.8 2003/06/04 08:48:26 heikki Exp $;
+    $Revision = q[$Id: soap.pm,v 1.13 2006/07/04 22:23:32 mauricio Exp $];
 
     # where to go
-    $DEFAULT_LOCATION = 'http://industry.ebi.ac.uk/soap/soaplab';
+    $DEFAULT_LOCATION = 'http://www.ebi.ac.uk/soaplab/services';
 }
 
 # -----------------------------------------------------------------------------
@@ -157,9 +156,9 @@ change Bio::Analysis I<new> method, not this one.
 A URL (also called an I<endpoint>) defining where is located a Web Service
 representing this analysis tool.
 
-Default is C<http://industry.ebi.ac.uk/soap/soaplab> (an experimental
-service running at European Bioinformatics Institute on top of most of
-EMBOSS analyses).
+Default is C<http://www.ebi.ac.uk/soaplab/services> (services running
+at European Bioinformatics Institute on top of most of EMBOSS
+analyses, and few others).
 
 For example, if you run your own Web Service using Java(TM) Apache Axis
 toolkit, the location might be something like
@@ -169,7 +168,7 @@ C<http://localhost:8080/axis/services>.
 
 A name of a Web Service (also called a I<urn> or a I<namespace>).
 There is no default value (which usually means that this parameter is
-mandatory unless your I<-location> parameter includes also the Web
+mandatory unless your I<-location> parameter includes also a Web
 Service name).
 
 =item -destroy_on_exit =E<gt> '0'
@@ -222,30 +221,19 @@ sub _initialize {
     # and who are not yet in the object
     $self->{'_location'} = $DEFAULT_LOCATION unless $self->{'_location'};
 
-    # hack: put service name at the end of location otherwise
-    # SOAP::Lite will complain about '::' in the service name (because
-    # it is actually a URN)
-    my $location = $self->{'_location'};
-    if ($self->{'_name'}) {
-	my $escaped_name = quotemeta $self->{'_name'};
-	if ($location !~ /$escaped_name$/) {
-	    $location .= '/' unless $location =~ m|/$|;
-	    $location .= $self->{'_name'};
-	}
-    }
-
     # create a SOAP::Lite object, the main worker
     if (defined $self->{'_httpproxy'}) {
 	$self->{'_soap'} = SOAP::Lite
-	    -> proxy ($location,
+	    -> proxy ($self->{'_location'},
 		      timeout => (defined $self->{'_timeout'} ? $self->{'_timeout'} : 120),
 		      proxy => ['http' => $self->{'_httpproxy'}]);
     } else {
 	$self->{'_soap'} = SOAP::Lite
-	    -> proxy ($location,
+	    -> proxy ($self->{'_location'},
 		      timeout => (defined $self->{'_timeout'} ? $self->{'_timeout'} : 120),
 		      );
     }
+    $self->{'_soap'}->uri ($self->{'_name'}) if $self->{'_name'};
 
     # forget cached things which should not be cloned into new
     # instances (because they may represent a completely different

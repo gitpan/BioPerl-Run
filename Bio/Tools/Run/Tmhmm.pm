@@ -27,27 +27,30 @@ Bio::Tools::Run::Tmhmm - Object for identifying transmembrane helixes
 
 =head1 DESCRIPTION
 
-  Tmhmm is a program for identifying transmembrane helices in proteins
+Tmhmm is a program for identifying transmembrane helices in proteins.
+
+You must have the environmental variable TMHMMDIR set to the base
+directory where I<tmhmm> and it's associated data/option files reside
+(NOT the bin directory where the actual executable resides)
 
 =head1 FEEDBACK
 
 =head2 Mailing Lists
 
- User feedback is an integral part of the evolution of this and other
- Bioperl modules. Send your comments and suggestions preferably to one
- of the Bioperl mailing lists.  Your participation is much appreciated.
+User feedback is an integral part of the evolution of this and other
+Bioperl modules. Send your comments and suggestions preferably to one
+of the Bioperl mailing lists.  Your participation is much appreciated.
 
- bioperl-l@bioperl.org          - General discussion
- http://bio.perl.org/MailList.html             - About the mailing lists
+  bioperl-l@bioperl.org                  - General discussion
+  http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
 
-=head2 Reporting Bugs
+head2 Reporting Bugs
 
- Report bugs to the Bioperl bug tracking system to help us keep track
- the bugs and their resolution.  Bug reports can be submitted via
- email or the web:
+Report bugs to the Bioperl bug tracking system to help us keep track
+the bugs and their resolution.  Bug reports can be submitted via the
+web:
 
- bioperl-bugs@bio.perl.org
- http://bio.perl.org/bioperl-bugs/
+  http://bugzilla.open-bio.org/
 
 =head1 AUTHOR - Bala
 
@@ -63,31 +66,22 @@ Bio::Tools::Run::Tmhmm - Object for identifying transmembrane helixes
 
 package Bio::Tools::Run::Tmhmm;
 
-use vars qw($AUTOLOAD @ISA $PROGRAM  $PROGRAMDIR
-            $PROGRAMNAME @TMHMM_PARAMS %OK_FIELD);
+use vars qw($AUTOLOAD @ISA $PROGRAMNAME @TMHMM_PARAMS %OK_FIELD);
 use strict;
+use Cwd;
 use Bio::SeqIO;
 use Bio::Root::Root;
 use Bio::Root::IO;
 use Bio::Tools::Tmhmm;
 use Bio::Tools::Run::WrapperBase;
 
-@ISA = qw(Bio::Root::Root Bio::Tools::Run::WrapperBase);
+@ISA = qw(Bio::Tools::Run::WrapperBase);
 
 BEGIN {
-       $PROGRAMNAME = 'tmhmm'  . ($^O =~ /mswin/i ?'.exe':'');
-
-       if (defined $ENV{TMHMMDIR}) {
-          $PROGRAMDIR = $ENV{TMHMMDIR} || '';
-          $PROGRAM = Bio::Root::IO->catfile($PROGRAMDIR,
-                                           "tmhmm".($^O =~ /mswin/i ?'.exe':''));
-       }
-       else {
-          $PROGRAM = 'tmhmm';
-       }
-       @TMHMM_PARAMS=qw(PROGRAM VERBOSE);
-       foreach my $attr ( @TMHMM_PARAMS)
-                        { $OK_FIELD{$attr}++; }
+    $PROGRAMNAME = 'tmhmm'  . ($^O =~ /mswin/i ?'.exe':'');       
+    @TMHMM_PARAMS=qw(PROGRAM VERBOSE NOPLOT);
+    foreach my $attr ( @TMHMM_PARAMS)
+    { $OK_FIELD{$attr}++; }
 }
 
 =head2 program_name
@@ -101,21 +95,47 @@ BEGIN {
 =cut
 
 sub program_name {
-    return 'tmhmm';
+    return $PROGRAMNAME;
 }
 
 =head2 program_dir
 
  Title   : program_dir
  Usage   : $factory->program_dir(@params)
- Function: returns the program directory, obtiained from ENV variable.
+ Function: returns the program directory, obtiained from ENV variable, in this
+           case it is the tmhmm installation directory, not the location of
+           the executable.
  Returns:  string
  Args    :
 
 =cut
 
 sub program_dir {
-    return Bio::Root::IO->catfile($ENV{TMHMMDIR});
+    return $ENV{TMHMMDIR} || '';
+}
+
+=head2 program_path
+
+ Title   : program_path
+ Usage   : my $path = $factory->program_path();
+ Function: Builds path for executable 
+ Returns : string representing the full path to the exe
+ Args    : none
+
+=cut
+
+sub program_path {
+    my ($self) = @_;
+    my @path;
+    if ($self->program_dir) {
+        my $program_dir = $self->program_dir;
+        $program_dir =~ s/\/bin//;
+        push @path, $program_dir;
+    }
+    push @path, 'bin';
+    push @path, $self->program_name.($^O =~ /mswin/i ?'.exe':'');
+
+    return File::Spec->catfile(@path);
 }
 
 sub AUTOLOAD {
@@ -166,6 +186,31 @@ sub predict_protein_features{
 	return shift->run(@_);
 }
 
+=head2 executable
+
+ Title   : executable
+ Usage   : my $exe = $tmhmm->executable('tmhmm');
+ Function: Finds the full path to the 'tmhmm' executable
+ Returns : string representing the full path to the exe
+ Args    : [optional] name of executable to set path to
+           [optional] boolean flag whether or not warn when exe is not found
+
+=cut
+
+sub executable {
+    my $self = shift;
+    my $exe = $self->SUPER::executable(@_) || return;
+    
+    # even if its executable, we still need the environment variable to have
+    # been set
+    if (! $ENV{TMHMMDIR}) {
+        $self->warn("Environment variable TMHMMDIR must be set, even if the tmhmm executable is in your path");
+        return undef;
+    }
+    
+    return $exe;
+}
+
 =head2 run
 
  Title   :   run()
@@ -176,12 +221,11 @@ sub predict_protein_features{
 
 =cut
 
-sub run{
+sub run {
     my ($self,$seq) = @_;
     my @feats;
 
-    if (ref($seq) ) {# it is an object
-
+    if (ref($seq) ) {		# it is an object
         if (ref($seq) =~ /GLOB/) {
             $self->throw("cannot use filehandle");
         }
@@ -190,25 +234,21 @@ sub run{
 
         $self->_input($infile1);
 
-         @feats = $self->_run();
-          unlink $infile1;
+	@feats = $self->_run();
+	unlink $infile1;
 
     }
     else {
-        #The clone object is not a seq object but a file.  Perhaps
-        #should check here or before if this file is fasta format...if
-        #not die Here the file does not need to be created or
-        #deleted. Its already written and may be used by other
-        #runnables.
+        # The clone object is not a seq object but a file.  Perhaps
+        # should check here or before if this file is fasta format...if
+        # not die Here the file does not need to be created or
+        # deleted. Its already written and may be used by other
+        # runnables.
 
         $self->_input($seq);
-
-         @feats = $self->_run();
-
+	@feats = $self->_run();
     }
-
     return @feats;
-
 }
 
 
@@ -245,10 +285,16 @@ sub _run {
      my ($self)= @_;
 
      my ($tfh1,$outfile) = $self->io->tempfile(-dir=>$self->tempdir());
-     my $str =$self->executable." ".$self->_input." > ".$outfile;
+     my $str = $self->executable || return;
+     
+     if( $self->NOPLOT ) {
+	 $str .= " --noplot";
+     }
+     $str .= " -basedir=".$self->program_dir." -workdir=".$self->tempdir()." ".$self->_input." > ".$outfile;
+     
      my $status = system($str);
      $self->throw( "Tmhmm call ($str) crashed: $? \n") unless $status==0;
-
+    
      my $filehandle;
      if (ref ($outfile) !~ /GLOB/) {
         open (TMHMM, "<".$outfile) or $self->throw ("Couldn't open file ".$outfile.": $!\n");
@@ -271,8 +317,8 @@ sub _run {
      unlink $outfile;
      close($tfh1);
      undef $tfh1;
+     
      return @tmhmm_feat;
-
 }
 
 =head2 _writeSeqFile

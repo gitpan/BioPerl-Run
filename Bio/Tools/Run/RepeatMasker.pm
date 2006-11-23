@@ -1,4 +1,4 @@
-# $Id: RepeatMasker.pm,v 1.20 2003/06/02 18:13:43 heikki Exp $
+# $Id: RepeatMasker.pm,v 1.25 2006/07/04 22:23:31 mauricio Exp $
 # BioPerl module for RepeatMasker
 #
 # Cared for by Shawn Hoon <shawnh@fugu-sg.org>
@@ -49,17 +49,16 @@ User feedback is an integral part of the evolution of this and other
 Bioperl modules. Send your comments and suggestions preferably to one
 of the Bioperl mailing lists. Your participation is much appreciated.
 
-  bioperl-l@bioperl.org              - General discussion
-  http://bio.perl.org/MailList.html  - About the mailing lists
+  bioperl-l@bioperl.org                  - General discussion
+  http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
 
 =head2 Reporting Bugs
 
 Report bugs to the Bioperl bug tracking system to help us keep track
-the bugs and their resolution.  Bug reports can be submitted via email
-or the web:
+the bugs and their resolution.  Bug reports can be submitted via the
+web:
 
-  bioperl-bugs@bioperl.org
-  http://bio.perl.org/bioperl-bugs/
+  http://bugzilla.open-bio.org/
 
 =head1 AUTHOR - Shawn Hoon
 
@@ -94,12 +93,14 @@ use Bio::Tools::RepeatMasker;
 @ISA = qw(Bio::Root::Root Bio::Tools::Run::WrapperBase );
 
 BEGIN {
-    @RM_PARAMS = qw(DIV LIB CUTOFF PARALLEL GC FRAG );
+    @RM_PARAMS = qw(DIR DIV LIB CUTOFF PARALLEL GC FRAG SPECIES MAXSIZE );
 
     @RM_SWITCHES = qw(NOLOW LOW L NOINT INT NORNA ALU M MUS ROD 
 		      RODENT MAM MAMMAL COW AR 
 		      ARABIDOPSIS DR DROSOPHILA EL ELEGANS 
-		      IS_ONLY IS_CLIP NO_IS RODSPEC
+		      IS_ONLY IS_CLIP NO_IS RODSPEC E EXCLN 
+                      NO_ID FIXED XM U GFF ACE POLY X XSMALL SMALL
+                      INV A ALIGNMENTS 
 		      PRIMSPEC W WUBLAST S Q QQ GCCALC NOCUT); 
     @OTHER_SWITCHES = qw(NOISY QUIET SILENT);
 
@@ -133,7 +134,7 @@ sub program_name {
 =cut
 
 sub program_dir {
-  return Bio::Root::IO->catfile($ENV{REPEATMASKERDIR}) if $ENV{REPEATMASKER};
+  return Bio::Root::IO->catfile($ENV{REPEATMASKERDIR}) if $ENV{REPEATMASKERDIR};
 }
 
 
@@ -195,8 +196,13 @@ sub version {
     my $exe = $self->executable;
     return undef unless $exe;
     my $string = `$exe -- ` ;    
-    $string =~ /\(([\d.]+)\)/;
-    return $self->{'_version'} = $1 || undef;
+    if( $string =~ /\(([\d.]+)\)/ ||
+	$string =~ /RepeatMasker\s+version\s+(\S+)/ ) { 
+	return $self->{'_version'} = $1;
+    } else {
+	return $self->{'_version'} = undef;
+    }
+    
 }
 
 =head2 run

@@ -1,4 +1,4 @@
-# $Id: ProtPars.pm,v 1.17 2003/03/28 22:42:08 jason Exp $
+# $Id: ProtPars.pm,v 1.24 2006/07/04 22:23:33 mauricio Exp $
 # BioPerl module for Bio::Tools::Run::Phylo::Phylip::ProtPars
 #
 # Created by Shawn Hoon 
@@ -90,17 +90,16 @@ User feedback is an integral part of the evolution of this and other
 Bioperl modules. Send your comments and suggestions preferably to one
 of the Bioperl mailing lists.  Your participation is much appreciated.
 
-  bioperl-l@bioperl.org          - General discussion
-  http://bio.perl.org/MailList.html             - About the mailing lists
+  bioperl-l@bioperl.org                  - General discussion
+  http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
 
 =head2 Reporting Bugs
 
 Report bugs to the Bioperl bug tracking system to help us keep track
- the bugs and their resolution.  Bug reports can be submitted via
- email or the web:
+the bugs and their resolution.  Bug reports can be submitted via the
+web:
 
-  bioperl-bugs@bio.perl.org
-  http://bugzilla.bioperl.org/
+  http://bugzilla.open-bio.org/
 
 =head1 AUTHOR - Shawn Hoon 
 
@@ -108,7 +107,7 @@ Email shawnh@fugu-sg.org
 
 =head1 CONTRIBUTORS
 
-Email jason@bioperl.org
+Email jason-AT-bioperl_DOT_org
 
 
 =head1 APPENDIX
@@ -134,7 +133,7 @@ use Bio::TreeIO;
 use Bio::Root::Root;
 use Bio::Root::IO;
 use Bio::Tools::Run::Phylo::Phylip::Base;
-use Bio::Tools::Run::Phylo::Phylip::PhylipConf;
+use Bio::Tools::Run::Phylo::Phylip::PhylipConf qw(%Menu);
 
 @ISA = qw(Bio::Tools::Run::Phylo::Phylip::Base);
 
@@ -418,9 +417,10 @@ sub _setparams {
 
     $self = shift;
     my $param_string = "";
-    my %menu = %{%Bio::Tools::Run::Phylo::Phylip::PhylipConf::Menu->{$self->version}->{'PROTPARS'}};
+    
+    my %menu = %{$Menu{$self->version}->{'PROTPARS'}};
 
-	  for $attr ( @PROTPARS_PARAMS) {
+    for $attr ( @PROTPARS_PARAMS) {
         $value = $self->$attr();
         next unless (defined $value);
 	      if ($attr =~/JUMBLE/i){

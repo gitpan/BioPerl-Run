@@ -1,6 +1,6 @@
 # -*-Perl-*-
 ## Bioperl Test Harness Script for Modules
-## $Id: TCoffee.t,v 1.22 2002/11/29 17:04:20 jason Exp $
+## $Id: TCoffee.t,v 1.26 2006/11/07 18:08:02 sendu Exp $
 
 use strict;
 use vars qw($NUMTESTS);
@@ -25,8 +25,9 @@ use Bio::Root::IO;
 
 END {     
     for ( $Test::ntest..$NUMTESTS ) {
-	skip("TCoffee program not found. Skipping.\n",1);
+	skip("TCoffee program not found. Skipping.",1);
     }
+    unlink("t_coffee.log");
 }
 
 ok(1);
@@ -109,8 +110,10 @@ if( $version <= 1.22 ) {
     ok( $aln->overall_percentage_identity > 18);    
     ok( int($aln->average_percentage_identity), 44);
 } else {
-    ok( int($aln->overall_percentage_identity), 21);
-    ok( int($aln->average_percentage_identity), 47);    
+    my $overall = int($aln->overall_percentage_identity);
+    ok( $overall >=21 && $overall <= 23, 1, 'expect 21 >= val >= 23');
+    my $avg = int($aln->average_percentage_identity);
+    ok( $avg == 47 || $avg ==48, 1, 'expect 47 or 48');    
 }
 
 # test new 'run' generic running of factory
@@ -124,8 +127,10 @@ if( $version <= 1.22 ) {
     ok( $aln->overall_percentage_identity > 18);    
     ok( int($aln->average_percentage_identity), 44);
 } else {
-    ok( int($aln->overall_percentage_identity), 14);
-    ok( int($aln->average_percentage_identity),41);    
+    my $overall = int $aln->overall_percentage_identity;
+    ok($overall == 14 || $overall == 13,1,'expect 13 or 14');
+    my $avg = int($aln->average_percentage_identity);
+    ok($avg == 41 || $avg == 42, 1, 'expect 41 or 42');    
 }
 
 $aln = $factory->run('-type' => 'align',

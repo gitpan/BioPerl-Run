@@ -1,6 +1,6 @@
 # -*-Perl-*-
 ## Bioperl Test Harness Script for Modules
-## $Id: ProtDist.t,v 1.14 2002/12/18 13:43:45 shawnh Exp $
+## $Id: ProtDist.t,v 1.15 2005/09/29 20:59:29 hartzell Exp $
 
 use strict;
 use vars qw($DEBUG);
@@ -95,7 +95,7 @@ unless ($protdist_present) {
 $dist_factory->verbose($verbose);
 ($matrix) = $dist_factory->create_distance_matrix($inputfilename);
 
-ok($matrix->get_entry('ENSP000003','SINFRUP001'),0.27708);
+ok(sprintf("%.3f", $matrix->get_entry('ENSP000003','SINFRUP001')),0.277);
 
 $inputfilename = Bio::Root::IO->catfile("t","data","cysprot.fa");
 @params = ('ktuple' => 2, 'matrix' => 'BLOSUM', 

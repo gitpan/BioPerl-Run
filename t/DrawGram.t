@@ -1,6 +1,6 @@
 # -*-Perl-*-
 ## Bioperl Test Harness Script for Modules
-## $Id: DrawGram.t,v 1.1 2002/11/30 01:51:01 jason Exp $
+## $Id: DrawGram.t,v 1.2 2005/10/08 21:42:46 jason Exp $
 
 use strict;
 use vars qw($DEBUG);
@@ -26,7 +26,7 @@ END {
     }
 }
 
-my @params = ('-verbose' => 0,
+my @params = ('-verbose' => $DEBUG,
 	      'quiet'    => 1);
 my $treedraw = Bio::Tools::Run::Phylo::Phylip::DrawGram->new(@params);
 unless($treedraw->executable){
@@ -38,25 +38,34 @@ if( ! $treedraw->executable ) {
     
 }
 $treedraw->fontfile(Bio::Root::IO->catfile(qw(t data fontfile)));
-my $file = $treedraw->draw_tree(Bio::Root::IO->catfile(qw(t data treefile.example)));
+
+my $file = $treedraw->draw_tree(Bio::Root::IO->catfile(qw(t data 
+							  treefile.example)));
 ok($file);
 ok(-e $file);
 
 if( $DEBUG ) {
-    `gv $file`;
-} else { 
-    unlink($file);
+    `gs $file`;
 }
+unlink($file);
 
-my $intree = new Bio::TreeIO(-file => Bio::Root::IO->catfile(qw(t data treefile.example)));
+
+my $intree = new Bio::TreeIO(-file => 
+			     Bio::Root::IO->catfile(qw(t data
+						       treefile.example)));
+
+$treedraw->HORIZMARGINS(['2.00','2.5']);
+$treedraw->ANCESTRALNODES('C');
+$treedraw->TREESTYLE('PHEN');
+$treedraw->USEBRANCHLENS('N');
 
 $file = $treedraw->draw_tree(Bio::Root::IO->catfile(qw(t data 
 						       treefile.example)));
+
 ok($file);
 ok(-e $file);
 
 if( $DEBUG ) {
-    `gv $file`;
-} else { 
-    unlink($file);
+    `gs $file`;
 }
+unlink($file);

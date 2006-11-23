@@ -1,4 +1,4 @@
-# $Id: Eponine.pm,v 1.10 2003/06/02 18:13:43 heikki Exp $
+# $Id: Eponine.pm,v 1.16 2006/10/26 11:49:53 nathan Exp $
 #
 # Cared for by Tania Oh
 #
@@ -45,7 +45,8 @@ wrapper for eponine, a mammalian TSS predictor.
 
 The environment variable EPONINEDIR must be set to point at either the
 directory which contains eponine-scan.jar or directly at the jar which
-eponine-scan classfiles.
+eponine-scan classfiles. NOTE: EPONINEDIR must point at the real file
+not a symlink.
 
 =head1 FEEDBACK
 
@@ -55,17 +56,16 @@ User feedback is an integral part of the evolution of this and other
 Bioperl modules. Send your comments and suggestions preferably to one
 of the Bioperl mailing lists.  Your participation is much appreciated.
 
-  bioperl-l@bioperl.org               - General discussion
-  http://bio.perl.org/MailList.html   - About the mailing lists
+  bioperl-l@bioperl.org                  - General discussion
+  http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
 
 =head2 Reporting Bugs
 
 Report bugs to the Bioperl bug tracking system to help us keep track
-the bugs and their resolution.  Bug reports can be submitted via email
-or the web:
+the bugs and their resolution.  Bug reports can be submitted via the
+web:
 
-  bioperl-bugs@bio.perl.org
-  http://bio.perl.org/bioperl-bugs/
+  http://bugzilla.open-bio.org/
 
 =head1 AUTHOR
 
@@ -112,8 +112,12 @@ BEGIN {
 	}
     }
 
-    if( defined $ENV{'EPONINEDIR'} ) {
-	$EPOJAR = Bio::Root::IO->catfile($ENV{'EPONINEDIR'}, $EPOJAR);
+    if( $ENV{'EPONINEDIR'} ) {
+    	if ( -d $ENV{'EPONINEDIR'} ) {
+	   $EPOJAR = Bio::Root::IO->catfile($ENV{'EPONINEDIR'}, $EPOJAR)
+	} elsif(-e $ENV{'EPONINEDIR'}) {
+	   $EPOJAR = $ENV{'EPONINEDIR'};
+	}
         if ( ! -e $EPOJAR) {
 	   $EPOJAR =undef;
 	}
@@ -205,15 +209,15 @@ sub new {
       # full path assumed
       $self->java($java);
     }
-
-   $self->epojar($epojar) if (defined $epojar && -e $epojar);
-
-   if (defined $threshold && $threshold >=0 ){
+    
+    $self->epojar($epojar) if (defined $epojar);
+    
+    if (defined $threshold && $threshold >=0 ){
         $self->threshold($threshold);
-   } else {
+    } else {
         $self->threshold($DEFAULT_THRESHOLD);
     }
-				
+    
     return $self;
 }
 
@@ -318,7 +322,7 @@ sub run{
 sub predict_TSS {
   return shift->run(@_);
 }
-  
+
 =head2  _setinput()
 
  Title   : _setinput
@@ -366,9 +370,10 @@ sub _run_eponine {
 	$self->warn("Cannot find java");
 	return undef;
     }
-    unless(defined $epojar && -e $epojar ) {
-	$self->warn("Cannot find Eponine jar");
-	return undef;
+    if (! defined $epojar) { $self->warn("Don't know the name of the Eponine jar file"); return; }
+    if (! -e $epojar) {
+	$self->warn("Cannot find Eponine jar: $epojar - either you specified an incorrect path in\nEPONINEDIR or it was not in the current working directory");
+	return;
     }
     my $cmd  =   $self->java.' -jar '.$self->epojar.' -seq '.$infile.' -threshold '.$self->threshold." > ".$result;
     $self->throw("Error running eponine-scan on ".$self->filename.

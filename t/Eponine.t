@@ -1,4 +1,5 @@
 # -*-Perl-*-
+# $Id: Eponine.t,v 1.8 2005/09/27 14:58:21 jason Exp $
 ## Bioperl Test Harness Script for Modules
 
 use strict;
@@ -32,20 +33,11 @@ if (-d "java") {
     $reason = "Skipping because no java present to run eponine";
     exit(0);
 }
-my $output = `java -version 2>&1`;
-open(PIPE,"java -version 2>&1 |");
+open(PIPE,"java -version 2>&1 |") || exit;
 
 while (<PIPE>) { 
-    if (/Java\sVersion\:\s(\d+\.\d+)/) {
+    if (/Java\sversion\:?\s+\"?(\d+\.\d+)\"?/i) {
 	$v = $1;
-	last;
-    }
-    elsif (/java version\s.(\d+\.\d+)/) {
-	$v = $1;
-	last;
-    }
-    elsif (/java version\s\"(\d\.\d)/) {
-	 $v = $1;
         last;
     }
 }

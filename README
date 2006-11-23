@@ -1,9 +1,10 @@
-$Id: README,v 1.7 2003/07/08 12:07:55 heikki Exp $
+$Id: README,v 1.9 2006/11/23 18:40:30 sendu Exp $
 
 
 o Version
 
- This is Bioperl-run release version 1.4, 22 Dec 2004
+ This is Bioperl-run version 1.5.2, a developer release, please ensure
+ that you have bioperl core 1.5.2 or later
 
 o Description 
  
@@ -22,17 +23,14 @@ o Installation
  version.
 
  The installation of this package is identical to the core bioperl
- install.
+ install. You can install with CPAN in the usual way, or:
 
- Essentially
+   % perl Build.PL
 
-   % perl Makefile.PL
-   % make
-
-   % make test (some tests may not succeed if you do not have the
-                necessary programs or env variables defined)
+   % ./Build test (some tests may not succeed if you do not have the
+                   necessary programs or env variables defined)
    % su
-   # make install
+   # ./Build install
 
 
 o Environmental variables
@@ -52,4 +50,6 @@ o Environmental variables
 
  EPONINEDIR          	DIR PATH   Point to the directory where 
                                     eponine_scan.jar is installed
-
+ PAMLDIR                DIR PATH   Point to directory where PAML is 
+                                    installed.
+ 

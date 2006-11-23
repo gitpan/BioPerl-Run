@@ -1,6 +1,6 @@
 # -*-Perl-*-
 ## Bioperl Test Harness Script for Modules
-## $Id: DrawTree.t,v 1.1 2002/11/30 01:51:01 jason Exp $
+## $Id: DrawTree.t,v 1.2 2005/10/08 21:42:46 jason Exp $
 
 use strict;
 use vars qw($DEBUG);
@@ -40,7 +40,7 @@ ok($file);
 ok(-e $file);
 
 if( $DEBUG ) {
-    `gv $file`;
+    `gs $file`;
 } else { 
     unlink($file);
 }
@@ -53,7 +53,7 @@ ok($file);
 ok(-e $file);
 
 if( $DEBUG ) {
-    `gv $file`;
+    `gs $file`;
 } else { 
     unlink($file);
 }

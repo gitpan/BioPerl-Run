@@ -1,8 +1,8 @@
-# $Id: Codeml.pm,v 1.23 2003/11/19 23:37:57 jason Exp $
+# $Id: Codeml.pm,v 1.44 2006/10/15 10:42:43 avilella Exp $
 #
 # BioPerl module for Bio::Tools::Run::Phylo::PAML::Codeml
 #
-# Cared for by Jason Stajich <jason@bioperl.org>
+# Cared for by Jason Stajich <jason-at-bioperl-dot-org>
 #
 # Copyright Jason Stajich
 #
@@ -51,21 +51,20 @@ User feedback is an integral part of the evolution of this and other
 Bioperl modules. Send your comments and suggestions preferably to
 the Bioperl mailing list.  Your participation is much appreciated.
 
-  bioperl-l@bioperl.org              - General discussion
-  http://bioperl.org/MailList.shtml  - About the mailing lists
+  bioperl-l@bioperl.org                  - General discussion
+  http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
 
 =head2 Reporting Bugs
 
 Report bugs to the Bioperl bug tracking system to help us keep track
-of the bugs and their resolution. Bug reports can be submitted via
-email or the web:
+of the bugs and their resolution. Bug reports can be submitted via the
+web:
 
-  bioperl-bugs@bioperl.org
-  http://bioperl.org/bioperl-bugs/
+  http://bugzilla.open-bio.org/
 
 =head1 AUTHOR - Jason Stajich
 
-Email jason@bioperl.org
+Email jason-at-bioperl-dot-org
 
 =head1 CONTRIBUTORS
 
@@ -135,9 +134,10 @@ rather easy to use. Otherwise, the program will ask the user to input
 a branch mark for the dN/dS ratio assumed for each branch. This should
 be an integral number between 0 to k - 1 if k different dN/dS ratios
 (omega_0 - omega_k - 1) are assumed for the branches of the
-tree. B<Bioperl note basically, doing this interactively is not going
+tree. B<Bioperl> note basically, doing this interactively is not going
 to work very well, so this module is really focused around using the 0
-or 1 parameters.  Read the program documentation if you'd like some more detail instructions>.
+or 1 parameters.  Read the program documentation if you'd like some more 
+detailed instructions.
 
 B<NSsites> specifies models that allow the dN/dS ratio (omega) to vary
 among sites (Nielsen and Yang 1998, Yang et al. 2000) B<Nssites> = m
@@ -211,7 +211,10 @@ for the a- and b-globin genes shown in Table 2 of Goldman and Yang
 (1994), calculated using the MEGA package (Kumar et al., 1993), are
 not accurate.  
 
-Results of ancestral reconstructions (B<RateAncestor> = 1) are collected in the file rst. Under models of variable dN/dS ratios among sites (NSsites models), the posterior probabilities for site classes as well as positively selected sites are listed in rst.
+Results of ancestral reconstructions (B<RateAncestor> = 1) are collected 
+in the file rst. Under models of variable dN/dS ratios among sites (NSsites models), 
+the posterior probabilities for site classes as well as positively 
+selected sites are listed in rst.
 
 INCOMPLETE DOCUMENTATION OF ALL METHODS
 
@@ -230,6 +233,7 @@ BEGIN {
     # much of the documentation here is lifted directly from the codeml.ctl
     # example file provided with the package
     %VALIDVALUES = ( 
+		     'outfile' => 'mlc',
 		     'noisy'   => [ 0..3,9],
 		     'verbose' => [ 0,1,2], # 0:concise, 1:detailed, 2:too much
 
@@ -255,7 +259,7 @@ BEGIN {
 
 		     # (model) models for codons 
 		     # 0: one, 1:b, 2:2 or more dN/dS ratios for branches
-		     'model'    => [0..2], 
+		     'model'    => [0..2,7], 
 		     
 		     # (NSsites) number of S sites
 		     # 0: one w;1:neutral;2:selection; 3:discrete;4:freqs;
@@ -283,15 +287,15 @@ BEGIN {
 		     'Mgene'    => [0,1], # 0:rates, 1:separate
 		     
 		     'fix_kappa'=> [0,1], # 0:estimate kappa, 1:fix kappa
-		     'kappa'    => [2],   # initial or fixed kappa
+		     'kappa'    => '2',   # initial or fixed kappa
 		     'fix_omega'=> [0,1], # 0: estimate omega, 1: fix omega
-		     'omega'    => [0.4,1], # initial or fixed omega for 
+		     'omega'    => '0.4', # initial or fixed omega for 
 		                          # codons or codon-base AAs
 		     'fix_alpha'=> [1,0], # 0: estimate gamma shape param
 		                          # 1: fix it at alpha
-		     'alpha'    => [0], # initial of fixed alpha
+		     'alpha'    => '0', # initial of fixed alpha
 		                        # 0: infinity (constant rate)
-		     'Malpha'   => [0], # different alphas for genes
+		     'Malpha'   => [0,1], # different alphas for genes
 		     'ncatG'    => [1..10], # number of categories in 
 		                        # dG of NSsites models
 
@@ -318,13 +322,20 @@ BEGIN {
 		     # (method) 
 		     # 0: simultaneous,1: 1 branch at a time
 		     'method'        => [0,1], 
+
+		     # allow branch lengths to be fixed
+		     # 0 ignore
+		     # -1 use random starting points
+		     # 1 use the branch lengths in initial ML iteration
+		     # 2 branch lengths are fixed
+		     'fix_blength'   => [0,-1,1,2],
 		     );
 }
 
 =head2 program_name
 
  Title   : program_name
- Usage   : >program_name()
+ Usage   : $factory->program_name()
  Function: holds the program name
  Returns:  string
  Args    : None
@@ -367,6 +378,7 @@ sub program_dir {
            -executable => where the codeml executable resides
 
 See also: L<Bio::Tree::TreeI>, L<Bio::Align::AlignI>
+
 =cut
 
 sub new {
@@ -394,27 +406,115 @@ sub new {
   return $self;
 }
 
-=head2 run
 
- Title   : run
- Usage   : $codeml->run();
- Function: run the codeml analysis using the default or updated parameters
+=head2 prepare
+
+ Title   : prepare
+ Usage   : my $rundir = $codeml->prepare($aln);
+ Function: prepare the codeml analysis using the default or updated parameters
            the alignment parameter must have been set
- Returns : 
- Args    :
-
+ Returns : value of rundir
+ Args    : L<Bio::Align::AlignI> object,
+	   L<Bio::Tree::TreeI> object [optional]
 
 =cut
 
-sub run{
-   my ($self) = @_;
+sub prepare{
+   my ($self,$aln,$tree) = @_;
    unless ( $self->save_tempfiles ) {
        # brush so we don't get plaque buildup ;)
        $self->cleanup();
    }
-   my ($aln,$tree) = ($self->alignment(),$self->tree);
+   $tree = $self->tree unless $tree;
+   $aln  = $self->alignment unless $aln;
    if( ! $aln ) { 
-       $self->warn("must have supplied a valid aligment file in order to run codeml");
+       $self->warn("must have supplied a valid alignment file in order to run codeml");
+       return 0;
+   }
+   my ($tempdir) = $self->tempdir();
+   my ($tempseqFH,$tempseqfile);
+   if( ! ref($aln) && -e $aln ) { 
+       $tempseqfile = $aln;
+   } else { 
+       ($tempseqFH,$tempseqfile) = $self->io->tempfile
+	   ('-dir' => $tempdir, 
+	    UNLINK => ($self->save_tempfiles ? 0 : 1));
+       my $alnout = new Bio::AlignIO('-format'      => 'phylip',
+				     '-fh'          => $tempseqFH,
+                                     '-interleaved' => 0,
+                                     '-idlength'    => $MINNAMELEN > $aln->maxdisplayname_length() ? $MINNAMELEN : $aln->maxdisplayname_length() +1);
+       
+       $alnout->write_aln($aln);
+       $alnout->close();
+       undef $alnout;   
+       close($tempseqFH);
+   }
+   # now let's print the codeml.ctl file.
+   # many of the these programs are finicky about what the filename is 
+   # and won't even run without the properly named file.  Ack
+   
+   my $codeml_ctl = "$tempdir/codeml.ctl";
+   open(CODEML, ">$codeml_ctl") or $self->throw("cannot open $codeml_ctl for writing");
+   print CODEML "seqfile = $tempseqfile\n";
+
+   my $outfile = $self->outfile_name;
+
+   my ($temptreeFH,$temptreefile);
+   if( ! ref($tree) && -e $tree ) { 
+       $temptreefile = $tree;
+   } else { 
+       ($temptreeFH,$temptreefile) = $self->io->tempfile
+	   ('-dir' => $tempdir, 
+	    UNLINK => ($self->save_tempfiles ? 0 : 1));
+
+       my $treeout = new Bio::TreeIO('-format' => 'newick',
+				     '-fh'     => $temptreeFH);
+       $treeout->write_tree($tree);
+       $treeout->close();
+       close($temptreeFH);
+   }
+   print CODEML "treefile = $temptreefile\n";
+
+   print CODEML "outfile = $outfile\n";
+   my %params = $self->get_parameters;
+   while( my ($param,$val) = each %params ) {
+       next if $param eq 'outfile';
+       print CODEML "$param = $val\n";
+   }
+   close(CODEML);
+#    my ($rc,$parser) = (1);
+#    {
+#        my $cwd = cwd();
+#        my $exit_status;
+#        chdir($tempdir);
+#    }
+   return $tempdir;
+}
+
+
+=head2 run
+
+ Title   : run
+ Usage   : my ($rc,$parser) = $codeml->run($aln);
+ Function: run the codeml analysis using the default or updated parameters
+           the alignment parameter must have been set
+ Returns : Return code, L<Bio::Tools::Phylo::PAML>
+ Args    : L<Bio::Align::AlignI> object,
+	   L<Bio::Tree::TreeI> object [optional]
+
+
+=cut
+
+sub run {
+   my ($self,$aln,$tree) = @_;
+   unless ( $self->save_tempfiles ) {
+       # brush so we don't get plaque buildup ;)
+       $self->cleanup();
+   }
+   $tree = $self->tree unless $tree;
+   $aln  = $self->alignment unless $aln;
+   if( ! $aln ) { 
+       $self->warn("must have supplied a valid alignment file in order to run codeml");
        return 0;
    }
    my ($tmpdir) = $self->tempdir();
@@ -483,7 +583,7 @@ sub run{
 	   $rc = 0;
        }
        eval {
-	   $parser = new Bio::Tools::Phylo::PAML(-file => "$tmpdir/mlc", 
+	   $parser = new Bio::Tools::Phylo::PAML(-file => "$tmpdir/$outfile", 
 						 -dir => "$tmpdir");
 
        };
@@ -619,16 +719,18 @@ sub get_parameters{
 
 sub set_parameter{
    my ($self,$param,$value) = @_;
-   if( ! defined $VALIDVALUES{$param} ) { 
-       $self->warn("unknown parameter $param will not be set unless you force by setting no_param_checks to true");
-       return 0;
-   } 
-   if( ref( $VALIDVALUES{$param}) =~ /ARRAY/i &&
-       scalar @{$VALIDVALUES{$param}} > 0 ) {
+   unless (defined $self->{'no_param_checks'} && $self->{'no_param_checks'} == 1) {
+       if ( ! defined $VALIDVALUES{$param} ) { 
+           $self->warn("unknown parameter $param will not be set unless you force by setting no_param_checks to true");
+           return 0;
+       } 
+       if ( ref( $VALIDVALUES{$param}) =~ /ARRAY/i &&
+            scalar @{$VALIDVALUES{$param}} > 0 ) {
        
-       unless ( grep { $value eq $_ } @{ $VALIDVALUES{$param} } ) {
-	   $self->warn("parameter $param specified value $value is not recognized, please see the documentation and the code for this module or set the no_param_checks to a true value");
-	   return 0;
+           unless ( grep { $value eq $_ } @{ $VALIDVALUES{$param} } ) {
+               $self->warn("parameter $param specified value $value is not recognized, please see the documentation and the code for this module or set the no_param_checks to a true value");
+               return 0;
+           }
        }
    }
    $self->{'_codemlparams'}->{$param} = $value;
@@ -680,6 +782,15 @@ sub set_default_parameters{
 
 =cut
 
+sub no_param_checks{
+   my ($self,$value) = @_;
+   if( defined $value) {
+      $self->{'no_param_checks'} = $value;
+    }
+    return $self->{'no_param_checks'};
+}
+
+
 =head2 save_tempfiles
 
  Title   : save_tempfiles
@@ -703,6 +814,13 @@ sub set_default_parameters{
 
 =cut
 
+sub outfile_name {
+    my $self = shift;
+    if( @_ ) {
+	return $self->{'_codemlparams'}->{'outfile'} = shift @_;
+    }
+    return $self->{'_codemlparams'}->{'outfile'};    
+}
 
 =head2 tempdir
 

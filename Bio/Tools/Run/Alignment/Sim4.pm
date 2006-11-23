@@ -58,17 +58,16 @@ User feedback is an integral part of the evolution of this and other
 Bioperl modules. Send your comments and suggestions preferably to one
 of the Bioperl mailing lists.  Your participation is much appreciated.
 
-  bioperl-l@bioperl.org          - General discussion
-  http://bio.perl.org/MailList.html             - About the mailing lists
+  bioperl-l@bioperl.org                  - General discussion
+  http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
 
 =head2 Reporting Bugs
 
 Report bugs to the Bioperl bug tracking system to help us keep track
- the bugs and their resolution.  Bug reports can be submitted via
- email or the web:
+the bugs and their resolution.  Bug reports can be submitted via the
+web:
 
-  bioperl-bugs@bio.perl.org
-  http://bio.perl.org/bioperl-bugs/
+  http://bugzilla.open-bio.org/
 
 =head1 AUTHOR - Shawn Hoon 
 
@@ -109,7 +108,7 @@ use Bio::Tools::Sim4::Results;
 
 BEGIN {
 
-    @SIM4_PARAMS= qw(W X K C R D H P N B); 
+    @SIM4_PARAMS= qw(A W X K C R D H P N B); 
     @OTHER_PARAMS= qw(CDNA_SEQ GENOMIC_SEQ OUTFILE);
     @OTHER_SWITCHES = qw(SILENT QUIET VERBOSE); 
 
@@ -151,12 +150,16 @@ sub new {
   my $self = $class->SUPER::new(@args);
   # to facilitiate tempfile cleanup
   $self->io->_initialize_io();
-
+  $self->A(0); # default
   my ($attr, $value);
-
+  
   while (@args) {
     $attr =   shift @args;
     $value =  shift @args;
+    if ($attr =~/est_first/i )  {      #NEW
+       $self->{est_first} = $value;    #NEW
+       next;                           #NEW
+    }                                  #NEW
     next if( $attr =~ /^-/ ); # don't want named parameters
     if ($attr =~/'PROGRAM'/i )  {
       $self->executable($value);
@@ -271,7 +274,7 @@ sub _run {
         $self->outfile($outfile);
     }
     my $outfile = $self->outfile(); 
-    my $commandstring = $self->executable." $infile1 $infile2 $param_string A=0 > $outfile";
+    my $commandstring = $self->executable." $infile1 $infile2 $param_string > $outfile";
     if($self->quiet || $self->silent || ($self->verbose < 0)){
       $commandstring .= " 2>/dev/null";
     }
@@ -302,7 +305,8 @@ sub _run {
 sub _setinput {
   my ($self, $cdna,$genomic) = @_;
   my ($infilename, $seq, $temp, $tfh1,$tfh2,$outfile1,$outfile2);
-  my $estfirst=1;
+  #my $estfirst=1;
+  my $estfirst= defined($self->{est_first}) ? $self->{_est_first} : 1;
   my ($cdna_file,$genomic_file);
   #a sequence obj
   if(ref($cdna)) {

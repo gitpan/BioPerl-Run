@@ -1,4 +1,4 @@
-# $Id: PiseWorkflow.pm,v 1.1 2003/08/27 17:27:17 letondal Exp $
+# $Id: PiseWorkflow.pm,v 1.2 2006/11/23 19:48:58 sendu Exp $
 #
 # Cared for by  S. Thoraval <s.thoraval@imb.uq.edu.au>
 #
@@ -95,7 +95,7 @@ the working directory. 	The html output file can also be specified:
 
 package Bio::Tools::Run::PiseWorkflow;
 
-use vars qw(@ISA $VERSION);
+use vars qw(@ISA);
 use strict;
 use Bio::Root::Root;
 use Bio::Tools::Run::PiseApplication;
@@ -104,10 +104,12 @@ use Data::Dumper;
 use CGI;
 use File::Temp qw/ tempfile /;
 use Fcntl qw(:DEFAULT :flock);
+use Bio::Root::Version;
 
 @ISA = qw(Bio::Root::Root);
-$VERSION = '1.0';
 my %pids;
+
+our $VERSION = ${Bio::Root::Version::VERSION};
 
 =head2 new
 

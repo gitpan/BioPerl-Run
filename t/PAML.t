@@ -1,7 +1,7 @@
 # This is -*-Perl-*- code
 ## Bioperl Test Harness Script for Modules
 ##
-# $Id: PAML.t,v 1.12 2003/04/01 05:27:43 jerm Exp $
+# $Id: PAML.t,v 1.14 2004/10/01 14:00:05 jason Exp $
 
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.t'
@@ -22,7 +22,7 @@ BEGIN {
     }
     use Test;
 
-    $NUMTESTS = 17;
+    $NUMTESTS = 18;
     plan tests => $NUMTESTS;
 
     unless (eval "require IO::String; 1;") {
@@ -84,22 +84,23 @@ if( ! defined $results ) {
 my $result = $results->next_result;
 my $MLmatrix = $result->get_MLmatrix;
 
+my ($vnum) = ($result->version =~ /(\d+\.\d+)/);
 # PAML 2.12 results
-if( $result->version =~ /3\.12/ ) {
+if( $vnum == 3.12 ) {
     ok($MLmatrix->[0]->[1]->{'dN'}, 0.0693);
     ok($MLmatrix->[0]->[1]->{'dS'},1.1459);
     ok($MLmatrix->[0]->[1]->{'omega'}, 0.0605);
     ok($MLmatrix->[0]->[1]->{'S'}, 273.5);
     ok($MLmatrix->[0]->[1]->{'N'}, 728.5);
     ok($MLmatrix->[0]->[1]->{'t'}, 1.0895);
-} elsif( $result->version =~ /3\.13/ ) {
+} elsif( $vnum >= 3.13 ) {
 # PAML 2.13 results
     ok($MLmatrix->[0]->[1]->{'dN'}, 0.0713);
     ok($MLmatrix->[0]->[1]->{'dS'},1.2462);
-    ok($MLmatrix->[0]->[1]->{'omega'}, 0.0572);
+    ok(sprintf("%.4f",$MLmatrix->[0]->[1]->{'omega'}), 0.0572);
     ok($MLmatrix->[0]->[1]->{'S'}, 278.8);
     ok($MLmatrix->[0]->[1]->{'N'}, 723.2);
-    ok($MLmatrix->[0]->[1]->{'t'}, 1.1946);
+    ok(sprintf("%.4f",$MLmatrix->[0]->[1]->{'t'}), 1.1946);
 } else { 
     for( 1..6) { 
 	skip("Can't test the result output, don't know about PAML version ".$result->version,1);
@@ -126,3 +127,10 @@ ok($MLmatrix->[0]->[1]->{'N'}, 723.6);
 ok($MLmatrix->[0]->[1]->{'t'}, 1.0941);
 
 ok($yn00->error_string !~ /Error/); # we don't expect any errors;
+
+
+$codeml = new Bio::Tools::Run::Phylo::PAML::Codeml
+    (-params => { 'alpha' => 1.53 },
+     -verbose => $verbose);
+
+ok($codeml);

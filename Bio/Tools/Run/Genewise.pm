@@ -1,4 +1,4 @@
-# $Id: Genewise.pm,v 1.19 2003/06/02 18:13:43 heikki Exp $
+# $Id: Genewise.pm,v 1.26 2006/07/04 22:23:31 mauricio Exp $
 #
 # Cared for by
 #
@@ -20,15 +20,15 @@ given sequence given a protein
   # Pass the factory 2 Bio:SeqI objects (in the order of query peptide
   # and target_genomic).
 
-  # $genes is a Bio::SeqFeature::Gene::GeneStructure object
-  my $genes = $factory->run($protein_seq, $genomic_seq);
+  # @genes is an array of Bio::SeqFeature::Gene::GeneStructure objects
+  my @genes = $factory->run($protein_seq, $genomic_seq);
 
   # Alternatively pass the factory a profile HMM filename and a
   # Bio:SeqI object (in the order of query HMM and target_genomic).
 
   # Set hmmer switch first to tell genewise to expect an HMM
   $factory->hmmer(1);
-  my $genes = $factory->run($hmmfile, $genomic_seq);
+  my @genes = $factory->run($hmmfile, $genomic_seq);
 
 
 =head1 DESCRIPTION
@@ -58,8 +58,8 @@ User feedback is an integral part of the evolution of this and other
 Bioperl modules. Send your comments and suggestions preferably to one
 of the Bioperl mailing lists.  Your participation is much appreciated.
 
-  bioperl-l@bioperl.org             - General discussion
-  http://bio.perl.org/MailList.html - About the mailing lists
+  bioperl-l@bioperl.org                  - General discussion
+  http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
 
 =head2 Reporting Bugs
 
@@ -67,7 +67,7 @@ Report bugs to the Bioperl bug tracking system to help us keep track
  the bugs and their resolution.  Bug reports can be submitted via
  the web:
 
-  http://bugzilla.bioperl.org/
+  http://bugzilla.open-bio.org/
 
 =head1 AUTHOR - FUGU Student Intern
 
@@ -75,7 +75,7 @@ Email: fugui@worf.fugu-sg.org
 
 =head1 CONTRIBUTORS
 
-Jason Stajich jason@bioperl.org
+Jason Stajich jason-AT-bioperl_DOT_org
 Keith James kdj@sanger.ac.uk
 
 =head1 APPENDIX
@@ -197,8 +197,13 @@ sub version {
     return undef unless $self->executable;
     my $prog = $self->executable;
     my $string = `$prog -version`;
-    $string =~ /(Version *)/i;
-    return $1 || undef;
+    if( $string =~ /Version:\s+\$\s*Name:\s+(\S+)\s+\$/ ) {
+	return $1;
+    } elsif( $string =~ /(Version *)/i ) {
+	return $1;
+    } else { 
+	return undef;
+    }
 }
 
 =head2 predict_genes
@@ -286,7 +291,6 @@ sub _run {
     $self->debug("genewise command = $commandstring");
     my $status = system("$commandstring > $outfile1");
     $self->throw("Genewies call $commandstring crashed: $? \n") unless $status==0;
-
     
     my $genewiseParser = Bio::Tools::Genewise->new(-file=> $outfile1);
     my @genes;

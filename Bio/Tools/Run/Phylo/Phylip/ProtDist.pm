@@ -54,8 +54,7 @@ L<Bio::SimpleAlign> object and returns a L<Bio::Matrix::PhylipDist> object;
 VERSION Support
 
 This wrapper currently supports v3.5 of phylip. There is also support
-for v3.6 although this is still experimental as v3.6 is still under
-alpha release and not all functionalities maybe supported.
+for v3.6.
 
 =head1 PARAMETERS FOR PROTDIST COMPUTATION
 
@@ -78,6 +77,10 @@ Description	: (optional)
  		  documentation 
                   defaults to Equal
  		  (0.25,0.25,0.25,0.25) found in the phylip package.
+
+                  Additional models in PHYLIP 3.6
+                  PMB - Henikoff/Tillier PMB matrix
+	          JTT - Jones/Taylor/Thornton
 
 =head2 MULTIPLE
 
@@ -176,17 +179,16 @@ User feedback is an integral part of the evolution of this and other
 Bioperl modules. Send your comments and suggestions preferably to one
 of the Bioperl mailing lists.  Your participation is much appreciated.
 
-  bioperl-l@bioperl.org          - General discussion
-  http://bio.perl.org/MailList.html             - About the mailing lists
+  bioperl-l@bioperl.org                  - General discussion
+  http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
 
 =head2 Reporting Bugs
 
 Report bugs to the Bioperl bug tracking system to help us keep track
- the bugs and their resolution.  Bug reports can be submitted via
- email or the web:
+the bugs and their resolution.  Bug reports can be submitted via the
+web:
 
-  bioperl-bugs@bio.perl.org
-  http://bio.perl.org/bioperl-bugs/
+  http://bugzilla.open-bio.org/
 
 =head1 AUTHOR - Shawn Hoon 
 
@@ -212,7 +214,7 @@ use Bio::SimpleAlign;
 use Bio::AlignIO;
 use Bio::TreeIO;
 use Bio::Tools::Run::Phylo::Phylip::Base;
-use Bio::Tools::Run::Phylo::Phylip::PhylipConf;
+use Bio::Tools::Run::Phylo::Phylip::PhylipConf qw(%Menu);
 use Bio::Tools::Phylo::Phylip::ProtDist;
 use Cwd;
 
@@ -514,7 +516,7 @@ sub _setparams {
     $self = shift;
     my $param_string = "";
     my $cat = 0;
-    my %menu = %{%Bio::Tools::Run::Phylo::Phylip::PhylipConf::Menu->{$self->version}->{'PROTDIST'}};
+    my %menu = %{$Menu{$self->version}->{'PROTDIST'}};
 
     foreach  my $attr ( @PROTDIST_PARAMS) {
     	$value = $self->$attr();
@@ -635,7 +637,7 @@ sub _setparams {
 
  Title   : cleanup
  Usage   : $codeml->cleanup();
- Function: Will cleanup the tempdir directory after a PAML run
+ Function: Will cleanup the tempdir directory after a ProtDist run
  Returns : none
  Args    : none
 
