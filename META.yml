@@ -1,6 +1,6 @@
 ---
 name: bioperl-run
-version: 1.005002005
+version: 1.0050021
 author:
   - 'Bioperl Team <bioperl-l@bioperl.org>'
 abstract: 'bioperl-run - wrapper toolkit'
@@ -23,1069 +23,1069 @@ dynamic_config: 1
 provides:
   Bio::Factory::EMBOSS:
     file: Bio/Factory/EMBOSS.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Installer::Clustalw:
     file: Bio/Installer/Clustalw.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Installer::EMBOSS:
     file: Bio/Installer/EMBOSS.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Installer::Generic:
     file: Bio/Installer/Generic.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Installer::Muscle:
     file: Bio/Installer/Muscle.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Installer::PAML:
     file: Bio/Installer/PAML.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Installer::Probcons:
     file: Bio/Installer/Probcons.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Installer::TCoffee:
     file: Bio/Installer/TCoffee.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::AbstractRunner:
     file: Bio/Tools/Run/AbstractRunner.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Alignment::Amap:
     file: Bio/Tools/Run/Alignment/Amap.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Alignment::Blat:
     file: Bio/Tools/Run/Alignment/Blat.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Alignment::Clustalw:
     file: Bio/Tools/Run/Alignment/Clustalw.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Alignment::DBA:
     file: Bio/Tools/Run/Alignment/DBA.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Alignment::Exonerate:
     file: Bio/Tools/Run/Alignment/Exonerate.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Alignment::Kalign:
     file: Bio/Tools/Run/Alignment/Kalign.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Alignment::Lagan:
     file: Bio/Tools/Run/Alignment/Lagan.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Alignment::MAFFT:
     file: Bio/Tools/Run/Alignment/MAFFT.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Alignment::Muscle:
     file: Bio/Tools/Run/Alignment/Muscle.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Alignment::Probalign:
     file: Bio/Tools/Run/Alignment/Probalign.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Alignment::Probcons:
     file: Bio/Tools/Run/Alignment/Probcons.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Alignment::Sim4:
     file: Bio/Tools/Run/Alignment/Sim4.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Alignment::StandAloneFasta:
     file: Bio/Tools/Run/Alignment/StandAloneFasta.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Alignment::TCoffee:
     file: Bio/Tools/Run/Alignment/TCoffee.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Analysis:
     file: Bio/Tools/Run/Analysis.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Analysis::Job:
     file: Bio/Tools/Run/Analysis.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Analysis::Job::soap:
     file: Bio/Tools/Run/Analysis/soap.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Analysis::Utils:
     file: Bio/Tools/Run/Analysis.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Analysis::soap:
     file: Bio/Tools/Run/Analysis/soap.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::AnalysisFactory:
     file: Bio/Tools/Run/AnalysisFactory.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::AnalysisFactory::Pise:
     file: Bio/Tools/Run/AnalysisFactory/Pise.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::AnalysisFactory::soap:
     file: Bio/Tools/Run/AnalysisFactory/soap.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Cap3:
     file: Bio/Tools/Run/Cap3.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Coil:
     file: Bio/Tools/Run/Coil.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::EMBOSSApplication:
     file: Bio/Tools/Run/EMBOSSApplication.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::EMBOSSacd:
     file: Bio/Tools/Run/EMBOSSacd.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Eponine:
     file: Bio/Tools/Run/Eponine.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::FootPrinter:
     file: Bio/Tools/Run/FootPrinter.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Genewise:
     file: Bio/Tools/Run/Genewise.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Genscan:
     file: Bio/Tools/Run/Genscan.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Hmmer:
     file: Bio/Tools/Run/Hmmer.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::JavaRunner:
     file: Bio/Tools/Run/JavaRunner.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Mdust:
     file: Bio/Tools/Run/Mdust.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Phrap:
     file: Bio/Tools/Run/Phrap.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Phylo::Forester::SDI:
     file: Bio/Tools/Run/Phylo/Forester/SDI.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Phylo::LVB:
     file: Bio/Tools/Run/Phylo/LVB.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Phylo::Molphy::ProtML:
     file: Bio/Tools/Run/Phylo/Molphy/ProtML.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Phylo::PAML::Baseml:
     file: Bio/Tools/Run/Phylo/PAML/Baseml.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Phylo::PAML::Codeml:
     file: Bio/Tools/Run/Phylo/PAML/Codeml.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Phylo::PAML::Evolver:
     file: Bio/Tools/Run/Phylo/PAML/Evolver.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Phylo::PAML::Yn00:
     file: Bio/Tools/Run/Phylo/PAML/Yn00.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Phylo::Phylip::Base:
     file: Bio/Tools/Run/Phylo/Phylip/Base.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Phylo::Phylip::Consense:
     file: Bio/Tools/Run/Phylo/Phylip/Consense.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Phylo::Phylip::DrawGram:
     file: Bio/Tools/Run/Phylo/Phylip/DrawGram.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Phylo::Phylip::DrawTree:
     file: Bio/Tools/Run/Phylo/Phylip/DrawTree.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Phylo::Phylip::Neighbor:
     file: Bio/Tools/Run/Phylo/Phylip/Neighbor.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Phylo::Phylip::PhylipConf:
     file: Bio/Tools/Run/Phylo/Phylip/PhylipConf.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Phylo::Phylip::ProtDist:
     file: Bio/Tools/Run/Phylo/Phylip/ProtDist.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Phylo::Phylip::ProtPars:
     file: Bio/Tools/Run/Phylo/Phylip/ProtPars.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Phylo::Phylip::SeqBoot:
     file: Bio/Tools/Run/Phylo/Phylip/SeqBoot.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication:
     file: Bio/Tools/Run/PiseApplication.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::CSR:
     file: Bio/Tools/Run/PiseApplication/CSR.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::Puzzle:
     file: Bio/Tools/Run/PiseApplication/Puzzle.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::abiview:
     file: Bio/Tools/Run/PiseApplication/abiview.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::addquart:
     file: Bio/Tools/Run/PiseApplication/addquart.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::align2model:
     file: Bio/Tools/Run/PiseApplication/align2model.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::alistat:
     file: Bio/Tools/Run/PiseApplication/alistat.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::antigenic:
     file: Bio/Tools/Run/PiseApplication/antigenic.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::assp:
     file: Bio/Tools/Run/PiseApplication/assp.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::backtranseq:
     file: Bio/Tools/Run/PiseApplication/backtranseq.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::bambe:
     file: Bio/Tools/Run/PiseApplication/bambe.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::banana:
     file: Bio/Tools/Run/PiseApplication/banana.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::bionj:
     file: Bio/Tools/Run/PiseApplication/bionj.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::biosed:
     file: Bio/Tools/Run/PiseApplication/biosed.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::bl2seq:
     file: Bio/Tools/Run/PiseApplication/bl2seq.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::blast2:
     file: Bio/Tools/Run/PiseApplication/blast2.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::blimps:
     file: Bio/Tools/Run/PiseApplication/blimps.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::blimps_block:
     file: Bio/Tools/Run/PiseApplication/blimps_block.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::blimps_matrix:
     file: Bio/Tools/Run/PiseApplication/blimps_matrix.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::boxshade:
     file: Bio/Tools/Run/PiseApplication/boxshade.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::btwisted:
     file: Bio/Tools/Run/PiseApplication/btwisted.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::cai:
     file: Bio/Tools/Run/PiseApplication/cai.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::cap:
     file: Bio/Tools/Run/PiseApplication/cap.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::cds:
     file: Bio/Tools/Run/PiseApplication/cds.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::chaos:
     file: Bio/Tools/Run/PiseApplication/chaos.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::charge:
     file: Bio/Tools/Run/PiseApplication/charge.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::checktrans:
     file: Bio/Tools/Run/PiseApplication/checktrans.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::chips:
     file: Bio/Tools/Run/PiseApplication/chips.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::cirdna:
     file: Bio/Tools/Run/PiseApplication/cirdna.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::clique:
     file: Bio/Tools/Run/PiseApplication/clique.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::clustalw:
     file: Bio/Tools/Run/PiseApplication/clustalw.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::clustalw_convert:
     file: Bio/Tools/Run/PiseApplication/clustalw_convert.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::codcmp:
     file: Bio/Tools/Run/PiseApplication/codcmp.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::coderet:
     file: Bio/Tools/Run/PiseApplication/coderet.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::codnocod:
     file: Bio/Tools/Run/PiseApplication/codnocod.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::codontree:
     file: Bio/Tools/Run/PiseApplication/codontree.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::codonw:
     file: Bio/Tools/Run/PiseApplication/codonw.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::comalign:
     file: Bio/Tools/Run/PiseApplication/comalign.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::combat:
     file: Bio/Tools/Run/PiseApplication/combat.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::compseq:
     file: Bio/Tools/Run/PiseApplication/compseq.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::con_filter:
     file: Bio/Tools/Run/PiseApplication/con_filter.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::confmat:
     file: Bio/Tools/Run/PiseApplication/confmat.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::cons:
     file: Bio/Tools/Run/PiseApplication/cons.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::consense:
     file: Bio/Tools/Run/PiseApplication/consense.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::consensus:
     file: Bio/Tools/Run/PiseApplication/consensus.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::cpgplot:
     file: Bio/Tools/Run/PiseApplication/cpgplot.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::cpgreport:
     file: Bio/Tools/Run/PiseApplication/cpgreport.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::cusp:
     file: Bio/Tools/Run/PiseApplication/cusp.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::cutseq:
     file: Bio/Tools/Run/PiseApplication/cutseq.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::dan:
     file: Bio/Tools/Run/PiseApplication/dan.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::dca:
     file: Bio/Tools/Run/PiseApplication/dca.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::decorate:
     file: Bio/Tools/Run/PiseApplication/decorate.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::degapseq:
     file: Bio/Tools/Run/PiseApplication/degapseq.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::descseq:
     file: Bio/Tools/Run/PiseApplication/descseq.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::dialign2:
     file: Bio/Tools/Run/PiseApplication/dialign2.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::diffseq:
     file: Bio/Tools/Run/PiseApplication/diffseq.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::digest:
     file: Bio/Tools/Run/PiseApplication/digest.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::distmat:
     file: Bio/Tools/Run/PiseApplication/distmat.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::distquart:
     file: Bio/Tools/Run/PiseApplication/distquart.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::dnadist:
     file: Bio/Tools/Run/PiseApplication/dnadist.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::dnapars:
     file: Bio/Tools/Run/PiseApplication/dnapars.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::dollop:
     file: Bio/Tools/Run/PiseApplication/dollop.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::domainer:
     file: Bio/Tools/Run/PiseApplication/domainer.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::dotmatcher:
     file: Bio/Tools/Run/PiseApplication/dotmatcher.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::dotpath:
     file: Bio/Tools/Run/PiseApplication/dotpath.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::dottup:
     file: Bio/Tools/Run/PiseApplication/dottup.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::drawgram:
     file: Bio/Tools/Run/PiseApplication/drawgram.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::drawpyr:
     file: Bio/Tools/Run/PiseApplication/drawpyr.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::drawtree:
     file: Bio/Tools/Run/PiseApplication/drawtree.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::dreg:
     file: Bio/Tools/Run/PiseApplication/dreg.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::druid:
     file: Bio/Tools/Run/PiseApplication/druid.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::dsc:
     file: Bio/Tools/Run/PiseApplication/dsc.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::dssp:
     file: Bio/Tools/Run/PiseApplication/dssp.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::einverted:
     file: Bio/Tools/Run/PiseApplication/einverted.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::emma:
     file: Bio/Tools/Run/PiseApplication/emma.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::emowse:
     file: Bio/Tools/Run/PiseApplication/emowse.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::environ:
     file: Bio/Tools/Run/PiseApplication/environ.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::eprimer3:
     file: Bio/Tools/Run/PiseApplication/eprimer3.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::equicktandem:
     file: Bio/Tools/Run/PiseApplication/equicktandem.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::est2genome:
     file: Bio/Tools/Run/PiseApplication/est2genome.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::etandem:
     file: Bio/Tools/Run/PiseApplication/etandem.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::extractfeat:
     file: Bio/Tools/Run/PiseApplication/extractfeat.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::extractseq:
     file: Bio/Tools/Run/PiseApplication/extractseq.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::fasta:
     file: Bio/Tools/Run/PiseApplication/fasta.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::fastdnaml:
     file: Bio/Tools/Run/PiseApplication/fastdnaml.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::fastrna:
     file: Bio/Tools/Run/PiseApplication/fastrna.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::filtersites:
     file: Bio/Tools/Run/PiseApplication/filtersites.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::findkm:
     file: Bio/Tools/Run/PiseApplication/findkm.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::fitch:
     file: Bio/Tools/Run/PiseApplication/fitch.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::fmtseq:
     file: Bio/Tools/Run/PiseApplication/fmtseq.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::freak:
     file: Bio/Tools/Run/PiseApplication/freak.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::fuzznuc:
     file: Bio/Tools/Run/PiseApplication/fuzznuc.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::fuzzpro:
     file: Bio/Tools/Run/PiseApplication/fuzzpro.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::fuzztran:
     file: Bio/Tools/Run/PiseApplication/fuzztran.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::gb2xml:
     file: Bio/Tools/Run/PiseApplication/gb2xml.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::geecee:
     file: Bio/Tools/Run/PiseApplication/geecee.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::genscan:
     file: Bio/Tools/Run/PiseApplication/genscan.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::getblock:
     file: Bio/Tools/Run/PiseApplication/getblock.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::getorf:
     file: Bio/Tools/Run/PiseApplication/getorf.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::gff2ps:
     file: Bio/Tools/Run/PiseApplication/gff2ps.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::gibbs:
     file: Bio/Tools/Run/PiseApplication/gibbs.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::gibbs_scan:
     file: Bio/Tools/Run/PiseApplication/gibbs_scan.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::golden:
     file: Bio/Tools/Run/PiseApplication/golden.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::grailclnt:
     file: Bio/Tools/Run/PiseApplication/grailclnt.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::gruppi:
     file: Bio/Tools/Run/PiseApplication/gruppi.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::helixturnhelix:
     file: Bio/Tools/Run/PiseApplication/helixturnhelix.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::hmmalign:
     file: Bio/Tools/Run/PiseApplication/hmmalign.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::hmmbuild:
     file: Bio/Tools/Run/PiseApplication/hmmbuild.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::hmmcalibrate:
     file: Bio/Tools/Run/PiseApplication/hmmcalibrate.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::hmmconvert:
     file: Bio/Tools/Run/PiseApplication/hmmconvert.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::hmmemit:
     file: Bio/Tools/Run/PiseApplication/hmmemit.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::hmmer2sam:
     file: Bio/Tools/Run/PiseApplication/hmmer2sam.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::hmmfetch:
     file: Bio/Tools/Run/PiseApplication/hmmfetch.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::hmmpfam:
     file: Bio/Tools/Run/PiseApplication/hmmpfam.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::hmmscore:
     file: Bio/Tools/Run/PiseApplication/hmmscore.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::hmmsearch:
     file: Bio/Tools/Run/PiseApplication/hmmsearch.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::hmoment:
     file: Bio/Tools/Run/PiseApplication/hmoment.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::homology:
     file: Bio/Tools/Run/PiseApplication/homology.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::html4blast:
     file: Bio/Tools/Run/PiseApplication/html4blast.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::iep:
     file: Bio/Tools/Run/PiseApplication/iep.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::infoalign:
     file: Bio/Tools/Run/PiseApplication/infoalign.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::infoseq:
     file: Bio/Tools/Run/PiseApplication/infoseq.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::interface:
     file: Bio/Tools/Run/PiseApplication/interface.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::isochore:
     file: Bio/Tools/Run/PiseApplication/isochore.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::kitsch:
     file: Bio/Tools/Run/PiseApplication/kitsch.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::lassap:
     file: Bio/Tools/Run/PiseApplication/lassap.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::lindna:
     file: Bio/Tools/Run/PiseApplication/lindna.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::listor:
     file: Bio/Tools/Run/PiseApplication/listor.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::loadseq:
     file: Bio/Tools/Run/PiseApplication/loadseq.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::lvb:
     file: Bio/Tools/Run/PiseApplication/lvb.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::makehist:
     file: Bio/Tools/Run/PiseApplication/makehist.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::map:
     file: Bio/Tools/Run/PiseApplication/map.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::marscan:
     file: Bio/Tools/Run/PiseApplication/marscan.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::maskfeat:
     file: Bio/Tools/Run/PiseApplication/maskfeat.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::maskseq:
     file: Bio/Tools/Run/PiseApplication/maskseq.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::matcher:
     file: Bio/Tools/Run/PiseApplication/matcher.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::megamerger:
     file: Bio/Tools/Run/PiseApplication/megamerger.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::melting:
     file: Bio/Tools/Run/PiseApplication/melting.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::merger:
     file: Bio/Tools/Run/PiseApplication/merger.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::mfold:
     file: Bio/Tools/Run/PiseApplication/mfold.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::mix:
     file: Bio/Tools/Run/PiseApplication/mix.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::modelfromalign:
     file: Bio/Tools/Run/PiseApplication/modelfromalign.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::most:
     file: Bio/Tools/Run/PiseApplication/most.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::mreps:
     file: Bio/Tools/Run/PiseApplication/mreps.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::msa:
     file: Bio/Tools/Run/PiseApplication/msa.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::msbar:
     file: Bio/Tools/Run/PiseApplication/msbar.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::mspcrunch:
     file: Bio/Tools/Run/PiseApplication/mspcrunch.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::mview_alig:
     file: Bio/Tools/Run/PiseApplication/mview_alig.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::mview_blast:
     file: Bio/Tools/Run/PiseApplication/mview_blast.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::mwfilter:
     file: Bio/Tools/Run/PiseApplication/mwfilter.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::needle:
     file: Bio/Tools/Run/PiseApplication/needle.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::neighbor:
     file: Bio/Tools/Run/PiseApplication/neighbor.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::newcpgreport:
     file: Bio/Tools/Run/PiseApplication/newcpgreport.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::newcpgseek:
     file: Bio/Tools/Run/PiseApplication/newcpgseek.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::newseq:
     file: Bio/Tools/Run/PiseApplication/newseq.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::njdist:
     file: Bio/Tools/Run/PiseApplication/njdist.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::nnssp:
     file: Bio/Tools/Run/PiseApplication/nnssp.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::notseq:
     file: Bio/Tools/Run/PiseApplication/notseq.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::nrscope:
     file: Bio/Tools/Run/PiseApplication/nrscope.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::nthseq:
     file: Bio/Tools/Run/PiseApplication/nthseq.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::octanol:
     file: Bio/Tools/Run/PiseApplication/octanol.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::oddcomp:
     file: Bio/Tools/Run/PiseApplication/oddcomp.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::palindrome:
     file: Bio/Tools/Run/PiseApplication/palindrome.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::pam:
     file: Bio/Tools/Run/PiseApplication/pam.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::parciquart:
     file: Bio/Tools/Run/PiseApplication/parciquart.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::pars:
     file: Bio/Tools/Run/PiseApplication/pars.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::pasteseq:
     file: Bio/Tools/Run/PiseApplication/pasteseq.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::patmatdb:
     file: Bio/Tools/Run/PiseApplication/patmatdb.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::patmatmotifs:
     file: Bio/Tools/Run/PiseApplication/patmatmotifs.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::patser:
     file: Bio/Tools/Run/PiseApplication/patser.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::pdbsearch:
     file: Bio/Tools/Run/PiseApplication/pdbsearch.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::pepcoil:
     file: Bio/Tools/Run/PiseApplication/pepcoil.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::pepinfo:
     file: Bio/Tools/Run/PiseApplication/pepinfo.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::pepnet:
     file: Bio/Tools/Run/PiseApplication/pepnet.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::pepstats:
     file: Bio/Tools/Run/PiseApplication/pepstats.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::pepwheel:
     file: Bio/Tools/Run/PiseApplication/pepwheel.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::pepwindow:
     file: Bio/Tools/Run/PiseApplication/pepwindow.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::pepwindowall:
     file: Bio/Tools/Run/PiseApplication/pepwindowall.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::pestfind:
     file: Bio/Tools/Run/PiseApplication/pestfind.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::pftools:
     file: Bio/Tools/Run/PiseApplication/pftools.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::phiblast:
     file: Bio/Tools/Run/PiseApplication/phiblast.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::phyml:
     file: Bio/Tools/Run/PiseApplication/phyml.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::pima:
     file: Bio/Tools/Run/PiseApplication/pima.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::plotcon:
     file: Bio/Tools/Run/PiseApplication/plotcon.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::plotorf:
     file: Bio/Tools/Run/PiseApplication/plotorf.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::plsearch:
     file: Bio/Tools/Run/PiseApplication/plsearch.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::polydot:
     file: Bio/Tools/Run/PiseApplication/polydot.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::pratt:
     file: Bio/Tools/Run/PiseApplication/pratt.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::predator:
     file: Bio/Tools/Run/PiseApplication/predator.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::preg:
     file: Bio/Tools/Run/PiseApplication/preg.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::prettyalign:
     file: Bio/Tools/Run/PiseApplication/prettyalign.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::prettyplot:
     file: Bio/Tools/Run/PiseApplication/prettyplot.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::prettyseq:
     file: Bio/Tools/Run/PiseApplication/prettyseq.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::primersearch:
     file: Bio/Tools/Run/PiseApplication/primersearch.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::primo:
     file: Bio/Tools/Run/PiseApplication/primo.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::prodom:
     file: Bio/Tools/Run/PiseApplication/prodom.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::profit:
     file: Bio/Tools/Run/PiseApplication/profit.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::prophecy:
     file: Bio/Tools/Run/PiseApplication/prophecy.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::prophet:
     file: Bio/Tools/Run/PiseApplication/prophet.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::prose:
     file: Bio/Tools/Run/PiseApplication/prose.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::prot_nucml:
     file: Bio/Tools/Run/PiseApplication/prot_nucml.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::protal2dna:
     file: Bio/Tools/Run/PiseApplication/protal2dna.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::protdist:
     file: Bio/Tools/Run/PiseApplication/protdist.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::protpars:
     file: Bio/Tools/Run/PiseApplication/protpars.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::pscan:
     file: Bio/Tools/Run/PiseApplication/pscan.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::psiblast:
     file: Bio/Tools/Run/PiseApplication/psiblast.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::psort2:
     file: Bio/Tools/Run/PiseApplication/psort2.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::pyramids:
     file: Bio/Tools/Run/PiseApplication/pyramids.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::pyreval:
     file: Bio/Tools/Run/PiseApplication/pyreval.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::qstar:
     file: Bio/Tools/Run/PiseApplication/qstar.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::quicktree:
     file: Bio/Tools/Run/PiseApplication/quicktree.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::readnexus:
     file: Bio/Tools/Run/PiseApplication/readnexus.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::readseq:
     file: Bio/Tools/Run/PiseApplication/readseq.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::recoder:
     file: Bio/Tools/Run/PiseApplication/recoder.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::redata:
     file: Bio/Tools/Run/PiseApplication/redata.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::remap:
     file: Bio/Tools/Run/PiseApplication/remap.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::repeats:
     file: Bio/Tools/Run/PiseApplication/repeats.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::restover:
     file: Bio/Tools/Run/PiseApplication/restover.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::restrict:
     file: Bio/Tools/Run/PiseApplication/restrict.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::revseq:
     file: Bio/Tools/Run/PiseApplication/revseq.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::rnadistance:
     file: Bio/Tools/Run/PiseApplication/rnadistance.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::rnaeval:
     file: Bio/Tools/Run/PiseApplication/rnaeval.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::rnafold:
     file: Bio/Tools/Run/PiseApplication/rnafold.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::rnaga:
     file: Bio/Tools/Run/PiseApplication/rnaga.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::rnaheat:
     file: Bio/Tools/Run/PiseApplication/rnaheat.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::rnainverse:
     file: Bio/Tools/Run/PiseApplication/rnainverse.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::rnapdist:
     file: Bio/Tools/Run/PiseApplication/rnapdist.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::rnasubopt:
     file: Bio/Tools/Run/PiseApplication/rnasubopt.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::sam2hmmer:
     file: Bio/Tools/Run/PiseApplication/sam2hmmer.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::sampleseqs:
     file: Bio/Tools/Run/PiseApplication/sampleseqs.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::saps:
     file: Bio/Tools/Run/PiseApplication/saps.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::satellites:
     file: Bio/Tools/Run/PiseApplication/satellites.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::scan_for_matches:
     file: Bio/Tools/Run/PiseApplication/scan_for_matches.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::scope:
     file: Bio/Tools/Run/PiseApplication/scope.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::scopparse:
     file: Bio/Tools/Run/PiseApplication/scopparse.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::seqboot:
     file: Bio/Tools/Run/PiseApplication/seqboot.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::seqgen:
     file: Bio/Tools/Run/PiseApplication/seqgen.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::seqmatchall:
     file: Bio/Tools/Run/PiseApplication/seqmatchall.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::seqsblast:
     file: Bio/Tools/Run/PiseApplication/seqsblast.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::seqstat:
     file: Bio/Tools/Run/PiseApplication/seqstat.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::showalign:
     file: Bio/Tools/Run/PiseApplication/showalign.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::showfeat:
     file: Bio/Tools/Run/PiseApplication/showfeat.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::showorf:
     file: Bio/Tools/Run/PiseApplication/showorf.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::showseq:
     file: Bio/Tools/Run/PiseApplication/showseq.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::shuffleseq:
     file: Bio/Tools/Run/PiseApplication/shuffleseq.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::sigcleave:
     file: Bio/Tools/Run/PiseApplication/sigcleave.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::siggen:
     file: Bio/Tools/Run/PiseApplication/siggen.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::sigscan:
     file: Bio/Tools/Run/PiseApplication/sigscan.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::silent:
     file: Bio/Tools/Run/PiseApplication/silent.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::sirna:
     file: Bio/Tools/Run/PiseApplication/sirna.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::splitter:
     file: Bio/Tools/Run/PiseApplication/splitter.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::sreformat:
     file: Bio/Tools/Run/PiseApplication/sreformat.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::stretcher:
     file: Bio/Tools/Run/PiseApplication/stretcher.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::stride:
     file: Bio/Tools/Run/PiseApplication/stride.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::stssearch:
     file: Bio/Tools/Run/PiseApplication/stssearch.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::supermatcher:
     file: Bio/Tools/Run/PiseApplication/supermatcher.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::syco:
     file: Bio/Tools/Run/PiseApplication/syco.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::tacg:
     file: Bio/Tools/Run/PiseApplication/tacg.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::tfscan:
     file: Bio/Tools/Run/PiseApplication/tfscan.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::tipdate:
     file: Bio/Tools/Run/PiseApplication/tipdate.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::tmap:
     file: Bio/Tools/Run/PiseApplication/tmap.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::toppred:
     file: Bio/Tools/Run/PiseApplication/toppred.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::tranalign:
     file: Bio/Tools/Run/PiseApplication/tranalign.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::transeq:
     file: Bio/Tools/Run/PiseApplication/transeq.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::treealign:
     file: Bio/Tools/Run/PiseApplication/treealign.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::trimest:
     file: Bio/Tools/Run/PiseApplication/trimest.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::trimseq:
     file: Bio/Tools/Run/PiseApplication/trimseq.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::trnascan:
     file: Bio/Tools/Run/PiseApplication/trnascan.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::twofeat:
     file: Bio/Tools/Run/PiseApplication/twofeat.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::unroot:
     file: Bio/Tools/Run/PiseApplication/unroot.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::vectorstrip:
     file: Bio/Tools/Run/PiseApplication/vectorstrip.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::water:
     file: Bio/Tools/Run/PiseApplication/water.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::weighbor:
     file: Bio/Tools/Run/PiseApplication/weighbor.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::whichdb:
     file: Bio/Tools/Run/PiseApplication/whichdb.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::wise2:
     file: Bio/Tools/Run/PiseApplication/wise2.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::wobble:
     file: Bio/Tools/Run/PiseApplication/wobble.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::wordcount:
     file: Bio/Tools/Run/PiseApplication/wordcount.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::wordmatch:
     file: Bio/Tools/Run/PiseApplication/wordmatch.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::wublast2:
     file: Bio/Tools/Run/PiseApplication/wublast2.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::xblast:
     file: Bio/Tools/Run/PiseApplication/xblast.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseApplication::xpound:
     file: Bio/Tools/Run/PiseApplication/xpound.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseJob:
     file: Bio/Tools/Run/PiseJob.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseJobParser:
     file: Bio/Tools/Run/PiseJobParser.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::PiseWorkflow:
     file: Bio/Tools/Run/PiseWorkflow.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Primate:
     file: Bio/Tools/Run/Primate.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Primer3:
     file: Bio/Tools/Run/Primer3.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Prints:
     file: Bio/Tools/Run/Prints.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Profile:
     file: Bio/Tools/Run/Profile.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Promoterwise:
     file: Bio/Tools/Run/Promoterwise.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Pseudowise:
     file: Bio/Tools/Run/Pseudowise.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::RepeatMasker:
     file: Bio/Tools/Run/RepeatMasker.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Seg:
     file: Bio/Tools/Run/Seg.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Signalp:
     file: Bio/Tools/Run/Signalp.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Tmhmm:
     file: Bio/Tools/Run/Tmhmm.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::TribeMCL:
     file: Bio/Tools/Run/TribeMCL.pm
-    version: 1.005002005
+    version: 1.0050021
   Bio::Tools::Run::Vista:
     file: Bio/Tools/Run/Vista.pm
-    version: 1.005002005
+    version: 1.0050021
 generated_by: Module::Build version 0.2805
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html

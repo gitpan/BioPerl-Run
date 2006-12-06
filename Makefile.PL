@@ -1,6 +1,6 @@
 ## --Makefile.PL for bioperl-run distribution--##
 ## ----------------------------------------------------##
-## $Id: Makefile.PL,v 1.22 2006/11/23 18:40:30 sendu Exp $
+## $Id: Makefile.PL,v 1.23 2006/12/05 20:07:11 sendu Exp $
 ##----------------------------------------------------
 
 # This still works, but has been superceded by Build.PL
@@ -18,13 +18,18 @@ warn <<'WARN';
   ./Build install
   
   If you're seeing this message whilst installing with CPAN, consider
-  killing this installation and changing your CPAN configuration before
+  stopping this installation and changing your CPAN configuration before
   trying to install again:
   
-  cpan> o conf init prefer_installer
-  Choose 'MB'.
-  cpan> o conf commit
-  cpan> q
+  cpan>install CPAN
+  cpan>reload CPAN
+  cpan>install Module::Build
+  cpan>o conf prefer_installer MB
+  cpan>o conf commit
+  cpan>q
+  
+  Otherwise, if you would like to install the optional dependencies,
+  install Bundle::BioPerl v2.1.8 or greater
 
 --!
 
@@ -49,7 +54,7 @@ use File::Spec::Functions;
 use ExtUtils::MakeMaker;
 use Cwd;
 
-my $VERSION = 1.005002_003;
+my $VERSION = 1.005002_100;
 $VERSION = eval $VERSION;
 
 # All Bioperl dependencies on external modules are defined here

@@ -362,9 +362,11 @@ examples/pise/genscan.pl
 examples/pise/needle.pl
 examples/pise/phylo-kun.pl
 examples/pise/toppred.pl
+INSTALL
 INSTALL.PROGRAMS
 Makefile.PL
 MANIFEST			This list of files
+META.yml
 ModuleBuildBioperl.pm
 README
 scripts/bioperl_application_installer.PLS
@@ -491,4 +493,3 @@ t/TCoffee.t
 t/Tmhmm.t
 t/TribeMCL.t
 t/Vista.t
-META.yml

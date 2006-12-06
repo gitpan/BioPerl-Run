@@ -1,11 +1,12 @@
 #-*-Perl-*-
-## $Id: Primer3.t,v 1.3 2005/09/27 14:15:01 jason Exp $
+## $Id: Primer3.t,v 1.4 2006/11/24 09:10:48 sendu Exp $
 
 # test for Bio::Tools::Run::Primer3
 # written by Rob Edwards
 
 use strict;
 
+use vars qw($ERROR);
 use constant NUMTESTS => 8;
 
 BEGIN {
@@ -14,18 +15,25 @@ BEGIN {
         use lib 't','..';
     }
     use Test;
-
+    
+    eval {  require Clone; };
+    if ( $@ ) {
+        warn("Clone not installed. This means that the module is not usable. Skipping tests\n");
+        $ERROR = 1;
+    }
+    
     plan tests => NUMTESTS;
 }
 
 END {
     for ( $Test::ntest..NUMTESTS ) {
-        skip("primer3 program not found. Skipping. You can get this from http://www-genome.wi.mit.edu/genome_software/other/primer3.html",1);
+        skip("primer3 program not found, or missing dependencies. Skipping. You can get this from http://www-genome.wi.mit.edu/genome_software/other/primer3.html",1);
     }
 }
 
+exit 0 if $ERROR;
 
-use Bio::Tools::Run::Primer3;
+require Bio::Tools::Run::Primer3;
 use Bio::SeqIO;
 ok(1);
 my ($seqio, $seq, $primer3, $args, $results, $num_results);
