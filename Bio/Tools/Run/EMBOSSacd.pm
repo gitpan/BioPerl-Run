@@ -1,4 +1,4 @@
-# $Id: EMBOSSacd.pm,v 1.9 2006/07/04 22:23:31 mauricio Exp $
+# $Id: EMBOSSacd.pm 13928 2007-06-14 15:23:09Z sendu $
 #
 # BioPerl module for Bio::Tools::Run::EMBOSSacd
 #
@@ -19,7 +19,7 @@ Bio::Tools::Run::EMBOSSacd - class for EMBOSS Application qualifiers
 
   use Bio::Factory::EMBOSS;
   # get an EMBOSS application object from the EMBOSS factory
-  $factory = new Bio::Factory::EMBOSS
+  $factory = Bio::Factory::EMBOSS->new();
   $application = $factory->program('embossversion');
   # run the application with an optional hash containing parameters
   $result = $application->run(); # returns a string or creates a file
@@ -41,7 +41,7 @@ Bio::Tools::Run::EMBOSSacd - class for EMBOSS Application qualifiers
                 -outfile   => $wateroutfile});
   # now you might want to get the alignment
   use Bio::AlignIO;
-  my $alnin = new Bio::AlignIO(-format => 'emboss',
+  my $alnin = Bio::AlignIO->new(-format => 'emboss',
 			                      -file   => $wateroutfile);
 
   while( my $aln = $alnin->next_aln ) {

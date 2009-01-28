@@ -1,4 +1,4 @@
-# $Id: StandAloneFasta.pm,v 1.14 2006/07/04 22:23:32 mauricio Exp $
+# $Id: StandAloneFasta.pm 15196 2008-12-17 08:19:17Z sendu $
 #StandAloneFasta.pm v1.00 2002/11/01 
 #
 #Bioperl module for Bio::Tools::Run::Alignment::StandAloneFasta
@@ -214,7 +214,7 @@ sub executable {
 
  Title   : program_dir
  Usage   : $factory->program_dir(@params)
- Function: returns the program directory, obtiained from ENV variable.
+ Function: returns the program directory, obtained from ENV variable.
  Returns:  string
  Args    :
 
@@ -463,7 +463,7 @@ sub _setinput  {
     my @seqs;
     if( ! ref $input ) {
 	if( -e $input ) {
-	    my $seqio = new Bio::SeqIO(-format => 'fasta', -file => $input);
+	    my $seqio = Bio::SeqIO->new(-format => 'fasta', -file => $input);
 	    while( my $seq = $seqio->next_seq ) {
 		push @seqs, $seq;
 	    }

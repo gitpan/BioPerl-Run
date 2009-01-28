@@ -1,4 +1,4 @@
-# $Id: TCoffee.pm,v 1.44 2006/11/16 09:03:18 sendu Exp $
+# $Id: TCoffee.pm 15196 2008-12-17 08:19:17Z sendu $
 #
 # BioPerl module for Bio::Tools::Run::Alignment::TCoffee
 #
@@ -20,7 +20,7 @@ alignments using the TCoffee program
 
   # Build a tcoffee alignment factory
   @params = ('ktuple' => 2, 'matrix' => 'BLOSUM');
-  $factory = new Bio::Tools::Run::Alignment::TCoffee (@params);
+  $factory = Bio::Tools::Run::Alignment::TCoffee->new(@params);
 
   # Pass the factory a list of sequences to be aligned.
   $inputfilename = 't/cysprot.fa';
@@ -585,7 +585,7 @@ sub program_name {
 
  Title   : program_dir
  Usage   : $factory->program_dir(@params)
- Function: returns the program directory, obtiained from ENV variable.
+ Function: returns the program directory, obtained from ENV variable.
  Returns:  string
  Args    :
 

@@ -1,4 +1,4 @@
-# $Id: MAFFT.pm,v 1.8 2006/11/13 09:31:39 nathan Exp $
+# $Id: MAFFT.pm 15456 2009-01-28 04:31:30Z cjfields $
 #
 # BioPerl module for Bio::Tools::Run::Alignment::MAFFT
 #
@@ -161,7 +161,7 @@ sub program_path {
 
  Title   : program_dir
  Usage   : $factory->program_dir(@params)
- Function: returns the program directory, obtiained from ENV variable.
+ Function: returns the program directory, obtained from ENV variable.
  Returns:  string
  Args    :
 
@@ -243,15 +243,16 @@ sub version {
     # slightly. i've tried to make the change compatible with both...
     # version="v5.860 (2006/06/12)"; export version
     
-    if( open(NAME, "grep 'export version' $exe | ") ) {
-	while(<NAME>) {
-	    if( /version.*?([\d.]+)\s+/ ) {
-		return $1;
-	    }
-	}
-	close(NAME);
+    if( open(my $NAME, "grep 'export version' $exe | ") ) {
+		while(<$NAME>) {
+			if( /version.*?([\d.a-z]+)\s+/ ) {
+				return $1;
+			}
+		}
+		$self->warn("No version found");
+		close($NAME);
     } else {
-	$self->warn("$!");
+		$self->warn("$!");
     }
     return;
 }

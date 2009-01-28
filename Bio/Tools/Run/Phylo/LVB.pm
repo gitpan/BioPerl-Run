@@ -1,4 +1,4 @@
-# $Id: LVB.pm,v 1.8 2006/07/04 22:23:33 mauricio Exp $
+# $Id: LVB.pm 13716 2006-07-04 22:23:36Z mauricio $
 # BioPerl module for Bio::Tools::Run::Phylo::LVB
 #
 # Created by Daniel Barker, based on ProtPars.pm by Shawn Hoon 

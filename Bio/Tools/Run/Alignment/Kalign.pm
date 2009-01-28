@@ -1,4 +1,4 @@
-# $Id: Kalign.pm,v 1.1 2006/09/02 12:24:01 avilella Exp $
+# $Id: Kalign.pm 15196 2008-12-17 08:19:17Z sendu $
 #
 # BioPerl module for Bio::Tools::Run::Alignment::Kalign
 #
@@ -19,7 +19,7 @@ sequences or alignments using the KALIGN program
 =head1 SYNOPSIS
 
   # Build a kalign alignment factory
-  $factory = new Bio::Tools::Run::Alignment::Kalign (@params);
+  $factory = Bio::Tools::Run::Alignment::Kalign->new(@params);
 
   # Pass the factory a list of sequences to be aligned.
   $inputfilename = 't/cysprot.fa';
@@ -143,7 +143,7 @@ sub program_name {
 
  Title   : program_dir
  Usage   : $factory->program_dir(@params)
- Function: returns the program directory, obtiained from ENV variable.
+ Function: returns the program directory, obtained from ENV variable.
  Returns:  string
  Args    :
 

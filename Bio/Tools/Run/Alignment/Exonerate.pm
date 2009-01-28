@@ -1,5 +1,5 @@
 # Wrapper  module for Exonerate Bio::Tools::Run::Alignment::Exonerate
-# $Id: Exonerate.pm,v 1.6 2006/07/04 22:23:32 mauricio Exp $
+# $Id: Exonerate.pm 15196 2008-12-17 08:19:17Z sendu $
 # 
 # Cared for by Shawn Hoon
 #
@@ -109,7 +109,7 @@ sub program_name {
 
  Title   : program_dir
  Usage   : $factory->program_dir(@params)
- Function: returns the program directory, obtiained from ENV variable.
+ Function: returns the program directory, obtained from ENV variable.
  Returns:  string
  Args    :
 
@@ -155,6 +155,29 @@ sub new {
        }
        return $self;
 }
+
+=head2  version
+
+ Title   : version
+ Usage   : exit if $prog->version() < 1.8
+ Function: Determine the version number of the program
+ Example :
+ Returns : float or undef
+ Args    : none
+
+=cut
+
+sub version {
+    my ($self) = @_;
+    my $exe;
+    return undef unless $exe = $self->executable;
+    my $string = `$exe -v` ;
+    #exonerate from exonerate version 2.0.0\n...
+    my ($version) = $string =~ /exonerate version ([\d+\.]+)/m;
+    $version =~ s/\.(\d+)$/$1/;
+    return $version || undef;
+}
+
 
 =head2 run
 

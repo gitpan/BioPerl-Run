@@ -1,4 +1,4 @@
-# $Id: DrawTree.pm,v 1.14 2006/07/11 21:35:15 cjfields Exp $
+# $Id: DrawTree.pm 15196 2008-12-17 08:19:17Z sendu $
 #
 # BioPerl module for Bio::Tools::Run::Phylo::Phylip::DrawTree
 #
@@ -19,7 +19,7 @@ program to draw trees
 
   use Bio::Tools::Run::Phylo::Phylip::DrawTree;
 
-  my $treedraw = new Bio::Tools::Run::Phylo::Phylip::DrawTree();
+  my $treedraw = Bio::Tools::Run::Phylo::Phylip::DrawTree->new();
   my $treeimagefile = $drawfact->run($tree);
 
 =head1 DESCRIPTION
@@ -143,7 +143,7 @@ sub program_name {
 
  Title   : program_dir
  Usage   : $drawfact->program_dir()
- Function: returns the program directory, obtiained from ENV variable.
+ Function: returns the program directory, obtained from ENV variable.
  Returns :  string
  Args    :
 
@@ -156,7 +156,7 @@ sub program_dir {
 =head2 new
 
  Title   : new
- Usage   : my $obj = new Bio::Tools::Run::Phylo::Phylip::DrawTree();
+ Usage   : my $obj = Bio::Tools::Run::Phylo::Phylip::DrawTree->new();
  Function: Builds a new Bio::Tools::Run::Phylo::Phylip::DrawTree object 
  Returns : an instance of Bio::Tools::Run::Phylo::Phylip::DrawTree
  Args    : The available DrawGram parameters

@@ -1,4 +1,4 @@
-# $Id: Muscle.pm,v 1.13 2006/11/09 17:38:44 avilella Exp $
+# $Id: Muscle.pm 15196 2008-12-17 08:19:17Z sendu $
 #
 # BioPerl module for Bio::Tools::Run::Alignment::Muscle
 #
@@ -19,7 +19,7 @@ sequences or alignments using the MUSCLE program
 =head1 SYNOPSIS
 
   # Build a muscle alignment factory
-  $factory = new Bio::Tools::Run::Alignment::Muscle (@params);
+  $factory = Bio::Tools::Run::Alignment::Muscle->new(@params);
 
   # Pass the factory a list of sequences to be aligned.
   $inputfilename = 't/cysprot.fa';
@@ -141,7 +141,7 @@ sub program_name {
 
  Title   : program_dir
  Usage   : $factory->program_dir(@params)
- Function: returns the program directory, obtiained from ENV variable.
+ Function: returns the program directory, obtained from ENV variable.
  Returns:  string
  Args    :
 

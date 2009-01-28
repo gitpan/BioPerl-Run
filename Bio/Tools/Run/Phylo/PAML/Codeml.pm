@@ -1,4 +1,4 @@
-# $Id: Codeml.pm,v 1.44 2006/10/15 10:42:43 avilella Exp $
+# $Id: Codeml.pm 15196 2008-12-17 08:19:17Z sendu $
 #
 # BioPerl module for Bio::Tools::Run::Phylo::PAML::Codeml
 #
@@ -19,12 +19,12 @@ Bio::Tools::Run::Phylo::PAML::Codeml - Wrapper aroud the PAML program codeml
   use Bio::Tools::Run::Phylo::PAML::Codeml;
   use Bio::AlignIO;
 
-  my $alignio = new Bio::AlignIO(-format => 'phylip',
+  my $alignio = Bio::AlignIO->new(-format => 'phylip',
   			         -file   => 't/data/gf-s85.phylip');
 
   my $aln = $alignio->next_aln;
 
-  my $codeml = new Bio::Tools::Run::Phylo::PAML::Codeml();
+  my $codeml = Bio::Tools::Run::Phylo::PAML::Codeml->new();
   $codeml->alignment($aln);
   my ($rc,$parser) = $codeml->run();
   my $result = $parser->next_result;
@@ -235,7 +235,7 @@ BEGIN {
     %VALIDVALUES = ( 
 		     'outfile' => 'mlc',
 		     'noisy'   => [ 0..3,9],
-		     'verbose' => [ 0,1,2], # 0:concise, 1:detailed, 2:too much
+		     'verbose' => [ 1,0,2], # 0:concise, 1:detailed, 2:too much
 
                      # (runmode) 0:user tree, 1:semi-autmatic, 2:automatic
 		     #           3:stepwise addition, 4,5:PerturbationNNI
@@ -244,7 +244,7 @@ BEGIN {
 
 		     'seqtype' => [ 1..3], # 1:codons, 2:AAs, 3:codons->AAs
 
-		     'CodonFreq' => [ 2, 0,1,3], # 0:1/61 each, 1:F1X4, 
+		     'CodonFreq' => [ 2, 0,1,3,4,5,6,7], # 0:1/61 each, 1:F1X4, 
 		                                # 2:F3X4, 3:codon table
 
 		     # (aaDist) 0:equal, +:geometric, -:linear, 
@@ -289,11 +289,11 @@ BEGIN {
 		     'fix_kappa'=> [0,1], # 0:estimate kappa, 1:fix kappa
 		     'kappa'    => '2',   # initial or fixed kappa
 		     'fix_omega'=> [0,1], # 0: estimate omega, 1: fix omega
-		     'omega'    => '0.4', # initial or fixed omega for 
+		     'omega'    => '1', # initial or fixed omega for 
 		                          # codons or codon-base AAs
 		     'fix_alpha'=> [1,0], # 0: estimate gamma shape param
 		                          # 1: fix it at alpha
-		     'alpha'    => '0', # initial of fixed alpha
+		     'alpha'    => '0.', # initial or fixed alpha
 		                        # 0: infinity (constant rate)
 		     'Malpha'   => [0,1], # different alphas for genes
 		     'ncatG'    => [1..10], # number of categories in 
@@ -350,7 +350,7 @@ sub program_name {
 
  Title   : program_dir
  Usage   : ->program_dir()
- Function: returns the program directory, obtiained from ENV variable.
+ Function: returns the program directory, obtained from ENV variable.
  Returns:  string
  Args    :
 
@@ -364,7 +364,7 @@ sub program_dir {
 =head2 new
 
  Title   : new
- Usage   : my $obj = new Bio::Tools::Run::Phylo::PAML::Codeml();
+ Usage   : my $obj = Bio::Tools::Run::Phylo::PAML::Codeml->new();
  Function: Builds a new Bio::Tools::Run::Phylo::PAML::Codeml object 
  Returns : Bio::Tools::Run::Phylo::PAML::Codeml
  Args    : -alignment => the Bio::Align::AlignI object
@@ -439,7 +439,7 @@ sub prepare{
        ($tempseqFH,$tempseqfile) = $self->io->tempfile
 	   ('-dir' => $tempdir, 
 	    UNLINK => ($self->save_tempfiles ? 0 : 1));
-       my $alnout = new Bio::AlignIO('-format'      => 'phylip',
+       my $alnout = Bio::AlignIO->new('-format'      => 'phylip',
 				     '-fh'          => $tempseqFH,
                                      '-interleaved' => 0,
                                      '-idlength'    => $MINNAMELEN > $aln->maxdisplayname_length() ? $MINNAMELEN : $aln->maxdisplayname_length() +1);
@@ -456,26 +456,27 @@ sub prepare{
    my $codeml_ctl = "$tempdir/codeml.ctl";
    open(CODEML, ">$codeml_ctl") or $self->throw("cannot open $codeml_ctl for writing");
    print CODEML "seqfile = $tempseqfile\n";
-
    my $outfile = $self->outfile_name;
-
-   my ($temptreeFH,$temptreefile);
-   if( ! ref($tree) && -e $tree ) { 
-       $temptreefile = $tree;
-   } else { 
-       ($temptreeFH,$temptreefile) = $self->io->tempfile
-	   ('-dir' => $tempdir, 
-	    UNLINK => ($self->save_tempfiles ? 0 : 1));
-
-       my $treeout = new Bio::TreeIO('-format' => 'newick',
-				     '-fh'     => $temptreeFH);
-       $treeout->write_tree($tree);
-       $treeout->close();
-       close($temptreeFH);
-   }
-   print CODEML "treefile = $temptreefile\n";
-
    print CODEML "outfile = $outfile\n";
+
+   if( $tree ) {
+       my ($temptreeFH,$temptreefile);
+       if( ! ref($tree) && -e $tree ) { 
+	   $temptreefile = $tree;
+       } else { 
+	   ($temptreeFH,$temptreefile) = $self->io->tempfile
+	       ('-dir' => $tempdir, 
+		UNLINK => ($self->save_tempfiles ? 0 : 1));
+	   
+	   my $treeout = Bio::TreeIO->new('-format' => 'newick',
+					  '-fh'     => $temptreeFH);
+	   $treeout->write_tree($tree);
+	   $treeout->close();
+	   close($temptreeFH);
+       }
+       print CODEML "treefile = $temptreefile\n";
+   }
+
    my %params = $self->get_parameters;
    while( my ($param,$val) = each %params ) {
        next if $param eq 'outfile';
@@ -492,10 +493,11 @@ sub prepare{
 }
 
 
+
 =head2 run
 
  Title   : run
- Usage   : my ($rc,$parser) = $codeml->run($aln);
+ Usage   : my ($rc,$parser) = $codeml->run($aln,$tree);
  Function: run the codeml analysis using the default or updated parameters
            the alignment parameter must have been set
  Returns : Return code, L<Bio::Tools::Phylo::PAML>
@@ -506,63 +508,10 @@ sub prepare{
 =cut
 
 sub run {
-   my ($self,$aln,$tree) = @_;
-   unless ( $self->save_tempfiles ) {
-       # brush so we don't get plaque buildup ;)
-       $self->cleanup();
-   }
-   $tree = $self->tree unless $tree;
-   $aln  = $self->alignment unless $aln;
-   if( ! $aln ) { 
-       $self->warn("must have supplied a valid alignment file in order to run codeml");
-       return 0;
-   }
-   my ($tmpdir) = $self->tempdir();
-   my ($tempseqFH,$tempseqfile);
-   if( ! ref($aln) && -e $aln ) { 
-       $tempseqfile = $aln;
-   } else { 
-       ($tempseqFH,$tempseqfile) = $self->io->tempfile
-	   ('-dir' => $tmpdir, 
-	    UNLINK => ($self->save_tempfiles ? 0 : 1));
-       my $alnout = new Bio::AlignIO('-format'      => 'phylip',
-				     '-fh'          => $tempseqFH,
-				 '-interleaved' => 0,
-				 '-idlength'    => $MINNAMELEN > $aln->maxdisplayname_length() ? $MINNAMELEN : $aln->maxdisplayname_length() +1);
-       
-       $alnout->write_aln($aln);
-       $alnout->close();
-       undef $alnout;   
-       close($tempseqFH);
-   }
-   # now let's print the codeml.ctl file.
-   # many of the these programs are finicky about what the filename is 
-   # and won't even run without the properly named file.  Ack
-   
-   my $codeml_ctl = "$tmpdir/codeml.ctl";
-   open(CODEML, ">$codeml_ctl") or $self->throw("cannot open $codeml_ctl for writing");
-   print CODEML "seqfile = $tempseqfile\n";
-
+   my ($self) = shift;;
    my $outfile = $self->outfile_name;
-
-   if( $tree ) {
-       my ($temptreeFH,$temptreefile) = $self->io->tempfile
-	   ('-dir' => $tmpdir, 
-	    UNLINK => ($self->save_tempfiles ? 0 : 1));
-
-       my $treeout = new Bio::TreeIO('-format' => 'newick',
-				     '-fh'     => $temptreeFH);
-       $treeout->write_tree($tree);
-       $treeout->close();
-       close($temptreeFH);
-       print CODEML "treefile = $temptreefile\n";
-   }
-   print CODEML "outfile = $outfile\n";
-   my %params = $self->get_parameters;
-   while( my ($param,$val) = each %params ) {
-       print CODEML "$param = $val\n";
-   }
-   close(CODEML);
+   my $tmpdir = $self->prepare(@_);
+   
    my ($rc,$parser) = (1);
    {
        my $cwd = cwd();
@@ -570,31 +519,28 @@ sub run {
        chdir($tmpdir);
        my $codemlexe = $self->executable();
        $self->throw("unable to find or run executable for 'codeml'") unless $codemlexe && -e $codemlexe && -x _;
+       my $run;
        if( $self->{'_branchLengths'} ) { 
-	   open(RUN, "echo $self->{'_branchLengths'} | $codemlexe |") or $self->throw("Cannot open exe $codemlexe");
+	   open($run, "echo $self->{'_branchLengths'} | $codemlexe |") or $self->throw("Cannot open exe $codemlexe");
        } else {
-	   open(RUN, "$codemlexe |") or $self->throw("Cannot open exe $codemlexe");
+	   open($run, "$codemlexe |") or $self->throw("Cannot open exe $codemlexe");
        }
-       my @output = <RUN>;
-       $exit_status = close(RUN);
+       my @output = <$run>;
+       $exit_status = close($run);
        $self->error_string(join('',@output));
        if( (grep { /\berr(or)?: /io } @output)  || !$exit_status) {
 	   $self->warn("There was an error - see error_string for the program output");
 	   $rc = 0;
        }
        eval {
-	   $parser = new Bio::Tools::Phylo::PAML(-file => "$tmpdir/$outfile", 
-						 -dir => "$tmpdir");
-
+	   $parser = Bio::Tools::Phylo::PAML->new(-file => "$tmpdir/$outfile",
+						  -verbose => $self->verbose,
+						  -dir => "$tmpdir");
        };
        if( $@ ) {
 	   $self->warn($self->error_string);
        }
        chdir($cwd);
-   }
-   unless ( $self->save_tempfiles ) {
-      unlink("$codeml_ctl");
-      $self->cleanup();
    }
    return ($rc,$parser);
 }
@@ -818,6 +764,9 @@ sub outfile_name {
     my $self = shift;
     if( @_ ) {
 	return $self->{'_codemlparams'}->{'outfile'} = shift @_;
+    }
+    unless (defined $self->{'_codemlparams'}->{'outfile'}) {
+        $self->{'_codemlparams'}->{'outfile'} = 'mlc';
     }
     return $self->{'_codemlparams'}->{'outfile'};    
 }

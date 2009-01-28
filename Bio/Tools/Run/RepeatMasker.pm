@@ -1,4 +1,4 @@
-# $Id: RepeatMasker.pm,v 1.25 2006/07/04 22:23:31 mauricio Exp $
+# $Id: RepeatMasker.pm 15196 2008-12-17 08:19:17Z sendu $
 # BioPerl module for RepeatMasker
 #
 # Cared for by Shawn Hoon <shawnh@fugu-sg.org>
@@ -36,10 +36,31 @@ Bio::Tools::Run::RepeatMasker - Wrapper for RepeatMasker Program
 
 =head1 DESCRIPTION
 
-RepeatMasker is a program that screens DNA sequences for interspersed
+To use this module, the RepeatMasker program (and probably database) must be
+installed. RepeatMasker is a program that screens DNA sequences for interspersed
 repeats known to exist in mammalian genomes as well as for low
 complexity DNA sequences. For more information, on the program and its
-usage, please refer to http://repeatmasker.genome.washington.edu/.
+usage, please refer to http://www.repeatmasker.org/.
+
+Having installed RepeatMasker, you must let Bioperl know where it is.
+This can be done in (at least) three ways:
+
+ 1. Make sure the RepeatMasker executable is in your path.
+ 2. Define an environmental variable REPEATMASKERDIR which is a 
+    directory which contains the RepeatMasker executable:
+    In bash:
+
+    export REPEATMASKERDIR=/home/username/RepeatMasker/
+
+    In csh/tcsh:
+
+    setenv REPEATMASKERDIR /home/username/RepeatMasker/
+
+ 3. Include a definition of an environmental variable REPEATMASKERDIR in
+    every script that will use this RepeatMasker wrapper module, e.g.:
+
+    BEGIN { $ENV{REPEATMASKERDIR} = '/home/username/RepeatMasker/' }
+    use Bio::Tools::Run::RepeatMasker;
 
 =head1 FEEDBACK
 
@@ -127,7 +148,7 @@ sub program_name {
 
  Title   : program_dir
  Usage   : $factory->program_dir(@params)
- Function: returns the program directory, obtiained from ENV variable.
+ Function: returns the program directory, obtained from ENV variable.
  Returns:  string
  Args    :
 
@@ -172,7 +193,7 @@ sub new {
   }
   unless ($self->executable()) {
     if( $self->verbose >= 0 ) {
-      warn "RepeatMasker program not found as ".$self->executable.
+      warn "RepeatMasker program not found as ".($self->executable||'').
 	  " or not executable. \n"; 
     }
   }  

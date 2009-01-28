@@ -6,7 +6,7 @@
 #   senger@ebi.ac.uk
 #   July 2002
 #
-#   $Id: papplmaker.PLS,v 1.8 2006/07/04 22:23:36 mauricio Exp $
+#   $Id: papplmaker.PLS,v 1.8 2006-07-04 22:23:36 mauricio Exp $
 #-----------------------------------------------------------------------------
 
 use strict;
@@ -62,7 +62,7 @@ BEGIN {
 
     # set the version for version checking
     $VERSION = do { my @r = (q[$Revision: 1.8 $] =~ /\d+/g); sprintf "%d.%-02d", @r };
-    $Revision = q[$Id: papplmaker.PLS,v 1.8 2006/07/04 22:23:36 mauricio Exp $];
+    $Revision = q[$Id: papplmaker.PLS,v 1.8 2006-07-04 22:23:36 mauricio Exp $];
 
     # help wanted?
     if ($opt_h) {

@@ -1,4 +1,4 @@
-# $Id: Primer3.pm,v 1.18 2006/07/04 22:23:31 mauricio Exp $
+# $Id: Primer3.pm 15456 2009-01-28 04:31:30Z cjfields $
 #
 # This is the original copyright statement. I have relied on Chad's module
 # extensively for this module.
@@ -377,6 +377,10 @@ sub add_targets {
 		elsif ($key eq "PRIMER_MAX_SIZE") {
 			if ($args{$key}>35) {$self->warn('Maximum primer size (PRIMER_MAX_SIZE) must be less than 35')}
 		}
+		elsif (uc($key) eq "SEQUENCE") {
+		    # Add seqobject if not present, since it is checked for by Bio::Tools::Primer3->next_primer()
+		    $self->{'seqobject'}=Bio::Seq->new(-seq=>$args{$key}) if not defined($self->{'seqobject'});
+		}
 
 		# need a check to see whether this is already in the array
 		# and finally add the argument to the list.
@@ -416,7 +420,8 @@ sub run {
 	my($self) = @_;
 	my $executable = $self->executable;
 	my $input = $self->{'primer3_input'};
-	unless (-e $executable) {
+	unless ($executable && -e $executable) {
+		$self->throw("Executable was not found. Do not know where primer3 is!") if !$executable;
 		$self->throw("$executable was not found. Do not know where primer3 is!");
 		exit(-1);
 	}

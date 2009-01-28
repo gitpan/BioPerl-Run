@@ -5,27 +5,9 @@
 use strict;
 
 BEGIN {
-  # Things to do ASAP once the script is run
-  # even before anything else in the file is parsed
-  #use vars qw($NUMTESTS $DEBUG $error);
-  #$DEBUG = $ENV{'BIOIPERLDEBUG'} || 0;
+  use Bio::Root::Test;
+  test_begin(-tests => 43);
   
-  # Use installed Test module, otherwise fall back
-  # to copy of Test.pm located in the t dir
-  eval { require Test::More; };
-  if ( $@ ) {
-    use lib 't/lib';
-  }
-
-  # Currently no errors
-  #$error = 0;
-
-  # Setup Test::More and plan the number of tests
-  use Test::More tests=>39;
-  
-  # Use modules that are needed in this test that are from
-  # any of the Bioperl packages: Bioperl-core, Bioperl-run ... etc
-  # use_ok('<module::to::use>');
   use_ok('Bio::Tools::Run::Alignment::Clustalw');
   use_ok('Bio::SimpleAlign');
   use_ok('Bio::AlignIO');
@@ -33,38 +15,23 @@ BEGIN {
   use_ok('File::Spec');
 }
 
-END {
-  # Things to do right at the very end, just
-  # when the  interpreter finishes/exits
-  # E.g. deleting intermediate files produced during the test
-  
-  #foreach my $file ( qw(cysprot.dnd cysprot1a.dnd) ) {
-  #  unlink $file;
-  #  # check it was deleted
-  #  ok( ! -e $file, 'Expected temp file deleted' );
-  #}
-}
 
 # setup input files etc
-my $inputfilename = File::Spec->catfile("t","data","cysprot.fa");
+my $inputfilename = test_input_file("cysprot.fa");
 ok( -e $inputfilename, 'Found input file' );
-my $profile1 = File::Spec->catfile('t','data','cysprot1a.msf');
+my $profile1 = test_input_file('cysprot1a.msf');
 ok( -e $profile1, 'Found profile1 file' );
-my $profile2 = File::Spec->catfile('t','data','cysprot1b.msf');
+my $profile2 = test_input_file('cysprot1b.msf');
 ok( -e $profile2, 'Found profile2 file' );
-
-# setup output files etc
-# none in this test
+my $outfile = test_output_file();
 
 # setup global objects that are to be used in more than one test
 # Also test they were initialised correctly
-my @params = (
-         'ktuple' => 3,
-	 'quiet'  => 1,
-	 #-verbose => $verbose,
-);
+my @params = ('ktuple' => 3, 'quiet'  => 1);
+
 my $factory = Bio::Tools::Run::Alignment::Clustalw->new(@params);
 isa_ok( $factory, 'Bio::Tools::Run::Alignment::Clustalw');
+$factory->outfile($outfile);
 
 # test default factory values
 is( $factory->program_dir, $ENV{'CLUSTALDIR'}, 'program_dir returned correct default' );
@@ -75,21 +42,27 @@ is( $factory->bootstrap, undef, 'bootstrap returned correct default' );
 # Now onto the nitty gritty tests of the modules methods
 is( $factory->program_name(), 'clustalw',                'Correct exe default name' );
 
-# block of tests to skip if you know the tests will fail
-# under some condition. E.g.:
-#   Need network access,
-#   Wont work on particular OS,
-#   Cant find the exectuable
-# DO NOT just skip tests that seem to fail for an unknown reason
 SKIP: {
-  # condition used to skip this block of tests
-  #skip($why, $how_many_in_block);
-  skip("Couldn't find the executable", 13)
-    unless defined $factory->executable();
+  test_skip(-requires_executable => $factory,
+            -tests => 17);  
   
   # test all factory methods dependent on finding the executable
   # TODO: isnt( $factory->program_dir, undef,               'Found program in an ENV variable' );
-  ok( $factory->version >= 1.8,                             'Correct minimum program version' );
+  my $ver = $factory->version || 0;
+  
+  # remove last bit 
+  $ver =~ s{^(\d+\.\d+)\.\d+}{$1};
+  
+  # clustalw2 isn't supported yet.
+  if ($ver < 1.8) {
+    diag("ClustalW version $ver not supported");
+    skip("ClustalW version $ver not supported", 17);
+  } if ($ver >= 2.0) {
+    diag("Warning: ClustalW version $ver not supported yet.");
+    skip("ClustalW version $ver not supported yet", 17);
+  }
+  
+  ok( $ver, "Supported program version $ver" );
   
   # test execution using filename
   my $aln = $factory->align($inputfilename);
@@ -101,12 +74,10 @@ SKIP: {
   # now test its output
   isa_ok( $aln, 'Bio::SimpleAlign');
   is( $aln->no_sequences, 7,                               'Correct number of seqs returned' );
+  is $aln->score, 16047, 'Score';
   
   # test execution using an array of Seq objects
-  my $str = Bio::SeqIO->new(
-                        '-file' => $inputfilename,
-			'-format' => 'Fasta',
-  );
+  my $str = Bio::SeqIO->new('-file' => $inputfilename, '-format' => 'Fasta');
   my @seq_array =();
   while ( my $seq = $str->next_seq() ) {
     push (@seq_array, $seq) ;
@@ -135,6 +106,26 @@ SKIP: {
   isa_ok( $aln, 'Bio::SimpleAlign' );
   is( $aln->no_sequences, 7,                            'Correct number of seqs returned' );
   
+  # test the run method
+  ($aln, $tree) = $factory->run(\@seq_array);
+  isa_ok($aln, 'Bio::SimpleAlign');
+  isa_ok($tree, 'Bio::Tree::Tree');
+  
+  # test the footprint method
+  my @seqs = (Bio::Seq->new(-seq => 'AACCTGGCCAATTGGCCAATTGGGCGTACGTACGT', -id => 'rabbit'),
+	      Bio::Seq->new(-seq => 'ACCCTGGCCAATTGGCCAATTGTAAGTACGTACGT', -id => 'marmot'),
+	      Bio::Seq->new(-seq => 'AAGCTGGCCAATTGGCCAATTAGACTTACGTACGT', -id => 'chimp'),
+	      Bio::Seq->new(-seq => 'AACATGGCCAATTGGCCAATCGGACGTACGTCCGT', -id => 'human'),
+	      Bio::Seq->new(-seq => 'AACCGGGCCAATTGGCCAAGTGGACGTACGTATGT', -id => 'cebus'),
+	      Bio::Seq->new(-seq => 'AACCTAGCCAATTGGCCACTTGGACGTACGTACAT', -id => 'gorilla'),
+	      Bio::Seq->new(-seq => 'AACCTGCCCAATTGGCCGATTGGACGTACGTACGC', -id => 'orangutan'),
+	      Bio::Seq->new(-seq => 'AACCTGGGCAATTGGCAAATTGGACGTACGTACGT', -id => 'baboon'),
+	      Bio::Seq->new(-seq => 'AACCTGGCTAATTGGTCAATTGGACGTACGTACGT', -id => 'rhesus'),
+	      Bio::Seq->new(-seq => 'AACCTGGCCGATTGGCCAATTGGACGTACGTACGT', -id => 'squirrelmonkey'));
+  my @results = $factory->footprint(\@seqs);
+  @results = map { $_->consensus_string } @results;
+  is_deeply(\@results, [qw(ATTGG TACGT)], 'footprinting worked');
+  
   SKIP: {
 	# TODO: Is this needed, or should min version be bumped to > 1.82. Discuss with module author
     # keeping this to be compatible with older t/Clustalw.t
@@ -148,7 +139,7 @@ SKIP: {
     $aln = $factory->profile_align($aln1,$aln2);
     is($aln->get_seq_by_pos(2)->get_nse, 'CATH_HUMAN/1-335', 'Got correct sequence by position');
 	
-    $str2 = Bio::SeqIO->new(-file=> Bio::Root::IO->catfile("t","data","cysprot1b.fa"));
+    $str2 = Bio::SeqIO->new(-file=> test_input_file("cysprot1b.fa"));
     my $seq = $str2->next_seq();
     $aln = $factory->profile_align($aln1,$seq);
     is($aln->get_seq_by_pos(2)->get_nse,  'CATH_HUMAN/1-335', 'Got correct sequence by position');

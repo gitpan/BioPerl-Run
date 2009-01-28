@@ -1,7 +1,5 @@
-# $Id: FootPrinter.pm,v 1.16 2006/11/07 11:20:03 sendu Exp $
+# $Id: FootPrinter.pm 15196 2008-12-17 08:19:17Z sendu $
 # BioPerl module for FootPrinter
-#
-# Cared for by Shawn Hoon <shawnh@fugu-sg.org>
 #
 # Copyright Shawn Hoon
 #
@@ -11,30 +9,27 @@
 
 =head1 NAME
 
-Bio::Tools::Run::FootPrinter -
-Wrapper for FootPrinter Program
+Bio::Tools::Run::FootPrinter - wrapper for the FootPrinter program
 
 =head1 SYNOPSIS
 
   use Bio::Tools::Run::FootPrinter;
 
-  my @params = (
-               'size'=>10,
-              'max_mutations_per_branch'=>4,
-              'sequence_type'=>'upstream',
-              'subregion_size'=>30,
-              'position_change_cost'=>5,
-              'triplet_filtering'=>1,
-              'pair_filtering'=>1,
-              'post_filtering'=>1,
-              'inversion_cost'=>1,
-              'max_mutations'=>4,
-              'program'=>"/usr/users/shawnh/software/FootPrinter2.0/FootPrinter",
-              'tree'   =>"/usr/users/shawnh/software/FootPrinter2.0/tree_of_life",
-              'verbose'=>1);
-  my $fp = Bio::Tools::Run::FootPrinter->new(@params);
+  my @params = (size => 10,
+                 max_mutations_per_branch => 4,
+                 sequence_type => 'upstream',
+                 subregion_size => 30,
+                 position_change_cost => 5,
+                 triplet_filtering => 1,
+                 pair_filtering => 1,
+                 post_filtering => 1,
+                 inversion_cost => 1,
+                 max_mutations => 4,
+                 tree => "~/software/FootPrinter2.0/tree_of_life" );
 
-  my $sio = Bio::SeqIO->new(-file=>"/usr/users/shawnh/seq.fa",-format=>"fasta");
+  my $fp = Bio::Tools::Run::FootPrinter->new(@params, -verbose => 1);
+
+  my $sio = Bio::SeqIO->new(-file => "seq.fa", -format => "fasta");
 
   while (my $seq = $sio->next_seq){
     push @seq, $seq;
@@ -43,83 +38,89 @@ Wrapper for FootPrinter Program
 
   foreach my $result(@fp){
     print "***************\n".$result->seq_id."\n";
-     foreach my $feat($result->sub_SeqFeature){
+    foreach my $feat($result->sub_SeqFeature){
       print $feat->start."\t".$feat->end."\t".$feat->seq->seq."\n";
     }
   }
 
 =head1 DESCRIPTION
 
-
-Taken from FootPrinter manual:
+From the FootPrinter manual:
 
 FootPrinter is a program that performs phylogenetic footprinting. 
-It takes as input a set of unaligned orthologous sequences from various species, 
-together with a phylogenetic tree relating these species. 
+It takes as input a set of unaligned orthologous sequences from various 
+species, together with a phylogenetic tree relating these species. 
 It then searches for short regions of the sequences that are highly conserved, 
 according to a parsimony criterion. 
+
 The regions identified are good candidates for regulatory elements. 
 By default, the program searches for regions that are well conserved across 
 all of the input sequences, but this can be relaxed to 
 find regions conserved in only a subset of the species
 
-Copyright (c) 1999-2002, by Mathieu Blanchette and Martin Tompa.
+=head2 About Footprinter
 
-http://abstract.cs.washington.edu/~blanchem/FootPrinterWeb/FootPrinterInput.pl
+Written by Mathieu Blanchette and Martin Tompa. Available here:
 
-**NOTE**
-To run FootPrinter, you will NEED to set the enviroment variable
-FOOTPRINTER_DIR to where the binary is located (even if the executable is in
-your path). For example:
-setenv FOOTPRINTER_DIR=/usr/local/bin/FootPrinter2.0/
+  http://www.mcb.mcgill.ca/~blanchem/FootPrinter2.1.tar.gz 
 
-Available Parameters:
 
+=head2 Running Footprinter
+
+To run FootPrinter, you will need to set the enviroment variable
+FOOTPRINTER_DIR to where the binary is located (even if the executable
+is in your path). For example:
+
+  setenv FOOTPRINTER_DIR /usr/local/bin/FootPrinter2.0/
+
+
+=head2 Available Parameters
 
   PARAM         VALUES        DESCRIPTION
-  ----------------------------------------
-  tree                      <file>        REQUIRED, Tree in Newick Format
-                                          to evaluate parsimony score 
-                                          REQUIRED unless tree_of_life
-                                          exists in FOOTPRINTER_DIR
-  sequence_type             upstream      Default upstream
+  ------------------------------------------------------------------------
+  tree                      <file>     REQUIRED, Tree in Newick Format
+                                       to evaluate parsimony score 
+                                       REQUIRED unless tree_of_life
+                                       exists in FOOTPRINTER_DIR
+  sequence_type             upstream   Default upstream
                             downstream
                             other
-  size                      4-16          Specifies the size of the motifs sought
-  max_mutations             0-20          maximum parsimony score allowed for the motifs
-  max_mutations_per_branch  0-20          Allows at most a fixed number of mutations per 
-                                          branch of the tree
-  losses                    <file>        files give span constraints so that the motifs
-                                          reported are statistically significant
-                                          Example files
-                                          universal([6-9]|1[0-2])(loose|tight)?.config
-                                          come with FootPrinter2.0.
-                                          Install these in FOOTPRINTER_DIR and use by
-                                          setting "losses" to "somewhat significant",
-                                          "significant", or "very significant". Do not
-                                          set loss_cost.
-  loss_cost                 0-20          a cost associated with losing a motif along some 
-                                          branch of the tre
-  subregion_size            1-infinity    penalize motifs whose position in the sequences 
-                                          varies too much
-  position_change_cost      0-20          Cost for changing subregion
-
-  triplet_filtering         1/0           pre-filtering step that removes from consideration 
-                                          any substring that doesn't have a sufficiently good 
-                                          pair of matching substrings in some pair of the other 
-                                          input sequences
-  pair_filtering            1/0           Same as triplet filtering, but looks only for one match 
-                                          per other sequence
-  post_filtering            1/0           when used in conjunction with the triplet filtering 
-                                          option, this often significantly speeds up the program, 
-                                          while still garanteeing optimal results
-  indel_cost                1-5           insertions and deletions will be allowed in the motifs 
-                                          sought, at the given cost
-  inversion_cost            1-5           This option allows for motifs to undergo inversions, 
-                                          at the given cost. An inversion reverse-complements the motif.
-  details                   1/0           Shows some of the details about the progress of the computation
-  html                      1/0           produce html output (never deleted)
-  ps                        1/0           produce postscript output (never deleted)
+  size                      4-16       Specifies the size of the motifs sought
+  max_mutations             0-20       maximum parsimony score allowed for the motifs
+  max_mutations_per_branch  0-20       Allows at most a fixed number of mutations per 
+                                       branch of the tree
+  losses                    <file>     files give span constraints so that the motifs
+                                       reported are statistically significant
+                                       Example files
+                                       universal([6-9]|1[0-2])(loose|tight)?.config
+                                       come with FootPrinter2.0.
+                                       Install these in FOOTPRINTER_DIR and use by
+                                       setting "losses" to "somewhat significant",
+                                       "significant", or "very significant". Do not
+                                       set loss_cost.
+  loss_cost                 0-20       a cost associated with losing a motif along some 
+                                       branch of the tre
+  subregion_size            1-infinity penalize motifs whose position in the sequences 
+                                       varies too much
+  position_change_cost      0-20       Cost for changing subregion
+  triplet_filtering         1/0        pre-filtering step that removes from consideration 
+                                       any substring that does not have a sufficiently good 
+                                       pair of matching substrings in some pair of the other 
+                                       input sequences
+  pair_filtering            1/0        Same as triplet filtering, but looks only for one match 
+                                       per other sequence
+  post_filtering            1/0        when used in conjunction with the triplet filtering 
+                                       option, this often significantly speeds up the program, 
+                                       while still garanteeing optimal results
+  indel_cost                1-5        insertions and deletions will be allowed in the motifs 
+                                       sought, at the given cost
+  inversion_cost            1-5        This option allows for motifs to undergo inversions, 
+                                       at the given cost. An inversion reverse-complements 
+                                       the motif.
+  details                   1/0        Shows some of the details about the progress of the 
+                                       computation
+  html                      1/0        produce html output (never deleted)
+  ps                        1/0        produce postscript output (never deleted)
 
 =head1 FEEDBACK
 
@@ -161,7 +162,7 @@ use Cwd;
 use Bio::Root::Root;
 use Bio::Tools::Run::WrapperBase;
 use Bio::Tools::FootPrinter;
-
+use Bio::SeqIO;
 
 # Let the code begin...
 
@@ -197,7 +198,7 @@ sub program_name {
 
  Title   : program_dir
  Usage   : $factory->program_dir(@params)
- Function: returns the program directory, obtiained from ENV variable.
+ Function: returns the program directory, obtained from ENV variable.
  Returns:  string
  Args    :
 
@@ -316,6 +317,7 @@ sub run {
 sub _run {
   my ($self,$infile,$tree,$param_string) = @_;
   my $instring;
+  my $exe = $self->executable || return;
   $self->debug( "Program ".$self->executable."\n");
 
   my $outfile = $infile.".seq.txt";

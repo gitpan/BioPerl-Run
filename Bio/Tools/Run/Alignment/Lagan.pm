@@ -59,14 +59,14 @@ parsing of the alignment format.
 
 TO USE LAGAN:
 
-  my $lagan = new Bio::Tools::Run::Alignment::Lagan(@params);
+  my $lagan = Bio::Tools::Run::Alignment::Lagan->new(@params);
   my $report_out = $lagan->lagan($seq1, $seq2);
 
 A SimpleAlign object is returned.
 
 TO USE MLAGAN:
 
-  my $lagan = new Bio::Tools::Run::Alignment::Lagan();
+  my $lagan = Bio::Tools::Run::Alignment::Lagan->new();
   my $tree = "(($seqname1 $seqname2) $seqname3)";
   my @sequence_objs; 	#an array of bioperl Seq objects
 
@@ -112,6 +112,8 @@ Genome Sciences Centre in beautiful Vancouver, British Columbia CANADA
 
 MLagan/Lagan is the hard work of Michael Brudno et al.
 
+Sendu Bala bix@sendu.me.uk
+
 =head1 APPENDIX
 
 The rest of the documentation details each of the object methods.
@@ -121,68 +123,45 @@ Internal methods are usually preceded with a _
 
 package Bio::Tools::Run::Alignment::Lagan;
 
-use vars qw(@ISA $PROGRAM_DIR @LAGAN_PARAMS @MLAGAN_PARAMS @LAGAN_SWITCHES @OTHER_PARAMS
-	    %OK_FIELD $AUTOLOAD);
-
 use strict;
-use Bio::Root::Root;
 use Bio::Root::IO;
 use Bio::Seq;
 use Bio::SeqIO;
 use Bio::AlignIO;
-use Bio::AlignIO::fasta;
 use Bio::SimpleAlign;
-use Bio::Tools::Run::WrapperBase;
+use File::Spec;
+use Bio::Matrix::IO;
 use Cwd;
 
-@ISA = qw(	Bio::Root::Root
-		Bio::Tools::Run::WrapperBase);
+use base qw(Bio::Tools::Run::WrapperBase);
 
-BEGIN {
-
-    @LAGAN_PARAMS = qw(chaos order recurse mfa out lazy maskedonly
+our @LAGAN_PARAMS = qw(chaos order recurse mfa out lazy maskedonly
                        usebounds rc translate draft info fastreject);
-    @OTHER_PARAMS = qw(outfile);
-    @LAGAN_SWITCHES = qw(silent quiet);
-    @MLAGAN_PARAMS = qw(nested postir translate lazy verbose tree match mismatch
+our @OTHER_PARAMS = qw(outfile);
+our @LAGAN_SWITCHES = qw(silent quiet);
+our @MLAGAN_PARAMS = qw(nested postir translate lazy verbose tree match mismatch
                         gapstart gapend gapcont out version);
 
-    #Not all of these parameters are useful in this context, care
-    #should be used in setting only standard ones
+#Not all of these parameters are useful in this context, care
+#should be used in setting only standard ones
 
-    #Authorize Attribute fields
-    foreach my $attr (@LAGAN_PARAMS, @LAGAN_SWITCHES, @MLAGAN_PARAMS,@OTHER_PARAMS) {
-        $OK_FIELD{$attr}++;
-    }
-
-    #The LAGAN_DIR environment variable must be set
-    $PROGRAM_DIR = $ENV{'LAGAN_DIR'} || '';
-}
+#The LAGAN_DIR environment variable must be set
+our $PROGRAM_DIR = $ENV{'LAGAN_DIR'} || '';
 
 sub new {
     my($class, @args) = @_;
     my $self = $class->SUPER::new(@args);
-    while (@args) {
-        my $attr = shift @args;
-        my $value = shift @args;
-        $self->$attr($value);
-    }
+    
+    $self->_set_from_args(\@args, -methods => [@LAGAN_PARAMS, @OTHER_PARAMS,
+                                               @LAGAN_SWITCHES, @MLAGAN_PARAMS],
+                                  -create => 1);
+    
     my ($tfh, $tempfile) = $self->io->tempfile();
     my $outfile = $self->out || $self->outfile || $tempfile;
     $self->out($outfile);
     close($tfh);
     undef $tfh;
     return $self;
-}
-
-sub AUTOLOAD {
-    my $self = shift;
-    my $attr = $AUTOLOAD;
-    $attr =~ s/.*:://;
-
-    $self->throw("Unallowed parameter: $attr !") unless $OK_FIELD{$attr};
-    $self->{$attr} = shift if @_;
-    return $self->{$attr};
 }
 
 =head2 lagan
@@ -211,9 +190,11 @@ sub lagan {
 
 =head2 mlagan
 
-  Runs the Mlagan multiple sequence alignment algorithm
-  Inputs should be an Array of Primary Seq objects and a Phylogenetic Tree in String format
-  Returns an SimpleAlign object / preloaded with the tmp file of the Mlagan multifasta output.
+  Runs the Mlagan multiple sequence alignment algorithm.
+  Inputs should be an Array of Primary Seq objects and a Phylogenetic Tree in
+  String format or as a Bio::Tree::TreeI compliant object.
+  Returns an SimpleAlign object / preloaded with the tmp file of the Mlagan
+  multifasta output.
 
 =cut
 
@@ -221,12 +202,96 @@ sub mlagan {
     my ($self, $input1, $tree) = @_;
     $self->io->_io_cleanup();
     my $executable = 'mlagan';
+    
+    if ($tree && ref($tree) && $tree->isa('Bio::Tree::TreeI')) {
+        # fiddle tree so mlagan will like it
+        my %orig_ids;
+        foreach my $node ($tree->get_nodes) {
+            my $seq_id = $node->name('supplied');
+            $seq_id = $seq_id ? shift @{$seq_id} : ($node->node_name ? $node->node_name : $node->id);
+            $orig_ids{$seq_id} = $node->id;
+            $node->id($seq_id);
+        }
+        
+        # convert to string
+        my $tree_obj = $tree;
+        $tree = $tree->simplify_to_leaves_string;
+        
+        # more fiddling
+        $tree =~ s/ /_/g;
+        $tree =~ s/"//g;
+        $tree =~ s/,/ /g;
+
+        # unfiddle the tree object
+        foreach my $node ($tree_obj->get_nodes) {
+            $node->id($orig_ids{$node->id});
+        }
+    }
+    
     my $infiles;
     ($infiles, $tree) = $self->_setinput($executable, $input1, $tree);
     my $lagan_report = &_generic_lagan (	$self,
 						$executable,
 						$infiles,
 						$tree );
+}
+
+=head2  nuc_matrix
+
+ Title   : nuc_matrix
+ Usage   : my $matrix_obj = $obj->nuc_matrix();
+           -or-
+           $obj->nuc_matrix($matrix_obj);
+           -or-
+           $obj->nuc_matrix($matrix_file);
+ Function: Get/set the substitution matrix for use by mlagan. By default the
+           file $LAGAN_DIR/nucmatrix.txt is used by mlagan. By default this
+           method returns a corresponding Matrix.
+ Returns : Bio::Matrix::Mlagan object
+ Args    : none to get, OR to set:
+           Bio::Matrix::MLagan object
+           OR
+           filename of an mlagan substitution matrix file
+
+           NB: due to a bug in mlagan 2.0, the -nucmatrixfile option does not
+           work, so this Bioperl wrapper is unable to simply point mlagan to
+           your desired matrix file (or to a temp file generated from your
+           matrix object). Instead the $LAGAN_DIR/nucmatrix.txt file must
+           actually be replaced. This wrapper will make a back-up copy of that
+           file, write the new file in its place, then revert things back to the
+           way they were after the alignment has been produced. For this reason,
+           $LAGAN_DIR must be writable, as must $LAGAN_DIR/nucmatrix.txt.
+
+=cut
+
+sub nuc_matrix {
+    my ($self, $thing, $gap_open, $gap_continue) = @_;
+    
+    if ($thing) {
+        if (-e $thing) {
+            my $min = Bio::Matrix::IO->new(-format => 'mlagan',
+                                           -file   => $thing);
+            $self->{_nuc_matrix} = $min->next_matrix;
+        }
+        elsif (ref($thing) && $thing->isa('Bio::Matrix::Mlagan')) {
+            $self->{_nuc_matrix} = $thing;
+        }
+        else {
+            $self->throw("Unknown kind of thing supplied, '$thing'");
+        }
+        
+        $self->{_nuc_matrix_set} = 1;
+    }
+    
+    unless (defined $self->{_nuc_matrix}) {
+        # read the program default file
+        my $min = Bio::Matrix::IO->new(-format => 'mlagan',
+                                       -file   => File::Spec->catfile($PROGRAM_DIR, 'nucmatrix.txt'));
+        $self->{_nuc_matrix} = $min->next_matrix;
+    }
+    
+    $self->{_nuc_matrix_set} = 1 if defined wantarray;
+    return $self->{_nuc_matrix};
 }
 
 =head2  _setinput
@@ -238,7 +303,6 @@ sub mlagan {
            or array of files and phylo tree for Mlagan data input
 
 =cut
-
 
 sub _setinput {
     my ($self, $executable, $input1, $input2) = @_;
@@ -342,23 +406,29 @@ sub _generic_lagan {
 
 sub _setparams {
     my ($self, $executable) = @_;
-    my ($attr, $value, @execparams);
-
+    
+    my (@execparams, $nucmatrixfile);
     if ($executable eq 'lagan.pl') {
         @execparams = @LAGAN_PARAMS;
     }
-    if ($executable eq 'mlagan') {
+    elsif ($executable eq 'mlagan') {
         @execparams = @MLAGAN_PARAMS;
+        
+        if ($self->{_nuc_matrix_set}) {
+            # we create this file on every call because we have no way of
+            # knowing if user altered the matrix object
+            (my $handle, $nucmatrixfile) = $self->io->tempfile();
+            my $mout = Bio::Matrix::IO->new(-format => 'mlagan',
+                                            -fh => $handle);
+            $mout->write_matrix($self->nuc_matrix);
+            $self->{_nucmatrixfile} = $nucmatrixfile;
+        }
     }
     ##EXPAND OTHER LAGAN SUITE PROGRAMS HERE
-
-    my $param_string = "";
-    for $attr (@execparams) {
-        $value = $self->$attr();
-        next unless (defined $value);
-        $attr = '-' . $attr;
-        $param_string .= " $attr $value ";
-    }
+    
+    my $param_string = $self->SUPER::_setparams(-params => [@execparams],
+                                                -dash => 1);
+    $param_string .= " -nucmatrixfile $nucmatrixfile" if $nucmatrixfile;
     return $param_string . " -mfa ";
 }	
 
@@ -380,6 +450,8 @@ sub _runlagan {
         return;
     }
     
+    my $version = $self->version;
+    
     my $command_string;
     if ($executable eq 'lagan.pl') {
         $command_string = $exe . " " . $input1 . " " . $input2 . $param_string;
@@ -393,6 +465,15 @@ sub _runlagan {
             $command_string .= " -tree " . "\"" . $input2 . "\"";
         }	
         $command_string .= " " . $param_string;
+        
+        my $matrix_file = $self->{_nucmatrixfile};
+        if ($version <= 3 && $matrix_file) {
+            # mlagan 2.0 bug-workaround
+            my $orig = File::Spec->catfile($PROGRAM_DIR, 'nucmatrix.txt');
+            -e $orig || $self->throw("Strange, $orig doesn't seem to exist");
+            system("cp $orig $orig.bk") && $self->throw("Backup of $orig failed: $!");
+            system("cp $matrix_file $orig") && $self->throw("Copy of $matrix_file -> $orig failed: $!");
+        }
     }
 
     if (($self->silent ||  $self->quiet) &&
@@ -413,7 +494,12 @@ sub _runlagan {
     closedir($cwd_dir);
     
     $self->debug("$command_string\n");
-    my $status = system('_POSIX2_VERSION=1 '.$command_string); # temporary hack whilst lagan script 'rechaos.pl' uses obsolete sort syntax
+    my $status = system(($version <= 3 ? '_POSIX2_VERSION=1 ' : '').$command_string); # temporary hack whilst lagan script 'rechaos.pl' uses obsolete sort syntax
+    
+    if ($version <= 1 && $self->{_nucmatrixfile}) {
+        my $orig = File::Spec->catfile($PROGRAM_DIR, 'nucmatrix.txt');
+        system("mv $orig.bk $orig") && $self->warn("Restore of $orig from $orig.bk failed: $!");
+    }
     
     opendir($cwd_dir, $cwd) || $self->throw("Could not open the current directory '$cwd'!");
     foreach my $thing (readdir($cwd_dir)) {
@@ -443,7 +529,6 @@ sub _runlagan {
  Thanks to Jason Stajich for providing the framework for this subroutine
 
 =cut
-
 
 sub executable {
     my ($self, $exename, $exe, $warn) = @_;
@@ -513,3 +598,28 @@ sub program_dir {
     $PROGRAM_DIR;
 }
 
+=head2 version
+
+ Title   : version
+ Usage   : my $version = $lagan->version;
+ Function: returns the program version
+ Returns : number
+ Args    : none
+
+=cut
+
+sub version {
+    my $self = shift;
+    my $exe = $self->executable('mlagan') || return;
+    
+    open(my $VER, "$exe -version 2>&1 |") || die "Could not open command '$exe -version'\n";
+    my $version;
+    while (my $line = <$VER>) {
+        ($version) = $line =~ /(\d+\S+)/;
+    }
+    close($VER) || die "Could not complete command '$exe -version'\n";
+    
+    return $version;
+}
+
+1;

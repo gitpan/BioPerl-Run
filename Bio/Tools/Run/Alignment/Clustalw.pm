@@ -1,10 +1,6 @@
-# $Id: Clustalw.pm,v 1.48 2006/09/28 23:14:03 bosborne Exp $
+# $Id: Clustalw.pm 15313 2009-01-07 20:40:53Z cjfields $
 #
 # BioPerl module for Bio::Tools::Run::Alignment::Clustalw
-#
-# Cared for by
-#
-# Copyright Peter Schattner
 #
 # You may distribute this module under the same terms as perl itself
 # POD documentation - main docs before the code
@@ -38,6 +34,19 @@ alignments using the Clustalw program
   # sequences to be added to the alignment. For example: 	
   $aln = $factory->profile_align($aln1,$seq); # $seq is a Bio::Seq object.
 
+  # Get a tree of the sequences
+  $tree = $factory->tree(\@seq_array);
+
+  # Get both an alignment and a tree
+  ($aln, $tree) = $factory->run(\@seq_array);
+
+  # Do a footprinting analysis on the supplied sequences, getting back the
+  # most conserved sub-alignments
+  my @results = $factory->footprint(\@seq_array);
+  foreach my $result (@results) {
+    print $result->consensus_string, "\n";
+  }
+
   # There are various additional options and input formats available.
   # See the DESCRIPTION section that follows for additional details.
 
@@ -62,6 +71,7 @@ can be done in (at least) three ways:
  1. Make sure the clustalw executable is in your path so that
     which clustalw
     returns a clustalw executable on your system.
+
  2. Define an environmental variable CLUSTALDIR which is a 
     directory which contains the 'clustalw' application:
     In bash:
@@ -103,14 +113,13 @@ terminal output. Not all clustalw parameters are supported at this
 stage.
 
 By default, Clustalw output is returned solely in a the form of a
-BioPerl Bio::SimpleAlign object which can then be printed and/or saved
+Bio::SimpleAlign object which can then be printed and/or saved
 in multiple formats using the AlignIO.pm module. Optionally the raw
 clustalw output file can be saved if the calling script specifies an
 output file (with the clustalw parameter OUTFILE).  Currently only the
 GCG-MSF output file formats is supported.
 
-Other parameters and features (such as those corresponding to tree
-production) have not been implemented yet in Perl format.
+Not all parameters and features have been implemented yet in Perl format.
 
 Alignment parameters can be changed and/or examined at any time after
 the factory has been created.  The program checks that any
@@ -273,10 +282,10 @@ object, or through get/set methods of the same name (lowercase).
 
  Title       : TYPE
  Description : (optional) sequence type: protein or DNA. This allows
-	       you to explicitly overide the programs attempt at
-	       guessing the type of the sequence.  It is only useful
-	       if you are using sequences with a VERY strange
-	       composition.
+	            you to explicitly overide the programs attempt at
+	            guessing the type of the sequence.  It is only useful
+	            if you are using sequences with a VERY strange
+	            composition.
 
 =head2 OUTPUT
 
@@ -289,16 +298,16 @@ object, or through get/set methods of the same name (lowercase).
 
  Title       : OUTFILE
  Description : (optional) Name of clustalw output file. If not set
-	       module will erase output file.  In any case alignment will
-	       be returned in the form of SimpleAlign objects
+	            module will erase output file.  In any case alignment will
+	            be returned in the form of SimpleAlign objects
 
 =head2 TRANSMIT
 
  Title       : TRANSMIT
  Description : (optional) transitions not weighted.  The default is to
-	       weight transitions as more favourable than other
-	       mismatches in DNA alignments.  This switch makes all
-	       nucleotide mismatches equally weighted.
+	            weight transitions as more favourable than other
+	            mismatches in DNA alignments.  This switch makes all
+	            nucleotide mismatches equally weighted.
 
 =head1 FEEDBACK
 
@@ -326,6 +335,7 @@ Email schattner@alum.mit.edu
 =head1 CONTRIBUTORS
 
 Jason Stajich jason-AT-bioperl_DOT_org
+Sendu Bala    bix@sendu.me.uk
 
 =head1 APPENDIX
 
@@ -338,40 +348,31 @@ methods. Internal methods are usually preceded with a _
 
 package Bio::Tools::Run::Alignment::Clustalw;
 
-use vars qw($AUTOLOAD @ISA $PROGRAM_DIR $PROGRAM_NAME
-	    @CLUSTALW_SWITCHES @CLUSTALW_PARAMS
-	    @OTHER_SWITCHES %OK_FIELD);
 use strict;
 use Bio::Seq;
 use Bio::SeqIO;
 use Bio::SimpleAlign;
 use Bio::AlignIO;
 use Bio::TreeIO;
-use Bio::Root::Root;
 use Bio::Root::IO;
-use Bio::Tools::Run::WrapperBase;
 
-@ISA = qw(Bio::Root::Root Bio::Tools::Run::WrapperBase);
+use base qw(Bio::Root::Root Bio::Tools::Run::WrapperBase);
 
-BEGIN {
-    @CLUSTALW_PARAMS = qw(OUTPUT KTUPLE TOPDIAGS WINDOW PAIRGAP FIXEDGAP
-                   FLOATGAP MATRIX TYPE	TRANSIT DNAMATRIX OUTFILE
-                   GAPOPEN GAPEXT MAXDIV GAPDIST HGAPRESIDUES PWMATRIX
-                   PWDNAMATRIX PWGAPOPEN PWGAPEXT SCORE TRANSWEIGHT
-                   SEED HELIXGAP OUTORDER STRANDGAP LOOPGAP TERMINALGAP
-                   HELIXENDIN HELIXENDOUT STRANDENDIN STRANDENDOUT PROGRAM
-                   REPS OUTPUTTREE SEED BOOTLABELS BOOTSTRAP);
+our @CLUSTALW_PARAMS = qw(output ktuple topdiags window pairgap fixedgap
+                   floatgap matrix type	transit dnamatrix outfile
+                   gapopen gapext maxdiv gapdist hgapresidues pwmatrix
+                   pwdnamatrix pwgapopen pwgapext score transweight
+                   seed helixgap outorder strandgap loopgap terminalgap
+                   helixendin helixendout strandendin strandendout program
+                   reps outputtree seed bootlabels bootstrap);
 
-    @CLUSTALW_SWITCHES = qw(HELP CHECK OPTIONS NEGATIVE NOWEIGHTS ENDGAPS
-                        NOPGAP NOHGAP NOVGAP KIMURA TOSSGAPS
-                        KIMURA TOSSGAPS NJTREE);
-    $PROGRAM_NAME = 'clustalw';
-    $PROGRAM_DIR = $ENV{'CLUSTALDIR'} || $ENV{'CLUSTALWDIR'};
-    @OTHER_SWITCHES = qw(QUIET);
-    # Authorize attribute fields
-    foreach my $attr ( @CLUSTALW_PARAMS, @CLUSTALW_SWITCHES,
-		       @OTHER_SWITCHES ) { $OK_FIELD{$attr}++; }
-}
+our @CLUSTALW_SWITCHES = qw(help check options negative noweights endgaps
+                        nopgap nohgap novgap kimura tossgaps
+                        kimura tossgaps njtree);
+our @OTHER_SWITCHES = qw(quiet);
+our $PROGRAM_NAME = 'clustalw';
+our $PROGRAM_DIR = $ENV{'CLUSTALDIR'} || $ENV{'CLUSTALWDIR'};
+
 
 =head2 program_name
 
@@ -391,7 +392,7 @@ sub program_name {
 
  Title   : program_dir
  Usage   : $factory->program_dir(@params)
- Function: returns the program directory, obtiained from ENV variable.
+ Function: returns the program directory, obtained from ENV variable.
  Returns:  string
  Args    :
 
@@ -405,24 +406,12 @@ sub new {
     my ($class,@args) = @_;
     my $self = $class->SUPER::new(@args);
 
-    my ($attr, $value);
-    while (@args)  {
-	    $attr =   shift @args;
-	    $value =  shift @args;
-	    next if( $attr =~ /^-/ ); # don't want named parameters
-	    $self->$attr($value);	
-    }
+    $self->_set_from_args(\@args, -methods => [@CLUSTALW_PARAMS,
+                                               @CLUSTALW_SWITCHES,
+                                               @OTHER_SWITCHES],
+                                  -create => 1);
+    
     return $self;
-}
-
-sub AUTOLOAD {
-    my $self = shift;
-    my $attr = $AUTOLOAD;
-    $attr =~ s/.*:://;
-    $attr = uc $attr;
-    $self->throw("Unallowed parameter: $attr !") unless $OK_FIELD{$attr};
-    $self->{$attr} = shift if @_;
-    return $self->{$attr};
 }
 
 =head2  version
@@ -442,23 +431,50 @@ sub version {
     return undef unless $self->executable;
     my $prog = $self->executable;
     my $string = `$prog --` ;
-    $string =~ /\(([\d.]+)\)/;
+    $string =~ /\(?([\d.]+)\)?/xms;
     return $1 || undef;
-
 }
 
+=head2  run
+
+ Title   : run
+ Usage   : ($aln, $tree) = $factory->run($inputfilename);
+           ($aln, $tree) = $factory->run($seq_array_ref);
+ Function: Perform a multiple sequence alignment, generating a tree at the same
+           time. (Like align() and tree() combined.)
+ Returns : A SimpleAlign object containing the sequence alignment and a
+           Bio::Tree::Tree object with the tree relating the sequences.
+ Args    : Name of a file containing a set of unaligned fasta sequences
+           or else an array of references to Bio::Seq objects.
+
+=cut
+
+sub run {
+    my ($self,$input) = @_;
+    my ($temp,$infilename, $seq);
+    my ($attr, $value, $switch);
+    
+    $self->io->_io_cleanup();
+    # Create input file pointer
+    $infilename = $self->_setinput($input);
+    $self->throw("Bad input data (sequences need an id) or less than 2 sequences in $input!") unless $infilename;
+    
+    # Create parameter string to pass to clustalw program
+    my $param_string = $self->_setparams();
+    
+    # run clustalw
+    return $self->_run('both', $infilename, $param_string);
+}
 
 =head2  align
 
  Title   : align
- Usage   :
-	$inputfilename = 't/data/cysprot.fa';
-	$aln = $factory->align($inputfilename);
-or
-	$seq_array_ref = \@seq_array; @seq_array is array of Seq objs
-	$aln = $factory->align($seq_array_ref);
+ Usage   : $inputfilename = 't/data/cysprot.fa';
+           $aln = $factory->align($inputfilename);
+           or
+           $seq_array_ref = \@seq_array; # @seq_array is array of Seq objs
+           $aln = $factory->align($seq_array_ref);
  Function: Perform a multiple sequence alignment
- Example :
  Returns : Reference to a SimpleAlign object containing the
            sequence alignment.
  Args    : Name of a file containing a set of unaligned fasta sequences
@@ -473,32 +489,64 @@ or
 =cut
 
 sub align {
-
     my ($self,$input) = @_;
-    my ($temp,$infilename, $seq);
-    my ($attr, $value, $switch);
-
+    
     $self->io->_io_cleanup();
-# Create input file pointer
-    $infilename = $self->_setinput($input);
-    if (!$infilename) {$self->throw("Bad input data (sequences need an id ) or less than 2 sequences in $input !");}
-
-# Create parameter string to pass to clustalw program
+    
+    # Create input file pointer
+    my $infilename = $self->_setinput($input);
+    $self->throw("Bad input data (sequences need an id ) or less than 2 sequences in $input !") unless $infilename;
+    
+    # Create parameter string to pass to clustalw program
     my $param_string = $self->_setparams();
-
-# run clustalw
-    my $aln = $self->_run('align', $infilename,$param_string);
+    
+    # run clustalw
+    my $aln = $self->_run('align', $infilename, $param_string);
 }
-#################################################
+
 
 =head2  profile_align
 
  Title   : profile_align
- Usage   :
+ Usage   : $aln = $factory->profile_align(@simple_aligns);
+           or
+           $aln = $factory->profile_align(@subalignment_filenames);
  Function: Perform an alignment of 2 (sub)alignments
- Example :
  Returns : Reference to a SimpleAlign object containing the (super)alignment.
  Args    : Names of 2 files containing the subalignments
+           or references to 2 Bio::SimpleAlign objects.
+
+Throws an exception if arguments are not either strings (eg filenames)
+or references to SimpleAlign objects.
+
+=cut
+
+sub profile_align {
+    my ($self,$input1,$input2) = @_;
+    
+    $self->io->_io_cleanup();
+    
+    # Create input file pointer
+    my $infilename1 = $self->_setinput($input1, 1);
+    my $infilename2 = $self->_setinput($input2, 2);
+    if (!$infilename1 || !$infilename2) {$self->throw("Bad input data: $input1 or $input2 !");}
+    unless ( -e $infilename1 and -e  $infilename2) {$self->throw("Bad input file: $input1 or $input2 !");}
+    
+    # Create parameter string to pass to clustalw program
+    my $param_string = $self->_setparams();
+    
+    # run clustalw
+    my $aln = $self->_run('profile-aln', $infilename1, $infilename2, $param_string);
+}
+
+=head2  add_sequences
+
+ Title   : add_sequences
+ Usage   :
+ Function: Align and add sequences into an alignment
+ Example :
+ Returns : Reference to a SimpleAlign object containing the (super)alignment.
+ Args    : Names of 2 files, the first one containing an alignment and the second one containing sequences to be added
          or references to 2 Bio::SimpleAlign objects.
 
 Throws an exception if arguments are not either strings (eg filenames)
@@ -507,56 +555,53 @@ or references to SimpleAlign objects.
 
 =cut
 
-sub profile_align {
+sub add_sequences {
 
     my ($self,$input1,$input2) = @_;
     my ($temp,$infilename1,$infilename2,$input,$seq);
-
+    
     $self->io->_io_cleanup();
-# Create input file pointer
+    # Create input file pointer
     $infilename1 = $self->_setinput($input1,1);
     $infilename2 = $self->_setinput($input2,2);
     if (!$infilename1 || !$infilename2) {$self->throw("Bad input data: $input1 or $input2 !");}
     unless ( -e $infilename1 and -e  $infilename2) {$self->throw("Bad input file: $input1 or $input2 !");}
-
-
-# Create parameter string to pass to clustalw program
+    
+    
+    # Create parameter string to pass to clustalw program
     my $param_string = $self->_setparams();
-# run clustalw
-    my $aln = $self->_run('profile-aln', $infilename1,
-			  $infilename2, $param_string);
+    # run clustalw
+    my $aln = $self->_run('add_sequences', $infilename1,
+    $infilename2, $param_string);
 
 }
-#################################################
 
 =head2  tree
 
  Title   : tree
- Usage   :
-    @params = ('bootstrap' => 1000, 
-	       'tossgaps'  => 1, 
-	       'kimura'    => 1, 
-	       'seed'      => 121, 
-	       'bootlabels'=> 'nodes', 
-	       'quiet'     => 1);
-    $factory = Bio::Tools::Run::Alignment::Clustalw->new(@params);
-    $tree_obj = $factory->tree($aln_obj);
-or
-    $tree_obj = $factory->tree($treefilename);
- Function: 
+ Usage   : @params = ('bootstrap' => 1000, 
+	                    'tossgaps'  => 1, 
+	                    'kimura'    => 1, 
+	                    'seed'      => 121, 
+	                    'bootlabels'=> 'nodes', 
+	                    'quiet'     => 1);
+           $factory = Bio::Tools::Run::Alignment::Clustalw->new(@params);
+           $tree_obj = $factory->tree($aln_obj);
+           or
+           $tree_obj = $factory->tree($treefilename);
+ Function: Retrieve a tree corresponding to the input
  Returns : Bio::TreeIO object
- Args    : 
-
+ Args    : Bio::SimpleAlign or filename of a tree
 
 =cut
 
 sub tree {
     my ($self,$input) = @_;
-    my ($temp,$infilename, $seq);
-    my ($attr, $value, $switch);
+    
     $self->io->_io_cleanup();
+    
     # Create input file pointer
-    $infilename = $self->_setinput($input);
+    my $infilename = $self->_setinput($input);
     
     if (!$infilename) {$self->throw("Bad input data (sequences need an id ) or less than 2 sequences in $input !");}
     
@@ -564,200 +609,284 @@ sub tree {
     my $param_string = $self->_setparams();
 
     # run clustalw
-    my $tree = $self->_run('tree', $infilename,$param_string);
+    my $tree = $self->_run('tree', $infilename, $param_string);
 }
-#################################################
+
+=head2  footprint
+
+ Title   : footprint
+ Usage   : @alns = $factory->footprint($treefilename, $window_size, $diff);
+           @alns = $factory->footprint($seqs_array_ref);
+ Function: Aligns all the supplied sequences and slices out of the alignment
+           those regions along a sliding window who's tree length differs
+           significantly from the total average tree length.
+ Returns : list of Bio::SimpleAlign objects
+ Args    : first argument as per run(), optional second argument to specify
+           the size of the sliding window (default 5 bp) and optional third
+           argument to specify the % difference from the total tree length
+           needed for a window to be considered a footprint (default 33%).
+
+=cut
+
+sub footprint {
+    my ($self, $in, $slice_size, $deviate) = @_;
+    
+    my ($simplealn, $tree) = $self->run($in);
+    
+    # total tree length?
+    my $total_length = $tree->total_branch_length;
+    
+    # tree length along sliding window, picking regions that significantly
+    # deviate from the average tree length
+    $slice_size ||= 5;
+    $deviate ||= 33;
+    my $threshold = $total_length - (($total_length / 100) * $deviate);
+    my $length = $simplealn->length;
+    my $below = 0;
+    my $found_minima = 0;
+    my $minima = [$threshold, ''];
+    my @results;
+    for my $i (1..($length - $slice_size + 1)) {
+        my $slice = $simplealn->slice($i, ($i + $slice_size - 1), 1);
+        my $tree = $self->tree($slice);
+        my $slice_length = $tree->total_branch_length;
+        
+        $slice_length <= $threshold ? ($below = 1) : ($below = 0);
+        if ($below) {
+            unless ($found_minima) {
+                if ($slice_length < ${$minima}[0]) {
+                    $minima = [$slice_length, $slice];
+                }
+                else {
+                    push(@results, ${$minima}[1]);
+                    $minima = [$threshold, ''];
+                    $found_minima = 1;
+                }
+            }
+        }
+        else {
+            $found_minima = 0;
+        }
+    }
+    
+    return @results;
+}
 
 =head2  _run
 
- Title   :  _run
- Usage   :  Internal function, not to be called directly	
- Function:   makes actual system call to clustalw program
- Example :
+ Title   : _run
+ Usage   : Internal function, not to be called directly	
+ Function: makes actual system call to clustalw program
  Returns : nothing; clustalw output is written to a
            temporary file 
  Args    : Name of a file containing a set of unaligned fasta sequences
            and hash of parameters to be passed to clustalw
 
-
 =cut
 
 sub _run {
-    my ($self,$command,$infile1,$infile2,$param_string) = @_;
-    my $instring;
+    my ($self, $command, $infile1, $infile2, $param_string) = @_;
     
-    if ($command =~ /align/) {
-	
-	if( $^O eq 'dec_osf' ) {
-	    $instring =  "$infile1";
-	    $command = '';
-	} else { 
-	    $instring = " -infile=$infile1";
-	}
-	$param_string .= " $infile2";
-
+    my ($instring, $tree);
+    my $quiet = $self->quiet() || $self->verbose() < 0;
+    
+    if ($command =~ /align|both/) {
+        if ($^O eq 'dec_osf') {
+            $instring = $infile1;
+            $command = '';
+        }
+        else { 
+            $instring = " -infile=$infile1";
+        }
+        $param_string .= " $infile2";
     }
-
+    
     if ($command =~ /profile/) {
-	$instring =  "-profile1=$infile1  -profile2=$infile2";
-    	chmod 0777, $infile1,$infile2;
+        $instring =  "-profile1=$infile1  -profile2=$infile2";
+    	chmod 0777, $infile1, $infile2;
     	$command = '-profile';
+    }
+    
+    if ($command =~ /add_sequences/) {
+      $instring =  "-profile1=$infile1  -profile2=$infile2";
+      chmod 0777, $infile1,$infile2;
+      $command = '-sequences';
     }
 
     if ($command =~ /tree/) {
     	if( $^O eq 'dec_osf' ) {
-	    $instring =  "$infile1";
-	    $command = '';
-	} else { 
-	    $instring = " $infile1";
-	}
+            $instring =  $infile1;
+            $command = '';
+        }
+        else { 
+            $instring = " $infile1";
+        }
     	$param_string .= " $infile2";
-
+        
     	$self->debug( "Program ".$self->executable."\n");
     	my $commandstring = $self->executable."$instring"."$param_string";
+        $commandstring .= ' 1>/dev/null' if $quiet;
         $self->debug( "clustal command = $commandstring");
-	my $status = system($commandstring);
-	unless( $status == 0 ) {
-	    $self->warn( "Clustalw call ($commandstring) crashed: $? \n");
-	    return undef;
-	}
-
-    	my $treefile = $instring;
-    	$treefile =~ s/ //g;
-	if( $param_string =~ /-bootstrap/ ) {
-	    $treefile = $instring.'.phb';
-	} elsif( $param_string =~ /-tree/ ) {
-	    $treefile = $instring.'.ph';
-	} else { $treefile = $instring.".dnd" }
-	my $in = new Bio::TreeIO('-file'  => $treefile,
-				 '-format'=> 'newick');
-    	my $tree = $in->next_tree;
-	unless ( $self->save_tempfiles ) {
-	    foreach my $f ( $treefile ) {
-		$f =~ s/\.[^\.]*$// ;
-		unlink $f if( $f ne '' );
-	    }
-	}
-	return $tree;
+        
+        my $status = system($commandstring);
+        unless( $status == 0 ) {
+            $self->warn( "Clustalw call ($commandstring) crashed: $? \n");
+            return undef;
+        }
+        
+    	return $self->_get_tree($infile1, $param_string);
     }
     
     my $output = $self->output || 'gcg';
     $self->debug( "Program ".$self->executable."\n");
-    my $commandstring = $self->executable." $command"." $instring".
-	" -output=$output". " $param_string";
-
+    my $commandstring = $self->executable." $command"." $instring"." -output=$output". " $param_string";
     $self->debug( "clustal command = $commandstring");
-    my $status = system($commandstring);    
-    unless( $status == 0 ) {
-	$self->warn( "Clustalw call ($commandstring) crashed: $? \n");
-	return undef;
+    
+    open(my $pipe, "$commandstring |") || $self->throw("ClustalW call ($commandstring) failed to start: $? | $!");
+    my $score;
+    while (<$pipe>) {
+        print unless $quiet;
+        # Kevin Brown suggested the following regex, though it matches multiple
+        # times: we pick up the last one
+        $score = $1 if ($_ =~ /Score:(\d+)/);
+        # This one is printed at the end and seems the most appropriate to pick
+        # up; we include the above regex incase 'Alignment Score' isn't given
+        $score = $1 if ($_ =~ /Alignment Score (\d+)/);
     }
-
+    close($pipe) || ($self->throw("ClustalW call ($commandstring) crashed: $?"));
+    
     my $outfile = $self->outfile();
-
+    
     # retrieve alignment (Note: MSF format for AlignIO = GCG format of clustalw)
-
     my $format = $output =~ /gcg/i ? 'msf' : $output;
-    if( $format =~ /clustal/i ) { 
-	$format = 'clustalw'; # force clustalw incase 'clustal' is requested
+    if ($format =~ /clustal/i) { 
+        $format = 'clustalw'; # force clustalw incase 'clustal' is requested
     }
-    my $in  = Bio::AlignIO->new(-file  => $outfile,
-				-format=> $format);
+    my $in  = Bio::AlignIO->new(-file  => $outfile, -format=> $format);
     my $aln = $in->next_aln();
     $in->close;
-
+    $aln->score($score);
+    
+    if ($command eq 'both') {
+        $tree = $self->_get_tree($infile1, $param_string);
+    }
+    
     # Clean up the temporary files created along the way...
     # Replace file suffix with dnd to find name of dendrogram file(s) to delete
     unless ( $self->save_tempfiles ) {
-	foreach my $f ( $infile1, $infile2 ) {
-	    $f =~ s/\.[^\.]*$// ;
-	    unlink $f .'.dnd' if( $f ne '' );
-	}
+        foreach my $f ($infile1, $infile2) {
+            $f =~ s/\.[^\.]*$// ;
+            unlink $f .'.dnd' if ($f ne '');
+        }
+    }
+    
+    if ($command eq 'both') {
+        return ($aln, $tree);
     }
     return $aln;
 }
 
+sub _get_tree {
+    my ($self, $treefile, $param_string) = @_;
+    
+    if ($param_string =~ /-bootstrap/) {
+        $treefile .= '.phb';
+    }
+    elsif ($param_string =~ /-tree/) {
+        $treefile .= '.ph';
+    }
+    else {
+        $treefile .= '.dnd';
+    }
+    
+    my $in = Bio::TreeIO->new('-file'  => $treefile,
+                             '-format'=> 'newick');
+    
+    my $tree = $in->next_tree;
+    unless ( $self->save_tempfiles ) {
+        foreach my $f ( $treefile ) {
+            $f =~ s/\.[^\.]*$// ;
+            unlink $f if( $f ne '' );
+        }
+    }
+    
+    return $tree;
+}
 
 =head2  _setinput()
 
- Title   :  _setinput
- Usage   :  Internal function, not to be called directly	
- Function:   Create input file for clustalw program
- Example :
+ Title   : _setinput
+ Usage   : Internal function, not to be called directly	
+ Function: Create input file for clustalw program
  Returns : name of file containing clustalw data input
  Args    : Seq or Align object reference or input file name
-
 
 =cut
 
 sub _setinput {
     my ($self, $input, $suffix) = @_;
     my ($infilename, $seq, $temp, $tfh);
-
+    
     # suffix is used to distinguish alignment files If $input is not a
     # reference it better be the name of a file with the sequence/
-
-    #  alignment data...
-
+    
+    # alignment data...
     unless (ref $input) {
-	# check that file exists or throw
-	$infilename = $input;
-	unless (-e $input) {return 0;}
-	return $infilename;
+        # check that file exists or throw
+        $infilename = $input;
+        return unless -e $input;
+        return $infilename;
     }
-
-    #  $input may be an array of BioSeq objects...
+    
+    # $input may be an array of BioSeq objects...
     if (ref($input) eq "ARRAY") {
         #  Open temporary file for both reading & writing of BioSeq array
-	($tfh,$infilename) = $self->io->tempfile(-dir=>$self->tempdir);
-	$temp =  Bio::SeqIO->new('-fh'=>$tfh,
-				 '-format' =>'Fasta');
+        ($tfh,$infilename) = $self->io->tempfile(-dir=>$self->tempdir);
+        $temp = Bio::SeqIO->new('-fh'=>$tfh, '-format' =>'Fasta');
         
-	# Need at least 2 seqs for alignment
-	unless (scalar(@$input) > 1) {return 0;}
-
-	foreach $seq (@$input) {
-	    unless (defined $seq &&
-		    $seq->isa("Bio::PrimarySeqI") and $seq->id() )
-	    {return 0;}
-	    $temp->write_seq($seq);
-	}
-	$temp->close();
-	close($tfh);
-	undef $tfh;
-	return $infilename;
+        # Need at least 2 seqs for alignment
+        return unless (scalar(@$input) > 1);
+        
+        foreach $seq (@$input) {
+            return unless (defined $seq && $seq->isa("Bio::PrimarySeqI") and $seq->id());
+            $temp->write_seq($seq);
+        }
+        $temp->close();
+        close($tfh);
+        undef $tfh;
+        return $infilename;
     }
-#  $input may be a SimpleAlign object.
+    
+    # $input may be a SimpleAlign object.
     elsif (ref($input) eq "Bio::SimpleAlign") {
-	#  Open temporary file for both reading & writing of SimpleAlign object
-	($tfh,$infilename) = $self->io->tempfile(-dir=>$self->tempdir);
-	$temp =  Bio::AlignIO->new('-fh'=> $tfh,
-				   '-format' => 'fasta');
-	$temp->write_aln($input);
-	close($tfh);
-	undef $tfh;
-	return $infilename;
+        # Open temporary file for both reading & writing of SimpleAlign object
+        ($tfh,$infilename) = $self->io->tempfile(-dir=>$self->tempdir);
+        $temp = Bio::AlignIO->new('-fh'=> $tfh, '-format' => 'fasta');
+        $temp->write_aln($input);
+        close($tfh);
+        undef $tfh;
+        return $infilename;
     }
-
-#  or $input may be a single BioSeq object (to be added to a previous alignment)
+    
+    # or $input may be a single BioSeq object (to be added to a previous alignment)
     elsif (ref($input) && $input->isa("Bio::PrimarySeqI") && $suffix==2) {
-        #  Open temporary file for both reading & writing of BioSeq object
-	($tfh,$infilename) = $self->io->tempfile();
-	$temp =  Bio::SeqIO->new(-fh=> $tfh, '-format' =>'Fasta');
-	$temp->write_seq($input);
-	close($tfh);
-	undef $tfh;
-	return $infilename;
+        # Open temporary file for both reading & writing of BioSeq object
+        ($tfh,$infilename) = $self->io->tempfile();
+        $temp = Bio::SeqIO->new(-fh=> $tfh, '-format' =>'Fasta');
+        $temp->write_seq($input);
+        close($tfh);
+        undef $tfh;
+        return $infilename;
     }
-    return 0;
+    
+    return;
 }
 
 =head2  _setparams()
 
- Title   :  _setparams
- Usage   :  Internal function, not to be called directly	
- Function:   Create parameter inputs for clustalw program
- Example :
+ Title   : _setparams
+ Usage   : Internal function, not to be called directly	
+ Function: Create parameter inputs for clustalw program
  Returns : parameter string to be passed to clustalw
            during align or profile_align
  Args    : name of calling object
@@ -765,47 +894,26 @@ sub _setinput {
 =cut
 
 sub _setparams {
-    my ($attr, $value, $self);
-
-    $self = shift;
-
-    my $param_string = "";
-    for  $attr ( @CLUSTALW_PARAMS ) {
-	$value = $self->$attr();
-	next unless (defined $value);
-	my $attr_key = lc $attr; #put params in format expected by clustalw
-	$attr_key = ' -'.$attr_key;
-	$param_string .= $attr_key.'='.$value;
-    }
-
-    for  $attr ( @CLUSTALW_SWITCHES) {
-	$value = $self->$attr();
-	next unless ($value);
-	my $attr_key = lc $attr; #put switches in format expected by clustalw
-	$attr_key = ' -'.$attr_key;
-	$param_string .= $attr_key ;
-#	$attr_key = '-'.$attr_key;
-#	$param_string .= '"'.$attr_key.'",';
-    }
-
-# Set default output file if no explicit output file selected
+    my $self = shift;
+    
+    my $param_string = $self->SUPER::_setparams(-params => \@CLUSTALW_PARAMS,
+                                                -switches => \@CLUSTALW_SWITCHES,
+                                                -dash => 1,
+                                                -lc => 1,
+                                                -join => '=');
+    
+    # Set default output file if no explicit output file selected
     unless ($param_string =~ /outfile/) {
-	my ($tfh, $outfile) = $self->io->tempfile(-dir=>$self->tempdir());
-	close($tfh);
-	undef $tfh;
-	$self->outfile($outfile);
-    	$param_string .= " -outfile=$outfile" ;
+        my ($tfh, $outfile) = $self->io->tempfile(-dir => $self->tempdir());
+        close($tfh);
+        undef $tfh;
+        $self->outfile($outfile);
+        $param_string .= " -outfile=$outfile" ;
     }
     
-    if ($self->quiet() || $self->verbose() < 0) {
-        if ($^O =~ /mswin/i) { $param_string .= ' >'.$self->outfile().'out'; }
-        elsif ($^O =~ /unix|linux|darwin/i) { $param_string .= ' >/dev/null 2>/dev/null'; }
-	else { 
-	    $self->warn("unknown os $^O\n");
-	}
-    }
+    $param_string .= ' 2>&1';
     
     return $param_string;
 }
 
-1; # Needed to keep compiler happy
+1;

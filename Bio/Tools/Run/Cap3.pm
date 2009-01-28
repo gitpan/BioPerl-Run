@@ -1,7 +1,8 @@
-# $Id: Cap3.pm,v 1.6 2006/09/20 13:22:49 sendu Exp $
+# $Id: Cap3.pm 14713 2008-06-10 22:42:30Z heikki $
 # You may distribute this module under the same terms as perl itself
 #
 # POD documentation - main docs before the code
+
 =head1 NAME
 
 Bio::Tools::Run::Cap3 - wrapper for Cap3

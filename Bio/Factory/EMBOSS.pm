@@ -1,4 +1,4 @@
-# $Id: EMBOSS.pm,v 1.9 2006/10/21 03:04:50 bosborne Exp $
+# $Id: EMBOSS.pm 13935 2007-07-16 21:20:35Z cjfields $
 #
 # BioPerl module for Bio::Factory::EMBOSS
 #
@@ -29,14 +29,14 @@ Bio::Factory::EMBOSS - EMBOSS application factory class
   my @seqs_to_check; # this would be a list of seqs to compare 
                        # (could be just 1)
   my $wateroutfile = 'out.water';
-  $water->run({-sequencea => $seq_to_test,
+  $water->run({-sequences => $seq_to_test,
                -seqall    => \@seqs_to_check,
                -gapopen   => '10.0',
                -gapextend => '0.5',
                -outfile   => $wateroutfile});
   # now you might want to get the alignment
   use Bio::AlignIO;
-  my $alnin = new Bio::AlignIO(-format => 'emboss',
+  my $alnin = Bio::AlignIO->new(-format => 'emboss',
 		               	       -file   => $wateroutfile);
 
   while ( my $aln = $alnin->next_aln ) {
@@ -171,7 +171,7 @@ sub program {
     $attr->{name} = $value;
     $attr->{verbose} = $self->verbose;
 
-    my $appl = Bio::Tools::Run::EMBOSSApplication ->new($attr);
+    my $appl = Bio::Tools::Run::EMBOSSApplication->new($attr);
     return $appl;
 }
 
@@ -242,8 +242,7 @@ Do not call these methods directly
 
 sub _program_list {
     my ($self) = @_;
-    if( $^O =~ /MSWIN/i ||
-	$^O =~ /Mac/i ) { return; }
+    if( $^O =~ /Mac/i ) { return; }
     {
 	local * SAVERR;
 	open SAVERR, ">&STDERR";

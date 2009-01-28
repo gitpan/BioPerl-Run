@@ -1,5 +1,3 @@
-#!/usr/local/bin/perl
-
 # BioPerl module for Bio::Installer::PAML
 #
 # Cared for by Albert Vilella
@@ -78,8 +76,8 @@ BEGIN {
                   'BIN_FOLDER' => 'src',
                   'DESTINATION_DOWNLOAD_DIR' => '/tmp',
                   'DESTINATION_INSTALL_DIR' => "$ENV{'HOME'}",
-                  'PACKAGE_NAME' => 'paml3.15.tar.gz',
-                  'DIRECTORY_NAME' => 'paml3.15',
+                  'PACKAGE_NAME' => 'paml4a.tar.gz',
+                  'DIRECTORY_NAME' => 'paml4',
                   'ENV_NAME' => 'PAMLDIR',
                 );
 }

@@ -1,138 +1,144 @@
-#!/usr/local/bin/perl
-#-*-Perl-*-
-# ## Bioperl Test Harness Script for Modules
-# #
+# -*-Perl-*- Test Harness script for Bioperl
+# $Id: Hmmer.t 15335 2009-01-12 00:14:07Z sendu $
+
 use strict;
+
 BEGIN {
-   eval { require Test; };
-   if( $@ ) {
-      use lib 't';
-   }
-   use Test;
-   use vars qw($NTESTS);
-   $NTESTS = 20;
-   plan tests => $NTESTS;
+   use Bio::Root::Test;
+   
+   test_begin(-tests => 27);
+   
+   use_ok('Bio::Tools::Run::Hmmer');
+   use_ok('Bio::SeqIO');
+   use_ok('Bio::AlignIO');
 }
 
-use Bio::Tools::Run::Hmmer;
-use Bio::Root::IO;
-use Bio::SeqIO;
-use Bio::AlignIO;
-use Bio::Seq;
+my $verbose = test_debug();
+my $quiet = $verbose > 0 ? 0 : 1;
 
-END {
-   foreach ( $Test::ntest..$NTESTS ) {
-       skip('Unable to run Hmmer tests, exe may not be installed',1);
-   }
-   unlink Bio::Root::IO->catfile(qw(t data hmmer.hmm));
-}
-ok(1);
-
-my $verbose = 1 if $ENV{'BIOPERLDEBUG'};
-
-my $db =  Bio::Root::IO->catfile("t","data","pfam_sample_R11");
-my @params = ('DB'=>$db,'E'=>5,'program'=>'hmmpfam','A'=>2,'-verbose' => $verbose);
+my $db = test_input_file('pfam_sample_R11');
+my @params = ('DB'=>$db,'E'=>5,'program'=>'hmmpfam','A'=>2,'-verbose' => $verbose, -quiet => $quiet);
 
 #test HMMPFAM
-my  $factory = Bio::Tools::Run::Hmmer->new(@params);
-ok $factory->isa('Bio::Tools::Run::Hmmer');
-ok $factory->E, 5;
-my $prot_file=  Bio::Root::IO->catfile("t","data","hmmpfam_protein_input");
+my $factory = Bio::Tools::Run::Hmmer->new(@params);
+isa_ok($factory, 'Bio::Tools::Run::Hmmer');
+is $factory->E, 5;
+is $factory->DB, $db;
+is $factory->hmm, $db;
+my $prot_file = test_input_file('hmmpfam_protein_input');
 
-my $seq1 = Bio::Seq->new();
-my $seqstream = Bio::SeqIO->new(-file   => $prot_file, 
+my $seqstream = Bio::SeqIO->new(-file => $prot_file, 
 				-format => 'fasta');
-$seq1 = $seqstream->next_seq();
+my $seq1 = $seqstream->next_seq();
 
-my $hmmpfam_present = $factory->executable();
+SKIP: {
+   # here we assume if hmmpfam isn't present, nothing is present
+   test_skip(-requires_executable => $factory,
+             -tests =>  20);
 
-unless ($hmmpfam_present) {
-       warn("hmmpfam  program not found. Skipping tests $Test::ntest to $NTESTS.\n");
-       exit 0;
+   my $searchio = $factory->run($seq1);
+   
+   my @feat;
+   while (my $result = $searchio->next_result){
+     while(my $hit = $result->next_hit){
+       while (my $hsp = $hit->next_hsp){
+         push @feat, $hsp;
+       }
+     }
+   }
+   
+   isa_ok $feat[0], 'Bio::SeqFeatureI';
+   is ($feat[0]->feature1->start,25);
+   is ($feat[0]->feature1->end,92);
+   is ($feat[0]->feature2->start,1);
+   is ($feat[0]->feature2->end,124);
+
+   #test HMMSEARCH
+   @params = ('HMM'=>$db,'E'=>5,'program'=>'hmmsearch','-verbose' => $verbose, -quiet => $quiet);
+   $factory = Bio::Tools::Run::Hmmer->new(@params);
+   isa_ok $factory, 'Bio::Tools::Run::Hmmer';
+   is $factory->E, 5;
+   
+   SKIP: {
+      test_skip(-requires_executable => $factory,
+                -tests => 5);
+      
+      my $searchio = $factory->run($seq1);
+      my @feat;
+      while (my $result = $searchio->next_result){
+        while(my $hit = $result->next_hit){
+          while (my $hsp = $hit->next_hsp){
+            push @feat, $hsp;
+          }
+        }
+      }
+      
+      isa_ok $feat[0], 'Bio::SeqFeatureI';
+      is ($feat[0]->feature1->start,1);
+      is ($feat[0]->feature1->end,124);
+      is ($feat[0]->feature2->start,25);
+      is ($feat[0]->feature2->end,92);
+   }
+   
+   #test HMMBUILD
+   my $hmmout = test_output_file();
+   unlink($hmmout);
+   @params = ('HMM'=>$hmmout,'program'=>'hmmbuild', -verbose => $verbose, -quiet => $quiet);
+   $factory = Bio::Tools::Run::Hmmer->new(@params);
+   isa_ok $factory, 'Bio::Tools::Run::Hmmer';
+   is $factory->quiet, 1;
+   my $aln_file = test_input_file('cysprot.msf');
+   my $aio = Bio::AlignIO->new(-file=>$aln_file,-format=>'msf');
+   my $aln = $aio->next_aln;
+   
+   SKIP: {
+      test_skip(-requires_executable => $factory,
+                -tests => 2);
+      ok $factory->run($aln);
+      ok -s $hmmout;
+   }
+   
+   #test HMMCALIBRATE, and from now on, alternate (preferred) run method calling,
+   #though we need to check the executables are present in the normal way first
+   $factory->program_name('hmmcalibrate');
+   
+   SKIP: {
+      test_skip(-requires_executable => $factory,
+                -tests => 1);
+      ok $factory->hmmcalibrate();
+   }
+   
+   $factory->program_name('hmmalign');
+   
+   #test HMMALIGN
+   my $seqfile = test_input_file('cysprot1a.fa');
+   my $seqio = Bio::SeqIO->new(-file  => $seqfile,
+                   -format=> 'fasta');
+   my @seqs;
+   while( my $seq = $seqio->next_seq ) {
+      push @seqs, $seq;
+   }
+   
+   SKIP: {
+      test_skip(-requires_executable => $factory,
+                -tests => 2);
+      $aio = $factory->hmmalign(@seqs);
+      ok $aln = $aio->next_aln;
+      is($aln->each_seq, 3);
+   }
+   
+   $factory->program_name('hmmemit');
+   
+   #test HMMEMIT
+   SKIP: {
+      test_skip(-requires_executable => $factory,
+                -tests => 1);
+      my $seqio = $factory->hmmemit();
+      my @seqs;
+      while (my $seq = $seqio->next_seq) {
+         push(@seqs, $seq);
+      }
+      is @seqs, 10; # emits 10 seqs by default
+   }
+
 }
-
-my $searchio = $factory->run($seq1);
-
-my @feat;
-while (my $result = $searchio->next_result){
-  while(my $hit = $result->next_hit){
-    while (my $hsp = $hit->next_hsp){
-      push @feat, $hsp;
-    }
-  }
-}
-
-ok $feat[0]->isa('Bio::SeqFeatureI');
-ok ($feat[0]->feature1->start,25);
-ok ($feat[0]->feature1->end,92);
-ok ($feat[0]->feature2->start,1);
-ok ($feat[0]->feature2->end,124);
-
-#test HMMSEARCH
-@params = ('HMM'=>$db,'E'=>5,'program'=>'hmmsearch','-verbose' => $verbose);
-$factory = Bio::Tools::Run::Hmmer->new(@params);
-ok $factory->isa('Bio::Tools::Run::Hmmer');
-ok $factory->E, 5;
-$prot_file=  Bio::Root::IO->catfile("t","data","hmmpfam_protein_input");
-
-$seq1 = Bio::Seq->new();
-$seqstream = Bio::SeqIO->new(-file   => $prot_file, 
-			     -format => 'fasta');
-$seq1 = $seqstream->next_seq();
-
-my $hmmsearch = $factory->executable();
-
-unless ($hmmsearch) {
-       warn("hmmsearch program not found. Skipping tests $Test::ntest to $NTESTS.\n");
-       exit 0;
-}
-$searchio = $factory->run($seq1);
-@feat= ();
-while (my $result = $searchio->next_result){
-  while(my $hit = $result->next_hit){
-    while (my $hsp = $hit->next_hsp){
-      push @feat, $hsp;
-    }
-  }
-}
-
-ok $feat[0]->isa('Bio::SeqFeatureI');
-ok ($feat[0]->feature1->start,1);
-ok ($feat[0]->feature1->end,124);
-ok ($feat[0]->feature2->start,25);
-ok ($feat[0]->feature2->end,92);
-
-#test HMMBUILD
-my $hmmout=  Bio::Root::IO->catfile("t","data","hmmer.hmm");
-@params = ('HMM'=>$hmmout,'program'=>'hmmbuild');
-$factory = Bio::Tools::Run::Hmmer->new(@params);
-ok $factory->isa('Bio::Tools::Run::Hmmer');
-my $aln_file=  Bio::Root::IO->catfile("t","data","cysprot.msf");
-my $aio = Bio::AlignIO->new(-file=>$aln_file,-format=>'msf');
-my $aln = $aio->next_aln;
-$factory->run($aln);
-ok -e $hmmout;
-
-
-
-#test HMMALIGN
-$hmmout=  Bio::Root::IO->catfile("t","data","hmmer.hmm");
-@params = ('HMM'=>$hmmout,'program'=>'hmmalign');
-$factory = Bio::Tools::Run::Hmmer->new(@params);
-ok $factory->isa('Bio::Tools::Run::Hmmer');
-my $seqfile=  Bio::Root::IO->catfile("t","data","cysprot1a.fa");
-my $seqio = Bio::SeqIO->new(-file  => $seqfile,
-			    -format=> 'fasta');
-my @seqs;
-while( my $seq = $seqio->next_seq ) {
-    push @seqs, $seq;
-}
-$aio = $factory->run(@seqs);
-$aln = $aio->next_aln;
-ok($aln);
-#$aio = Bio::AlignIO->new(-format => 'clustalw');
-#$aio->write_aln($aln);
-ok($aln->each_seq, 3);
-
-1; 
-

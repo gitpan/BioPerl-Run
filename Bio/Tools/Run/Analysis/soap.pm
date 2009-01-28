@@ -1,4 +1,4 @@
-# $Id: soap.pm,v 1.13 2006/07/04 22:23:32 mauricio Exp $
+# $Id: soap.pm 13928 2007-06-14 15:23:09Z sendu $
 #
 # BioPerl module Bio::Tools::Run::Analysis::soap.pm
 #
@@ -17,7 +17,7 @@ Do not use this object directly, it is recommended to access it and use
 it through the C<Bio::Tools::Run::Analysis> module:
 
   use Bio::Tools::Run::Analysis;
-  my $tool = new Bio::Tools::Run::Analysis (-access => 'soap',
+  my $tool = Bio::Tools::Run::Analysis->new(-access => 'soap',
                                             -name   => 'seqret');
 
 =head1 DESCRIPTION
@@ -111,7 +111,7 @@ use SOAP::Lite
 @ISA = qw(Bio::Tools::Run::Analysis);
 
 BEGIN { 
-    $Revision = q[$Id: soap.pm,v 1.13 2006/07/04 22:23:32 mauricio Exp $];
+    $Revision = q[$Id: soap.pm 13928 2007-06-14 15:23:09Z sendu $];
 
     # where to go
     $DEFAULT_LOCATION = 'http://www.ebi.ac.uk/soaplab/services';
@@ -121,7 +121,7 @@ BEGIN {
 
 =head2 _initialize
 
- Usage   : my $tool = new Bio::Tools::Run::Analysis (-access => 'soap',
+ Usage   : my $tool = Bio::Tools::Run::Analysis->new(-access => 'soap',
                                                      -name => 'seqret',
                                                      ...);
            (_initialize is internally called from the 'new()' method)

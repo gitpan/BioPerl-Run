@@ -1,4 +1,4 @@
-# $Id: Genewise.pm,v 1.26 2006/07/04 22:23:31 mauricio Exp $
+# $Id: Genewise.pm 15196 2008-12-17 08:19:17Z sendu $
 #
 # Cared for by
 #
@@ -145,7 +145,7 @@ sub program_name {
 
  Title   : program_dir
  Usage   : $factory->program_dir(@params)
- Function: returns the program directory, obtiained from ENV variable.
+ Function: returns the program directory, obtained from ENV variable.
  Returns:  string
  Args    :
 

@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# $Id: multi_hmmsearch.PLS,v 1.3 2006/07/04 22:23:36 mauricio Exp $
+# $Id: multi_hmmsearch.PLS,v 1.3 2006-07-04 22:23:36 mauricio Exp $
 
 use strict;
 

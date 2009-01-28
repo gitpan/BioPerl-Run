@@ -1,4 +1,4 @@
-# $Id: ProtPars.pm,v 1.24 2006/07/04 22:23:33 mauricio Exp $
+# $Id: ProtPars.pm 15196 2008-12-17 08:19:17Z sendu $
 # BioPerl module for Bio::Tools::Run::Phylo::Phylip::ProtPars
 #
 # Created by Shawn Hoon 
@@ -36,6 +36,19 @@ Works with Phylip version 3.6
   $tree_factory =
     Bio::Tools::Run::Phylo::Phylip::ProtPars->new(idlength=>30,threshold=>10);
   $tree = $tree_factory->run("/usr/users/shawnh/COMPARA/prot.phy");
+
+  # To prevent PHYLIP from truncating sequence names:
+  # Step 1. Shelf the original names:
+     my ($aln_safe, $ref_name)=                    #   $aln_safe has serial names
+                $aln->set_displayname_safe();      #   $ref_name holds original names
+  # Step 2. Run ProtPars:
+     $tree = $protpars_factory->run($aln_safe);    #  Use $aln_safe instead of $aln
+  # Step 3. Retrieve orgininal OTU names:
+     use Bio::Tree::Tree;
+     my @nodes=$tree->get_nodes();
+         foreach my $nd (@nodes){
+            $nd->id($ref_name->{$nd->id_output}) if $nd->is_Leaf;
+         }
 
 =head1 PARAMTERS FOR PROTPARS COMPUTATION
 
@@ -117,7 +130,6 @@ methods. Internal methods are usually preceded with a _
 
 =cut
 
-#'
 
 	
 package Bio::Tools::Run::Phylo::Phylip::ProtPars;
@@ -179,7 +191,7 @@ sub program_name {
 
  Title   : program_dir
  Usage   : ->program_dir()
- Function: returns the program directory, obtiained from ENV variable.
+ Function: returns the program directory, obtained from ENV variable.
  Returns:  string
  Args    :
 

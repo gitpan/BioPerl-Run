@@ -1,4 +1,4 @@
-# $Id: DBA.pm,v 1.15 2006/08/18 20:57:58 bosborne Exp $
+# $Id: DBA.pm 15196 2008-12-17 08:19:17Z sendu $
 #
 # BioPerl module for Bio::Tools::Run::Alignment::DBA
 #
@@ -130,7 +130,7 @@ sub program_name {
 
  Title   : program_dir
  Usage   : $factory->program_dir(@params)
- Function: returns the program directory, obtiained from ENV variable.
+ Function: returns the program directory, obtained from ENV variable.
  Returns:  string
  Args    :
 
