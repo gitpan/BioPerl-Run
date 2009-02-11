@@ -1,6 +1,6 @@
 ---
 name: BioPerl-run
-version: 1.005009_001
+version: 1.005009_002
 author:
   - 'BioPerl Team <bioperl-l@bioperl.org>'
 abstract: 'BioPerl-run - wrapper toolkit'
@@ -8,7 +8,6 @@ license: perl
 resources:
   license: http://dev.perl.org/licenses/
 requires:
-  Bio::Root::Version: 1.006000
   perl: 5.6.1
 optional_features:
   Bio::Tools::Run::EMBOSSacd:
@@ -31,298 +30,298 @@ dynamic_config: 1
 provides:
   Bio::Factory::EMBOSS:
     file: Bio/Factory/EMBOSS.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Installer::Clustalw:
     file: Bio/Installer/Clustalw.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Installer::EMBOSS:
     file: Bio/Installer/EMBOSS.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Installer::Generic:
     file: Bio/Installer/Generic.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Installer::Hyphy:
     file: Bio/Installer/Hyphy.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Installer::Muscle:
     file: Bio/Installer/Muscle.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Installer::PAML:
     file: Bio/Installer/PAML.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Installer::Probcons:
     file: Bio/Installer/Probcons.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Installer::SLR:
     file: Bio/Installer/SLR.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Installer::TCoffee:
     file: Bio/Installer/TCoffee.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Alignment::Amap:
     file: Bio/Tools/Run/Alignment/Amap.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Alignment::Blat:
     file: Bio/Tools/Run/Alignment/Blat.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Alignment::Clustalw:
     file: Bio/Tools/Run/Alignment/Clustalw.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Alignment::DBA:
     file: Bio/Tools/Run/Alignment/DBA.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Alignment::Exonerate:
     file: Bio/Tools/Run/Alignment/Exonerate.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Alignment::Kalign:
     file: Bio/Tools/Run/Alignment/Kalign.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Alignment::Lagan:
     file: Bio/Tools/Run/Alignment/Lagan.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Alignment::MAFFT:
     file: Bio/Tools/Run/Alignment/MAFFT.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Alignment::Muscle:
     file: Bio/Tools/Run/Alignment/Muscle.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Alignment::Pal2Nal:
     file: Bio/Tools/Run/Alignment/Pal2Nal.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Alignment::Probalign:
     file: Bio/Tools/Run/Alignment/Probalign.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Alignment::Probcons:
     file: Bio/Tools/Run/Alignment/Probcons.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Alignment::Proda:
     file: Bio/Tools/Run/Alignment/Proda.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Alignment::Sim4:
     file: Bio/Tools/Run/Alignment/Sim4.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Alignment::StandAloneFasta:
     file: Bio/Tools/Run/Alignment/StandAloneFasta.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Alignment::TCoffee:
     file: Bio/Tools/Run/Alignment/TCoffee.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Analysis:
     file: Bio/Tools/Run/Analysis.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Analysis::Job:
     file: Bio/Tools/Run/Analysis.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Analysis::Job::soap:
     file: Bio/Tools/Run/Analysis/soap.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Analysis::Utils:
     file: Bio/Tools/Run/Analysis.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Analysis::soap:
     file: Bio/Tools/Run/Analysis/soap.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::AnalysisFactory:
     file: Bio/Tools/Run/AnalysisFactory.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::AnalysisFactory::soap:
     file: Bio/Tools/Run/AnalysisFactory/soap.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Cap3:
     file: Bio/Tools/Run/Cap3.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Coil:
     file: Bio/Tools/Run/Coil.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::EMBOSSApplication:
     file: Bio/Tools/Run/EMBOSSApplication.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::EMBOSSacd:
     file: Bio/Tools/Run/EMBOSSacd.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::ERPIN:
     file: Bio/Tools/Run/ERPIN.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Ensembl:
     file: Bio/Tools/Run/Ensembl.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Eponine:
     file: Bio/Tools/Run/Eponine.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::FootPrinter:
     file: Bio/Tools/Run/FootPrinter.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Genemark:
     file: Bio/Tools/Run/Genemark.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Genewise:
     file: Bio/Tools/Run/Genewise.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Genscan:
     file: Bio/Tools/Run/Genscan.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Glimmer:
     file: Bio/Tools/Run/Glimmer.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Hmmer:
     file: Bio/Tools/Run/Hmmer.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Infernal:
     file: Bio/Tools/Run/Infernal.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::MCS:
     file: Bio/Tools/Run/MCS.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Match:
     file: Bio/Tools/Run/Match.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Mdust:
     file: Bio/Tools/Run/Mdust.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Meme:
     file: Bio/Tools/Run/Meme.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phrap:
     file: Bio/Tools/Run/Phrap.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::Gerp:
     file: Bio/Tools/Run/Phylo/Gerp.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::Gumby:
     file: Bio/Tools/Run/Phylo/Gumby.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::Hyphy::Base:
     file: Bio/Tools/Run/Phylo/Hyphy/Base.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::Hyphy::FEL:
     file: Bio/Tools/Run/Phylo/Hyphy/FEL.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::Hyphy::Modeltest:
     file: Bio/Tools/Run/Phylo/Hyphy/Modeltest.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::Hyphy::REL:
     file: Bio/Tools/Run/Phylo/Hyphy/REL.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::Hyphy::SLAC:
     file: Bio/Tools/Run/Phylo/Hyphy/SLAC.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::LVB:
     file: Bio/Tools/Run/Phylo/LVB.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::Molphy::ProtML:
     file: Bio/Tools/Run/Phylo/Molphy/ProtML.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::Njtree::Best:
     file: Bio/Tools/Run/Phylo/Njtree/Best.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::PAML::Baseml:
     file: Bio/Tools/Run/Phylo/PAML/Baseml.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::PAML::Codeml:
     file: Bio/Tools/Run/Phylo/PAML/Codeml.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::PAML::Evolver:
     file: Bio/Tools/Run/Phylo/PAML/Evolver.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::PAML::Yn00:
     file: Bio/Tools/Run/Phylo/PAML/Yn00.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::Phast::PhastCons:
     file: Bio/Tools/Run/Phylo/Phast/PhastCons.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::Phast::PhyloFit:
     file: Bio/Tools/Run/Phylo/Phast/PhyloFit.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::Phylip::Base:
     file: Bio/Tools/Run/Phylo/Phylip/Base.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::Phylip::Consense:
     file: Bio/Tools/Run/Phylo/Phylip/Consense.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::Phylip::DrawGram:
     file: Bio/Tools/Run/Phylo/Phylip/DrawGram.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::Phylip::DrawTree:
     file: Bio/Tools/Run/Phylo/Phylip/DrawTree.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::Phylip::Neighbor:
     file: Bio/Tools/Run/Phylo/Phylip/Neighbor.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::Phylip::PhylipConf:
     file: Bio/Tools/Run/Phylo/Phylip/PhylipConf.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::Phylip::ProtDist:
     file: Bio/Tools/Run/Phylo/Phylip/ProtDist.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::Phylip::ProtPars:
     file: Bio/Tools/Run/Phylo/Phylip/ProtPars.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::Phylip::SeqBoot:
     file: Bio/Tools/Run/Phylo/Phylip/SeqBoot.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::PhyloBase:
     file: Bio/Tools/Run/Phylo/PhyloBase.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::Phyml:
     file: Bio/Tools/Run/Phylo/Phyml.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::QuickTree:
     file: Bio/Tools/Run/Phylo/QuickTree.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::SLR:
     file: Bio/Tools/Run/Phylo/SLR.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Phylo::Semphy:
     file: Bio/Tools/Run/Phylo/Semphy.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Primate:
     file: Bio/Tools/Run/Primate.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Primer3:
     file: Bio/Tools/Run/Primer3.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Prints:
     file: Bio/Tools/Run/Prints.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Profile:
     file: Bio/Tools/Run/Profile.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Promoterwise:
     file: Bio/Tools/Run/Promoterwise.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Pseudowise:
     file: Bio/Tools/Run/Pseudowise.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::RNAMotif:
     file: Bio/Tools/Run/RNAMotif.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::RepeatMasker:
     file: Bio/Tools/Run/RepeatMasker.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Seg:
     file: Bio/Tools/Run/Seg.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Signalp:
     file: Bio/Tools/Run/Signalp.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Simprot:
     file: Bio/Tools/Run/Simprot.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::TigrAssembler:
     file: Bio/Tools/Run/TigrAssembler.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Tmhmm:
     file: Bio/Tools/Run/Tmhmm.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::TribeMCL:
     file: Bio/Tools/Run/TribeMCL.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::Vista:
     file: Bio/Tools/Run/Vista.pm
-    version: 1.005009_001
+    version: 1.005009_002
   Bio::Tools::Run::tRNAscanSE:
     file: Bio/Tools/Run/tRNAscanSE.pm
-    version: 1.005009_001
+    version: 1.005009_002
 generated_by: Module::Build version 0.3
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html
