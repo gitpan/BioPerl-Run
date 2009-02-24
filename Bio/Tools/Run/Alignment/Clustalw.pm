@@ -1,4 +1,4 @@
-# $Id: Clustalw.pm 15313 2009-01-07 20:40:53Z cjfields $
+# $Id: Clustalw.pm 15564 2009-02-24 01:59:09Z cjfields $
 #
 # BioPerl module for Bio::Tools::Run::Alignment::Clustalw
 #
@@ -319,6 +319,17 @@ of the Bioperl mailing lists.  Your participation is much appreciated.
 
   bioperl-l@bioperl.org                  - General discussion
   http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
+
+=head2 Support 
+ 
+Please direct usage questions or support issues to the mailing list:
+  
+L<bioperl-l@bioperl.org>
+  
+rather than to the module maintainer directly. Many experienced and 
+reponsive experts will be able look at the problem and quickly 
+address it. Please include a thorough description of the problem 
+with code and data examples if at all possible.
 
 =head2 Reporting Bugs
 
@@ -751,7 +762,7 @@ sub _run {
         $score = $1 if ($_ =~ /Score:(\d+)/);
         # This one is printed at the end and seems the most appropriate to pick
         # up; we include the above regex incase 'Alignment Score' isn't given
-        $score = $1 if ($_ =~ /Alignment Score (\d+)/);
+        $score = $1 if ($_ =~ /Alignment Score (-?\d+)/);
     }
     close($pipe) || ($self->throw("ClustalW call ($commandstring) crashed: $?"));
     

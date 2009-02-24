@@ -1,6 +1,8 @@
-# $Id: Baseml.pm 15196 2008-12-17 08:19:17Z sendu $
+# $Id: Baseml.pm 15564 2009-02-24 01:59:09Z cjfields $
 #
 # BioPerl module for Bio::Tools::Run::Phylo::PAML::Baseml
+#
+# Please direct questions and support issues to <bioperl-l@bioperl.org> 
 #
 # Cared for by Jason Stajich <jason-AT-bioperl_DOT_org>
 #
@@ -127,6 +129,17 @@ the Bioperl mailing list.  Your participation is much appreciated.
 
   bioperl-l@bioperl.org                  - General discussion
   http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
+
+=head2 Support 
+ 
+Please direct usage questions or support issues to the mailing list:
+  
+L<bioperl-l@bioperl.org>
+  
+rather than to the module maintainer directly. Many experienced and 
+reponsive experts will be able look at the problem and quickly 
+address it. Please include a thorough description of the problem 
+with code and data examples if at all possible.
 
 =head2 Reporting Bugs
 

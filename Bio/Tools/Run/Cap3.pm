@@ -1,4 +1,4 @@
-# $Id: Cap3.pm 14713 2008-06-10 22:42:30Z heikki $
+# $Id: Cap3.pm 15564 2009-02-24 01:59:09Z cjfields $
 # You may distribute this module under the same terms as perl itself
 #
 # POD documentation - main docs before the code
@@ -32,6 +32,17 @@ of the Bioperl mailing lists.  Your participation is much appreciated.
 
   bioperl-l@bioperl.org                  - General discussion
   http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
+
+=head2 Support 
+ 
+Please direct usage questions or support issues to the mailing list:
+  
+L<bioperl-l@bioperl.org>
+  
+rather than to the module maintainer directly. Many experienced and 
+reponsive experts will be able look at the problem and quickly 
+address it. Please include a thorough description of the problem 
+with code and data examples if at all possible.
 
 =head2 Reporting Bugs
 

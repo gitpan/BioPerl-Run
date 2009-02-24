@@ -1,5 +1,5 @@
 #-*-Perl-*-
-## $Id: Primer3.t 15456 2009-01-28 04:31:30Z cjfields $
+## $Id: Primer3.t 15564 2009-02-24 01:59:09Z cjfields $
 
 # test for Bio::Tools::Run::Primer3
 # written by Rob Edwards
@@ -8,7 +8,7 @@ use strict;
 
 BEGIN {
     use Bio::Root::Test;
-    test_begin(-tests => 8,
+    test_begin(-tests => 9,
                -requires_module => 'Clone');
     use_ok('Bio::Tools::Run::Primer3');
     use_ok('Bio::SeqIO');
@@ -30,4 +30,5 @@ SKIP: {
     ok $results = $primer3->run;
     is( $num_results = $results->number_of_results,5);
     is( $results->{input_options}->{PRIMER_SEQUENCE_ID},'test seq');
+    like( $primer3->program_name, qr/primer3/, 'program_name');
 }

@@ -1,6 +1,8 @@
-# $Id: AnalysisFactory.pm 13928 2007-06-14 15:23:09Z sendu $
+# $Id: AnalysisFactory.pm 15564 2009-02-24 01:59:09Z cjfields $
 #
 # BioPerl module for Bio::Tools::Run::AnalysisFactory
+#
+# Please direct questions and support issues to <bioperl-l@bioperl.org> 
 #
 # Cared for by Martin Senger <martin.senger@gmail.com>
 # For copyright and disclaimer see below.
@@ -88,6 +90,17 @@ the Bioperl mailing list.  Your participation is much appreciated.
   bioperl-l@bioperl.org                  - General discussion
   http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
 
+=head2 Support 
+ 
+Please direct usage questions or support issues to the mailing list:
+  
+L<bioperl-l@bioperl.org>
+  
+rather than to the module maintainer directly. Many experienced and 
+reponsive experts will be able look at the problem and quickly 
+address it. Please include a thorough description of the problem 
+with code and data examples if at all possible.
+
 =head2 Reporting Bugs
 
 Report bugs to the Bioperl bug tracking system to help us keep track
@@ -142,7 +155,7 @@ use Bio::Factory::AnalysisI;
 
 
 BEGIN {
-    $Revision = q$Id: AnalysisFactory.pm 13928 2007-06-14 15:23:09Z sendu $;
+    $Revision = q$Id: AnalysisFactory.pm 15564 2009-02-24 01:59:09Z cjfields $;
 }
 
 # -----------------------------------------------------------------------------

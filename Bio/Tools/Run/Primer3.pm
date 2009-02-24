@@ -1,4 +1,4 @@
-# $Id: Primer3.pm 15456 2009-01-28 04:31:30Z cjfields $
+# $Id: Primer3.pm 15564 2009-02-24 01:59:09Z cjfields $
 #
 # This is the original copyright statement. I have relied on Chad's module
 # extensively for this module.
@@ -98,6 +98,17 @@ of the Bioperl mailing lists.  Your participation is much appreciated.
 
   bioperl-l@bioperl.org                  - General discussion
   http://www.bioperl.org/MailList.html             - About the mailing lists
+
+=head2 Support 
+ 
+Please direct usage questions or support issues to the mailing list:
+  
+L<bioperl-l@bioperl.org>
+  
+rather than to the module maintainer directly. Many experienced and 
+reponsive experts will be able look at the problem and quickly 
+address it. Please include a thorough description of the problem 
+with code and data examples if at all possible.
 
 =head2 Reporting Bugs
 
@@ -280,7 +291,15 @@ sub new {
 sub program_name {
 	my $self = shift;
 	return $self->{'program_name'} = shift @_ if @_;
-	return $self->{'program_name'} || $PROGRAMNAME;
+    return $self->{'program_name'} if $self->{'program_name'};
+    for (qw(primer3 primer3_core)) {
+        if ($self->io->exists_exe($_)) {
+            $PROGRAMNAME = $_;
+            last;
+        }
+    }
+    # don't set permanently, use global
+    return $PROGRAMNAME;
 }
 
 =head2 program_dir
@@ -304,9 +323,9 @@ sub program_dir {
    return $self->{'program_dir'} if $self->{'program_dir'};
    
    if ($ENV{PRIMER3}) {
-      $self->{'program_dir'}=Bio::Root::IO->catfile($ENV{PRIMER3});
+        $self->{'program_dir'} = Bio::Root::IO->catfile($ENV{PRIMER3});
    } else {
-      $self->{'program_dir'}='/usr/local/bin';
+        $self->{'program_dir'} = Bio::Root::IO->catfile('usr','local','bin');
    }
    
    return $self->{'program_dir'}
