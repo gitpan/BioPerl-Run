@@ -1,5 +1,5 @@
 #-*-Perl-*-
-## $Id: Primer3.t 15564 2009-02-24 01:59:09Z cjfields $
+## $Id: Primer3.t 15575 2009-02-25 15:12:28Z cjfields $
 
 # test for Bio::Tools::Run::Primer3
 # written by Rob Edwards
@@ -22,7 +22,7 @@ ok $primer3 = Bio::Tools::Run::Primer3->new(-seq=>$seq);
 
 SKIP: {
     test_skip(-requires_executable => $primer3,
-              -tests => 5);
+              -tests => 6);
     
     $args = $primer3->arguments;
     is($$args{'PRIMER_SEQUENCE_ID'}, "(string, optional) an id. Optional. Note must be present if PRIMER_FILE_FLAG is set");
