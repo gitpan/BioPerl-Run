@@ -1,4 +1,4 @@
-# $Id: Evolver.pm 16221 2009-09-30 04:30:42Z cjfields $
+# $Id$
 #
 # BioPerl module for Bio::Tools::Run::Phylo::PAML::Evolver
 #
@@ -251,8 +251,8 @@ sub new {
 
   my $self = $class->SUPER::new(@args);
 #   $self->{'_branchLengths'} = 0;
-  my ($aln, $tree, $st, $params, $exe, 
-      $ubl) = $self->_rearrange([qw(TREE SAVE_TEMPFILES PARAMS EXECUTABLE)],
+  my ($tree, $st, $params, $exe)
+      = $self->_rearrange([qw(TREE SAVE_TEMPFILES PARAMS EXECUTABLE)],
 				    @args);
   defined $tree && $self->tree($tree);
   defined $st  && $self->save_tempfiles($st);
@@ -411,7 +411,6 @@ sub run {
     # FIXME: We should look for the stuff we prepared in the prepare method here
     my $rc = (1);
     {
-        my $cwd = cwd();
         my $exit_status;
         my ($tmpdir) = $self->tempdir();
         chdir($tmpdir);
@@ -432,8 +431,6 @@ sub run {
             my $aln = $in->next_aln();
             $self->alignment($aln);
         }
-        #chdir($cwd);
-        ####
     }
     return $rc;
 }

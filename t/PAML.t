@@ -1,7 +1,7 @@
 # This is -*-Perl-*- code
 ## Bioperl Test Harness Script for Modules
 ##
-# $Id: PAML.t 15337 2009-01-12 00:31:05Z sendu $
+# $Id$
 
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.t'

@@ -1,4 +1,4 @@
-# $Id: EMBOSSacd.pm 16221 2009-09-30 04:30:42Z cjfields $
+# $Id$
 #
 # BioPerl module for Bio::Tools::Run::EMBOSSacd
 #
@@ -96,7 +96,7 @@ report bugs to the Bioperl bug tracking system to help us keep track
 the bugs and their resolution.  Bug reports can be submitted via the
 web:
 
-  http://bugzilla.open-bio.org/
+  http://redmine.open-bio.org/projects/bioperl/
 
 =head1 AUTHOR - Heikki Lehvaslaiho
 
@@ -182,17 +182,19 @@ sub new {
     }
     
     # converting HTML -> XHTML for XML parsing
-    $file =~ s/(border)/$1="1"/;
+    $file =~ s/border/border="1"/;
     $file =~ s/=(\d+)/="$1"/g;
     $file =~ s/<br>/<br><\/br>/g;
     $file =~ s/&nbsp;//g;
 
-    my $t = new XML::Twig( TwigHandlers =>
+    my $t = XML::Twig->new( TwigHandlers =>
 			   {
 			       '/table/tr' => \&_row  }
 			   );
     
-    $t->parse( $file); # results written into global %OPT
+    $t->safe_parse( $file);
+    
+    #Bio::Root::Root->throw("XML parsing error: $@");
     
     my %acd = %OPT; # copy to a private hash
     $acd{'_name'} = $prog;

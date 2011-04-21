@@ -1,4 +1,4 @@
-# $Id: Infernal.pm 16221 2009-09-30 04:30:42Z cjfields $
+# $Id$
 #
 # You may distribute this module under the same terms as perl itself
 #
@@ -122,7 +122,7 @@ Report bugs to the Bioperl bug tracking system to help us keep track
 the bugs and their resolution.  Bug reports can be submitted via the
 web:
 
-  http://bugzilla.open-bio.org/
+  http://redmine.open-bio.org/projects/bioperl/
 
 =head1 AUTHOR - Chris Fields
 
@@ -466,7 +466,11 @@ sub model_file {
 =cut
 
 sub program_dir {
-    return Bio::Root::IO->catfile($ENV{INFERNALDIR}) if $ENV{INFERNALDIR};
+    my ($self, $dir) = @_;
+    if ($dir) {
+        $self->{_program_dir} = $dir;
+    }
+    return Bio::Root::IO->catfile($ENV{INFERNALDIR}) || '';
 }
 
 =head2  version
@@ -483,7 +487,8 @@ sub program_dir {
 sub version {
     my ($self) = @_;
     return unless $self->executable;
-    my $string = `cmsearch -h 2>&1`;
+    my $exe = $self->executable;
+    my $string = `$exe -h 2>&1`;
     my $v;
     if ($string =~ m{Infernal\s([\d.]+)}) {
         $v = $1;
@@ -1002,7 +1007,7 @@ sub _run {
             my $io;
             while(<$fh>) {$io .= $_;}
             close($fh);
-            $self->debug($io);
+            $self->debug($io) if $io;
             return 1;
         }
     }

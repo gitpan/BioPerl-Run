@@ -1,6 +1,6 @@
 # -*-Perl-*-
 ## Bioperl Test Harness Script for Modules
-## $Id: ProtDist.t 15337 2009-01-12 00:31:05Z sendu $
+## $Id$
 
 use strict;
 use vars qw($DEBUG);

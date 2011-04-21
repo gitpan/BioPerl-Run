@@ -1,4 +1,4 @@
-# $Id: Primer3.pm 16221 2009-09-30 04:30:42Z cjfields $
+# $Id$
 #
 # This is the original copyright statement. I have relied on Chad's module
 # extensively for this module.
@@ -36,7 +36,7 @@ output files.
 
 This module provides a bioperl interface to the program primer3. See
 http://frodo.wi.mit.edu/primer3/primer3_code.html for
-details and to download the software. This module should work for 
+details and to download the software. This module only works for
 primer3 release 1 but is not guaranteed to work with earlier versions.
 
   # design some primers.
@@ -116,7 +116,7 @@ Report bugs to the Bioperl bug tracking system to help us keep track
 the bugs and their resolution.  Bug reports can be submitted via the
 web:
 
-  http://bugzilla.open-bio.org/
+  http://redmine.open-bio.org/projects/bioperl/
 
 =head1 AUTHOR
 
@@ -271,7 +271,16 @@ sub new {
 	}
 	if ($args{'-outfile'}) {$self->{_outfilename}=$args{'-outfile'}}
 	if ($args{'-path'}) {
+	  
 		my (undef,$path,$prog) = File::Spec->splitpath($args{'-path'});
+	  
+    # For Windows system, $path better (Letter disk not truncated)
+    if ( $^O =~ m{mswin}i ) {
+      require File::Basename;
+      $path = File::Basename::dirname( $args{'-path'} );
+      $prog = File::Basename::basename( $args{'-path'} );
+    }
+    
 		$self->program_dir($path);
 		$self->program_name($prog);
 	}
@@ -456,8 +465,13 @@ sub run {
 	my ($temphandle, $tempfile) = $self->io->tempfile;
 	print $temphandle join "\n", @{$self->{'primer3_input'}}, "=\n";
 	close($temphandle);
-	open (RESULTS, "$executable < $tempfile|") || 
-	  $self->throw("Can't open RESULTS");
+
+  my $executable_command = $executable;
+  if ( $executable =~ m{^[^\'\"]+(.+)[^\'\"]+$} ) { 
+    $executable_command = "\"$executable\" < \"$tempfile\"|";
+  }
+
+	open (RESULTS, $executable_command) || $self->throw("Can't open RESULTS");
 	if ($self->{'_outfilename'}) {
 		# I can't figure out how to use either of these to write the results out.
 		# neither work, what am I doing wrong or missing in the docs?
@@ -524,6 +538,30 @@ sub arguments {
 	unless ($self->{'input_options'}) {$self->_input_args}
 	if ($required) {return ${$self->{'input_options'}}{'$required'}}
 	else {return $self->{'input_options'}}
+}
+
+=head2  version
+
+ Title   : version
+ Usage   : $v = $prog->version();
+ Function: Determine the version number of the program
+ Example :
+ Returns : float or undef
+ Args    : none
+
+=cut
+
+sub version {
+    my ($self) = @_;
+    return unless my $exe = $self->executable;
+    if (!defined $self->{'_progversion'}) {
+        my $string = `$exe -about 2>&1`;
+        my $v;
+        if ($string =~ m{primer3\s+release\s+([\d\.]+)}) {
+            $self->{'_progversion'} = $1;
+        }
+    }
+    return $self->{'_progversion'} || undef;
 }
 
 =head2 _input_args()

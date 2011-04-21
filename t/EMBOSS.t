@@ -1,6 +1,6 @@
 # -*-Perl-*-
 ## Bioperl Test Harness Script for Modules
-## $Id: EMBOSS.t 15337 2009-01-12 00:31:05Z sendu $
+## $Id$
 
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.t'
@@ -8,11 +8,12 @@
 use strict;
 BEGIN {
     use Bio::Root::Test;
-    test_begin(-tests => 21,
-			   -requires_modules => [qw(XML::Twig Bio::Factory::EMBOSS)]);
+    test_begin(-tests => 32,
+			   -requires_modules => [qw(XML::Twig)]);
 	use_ok('Bio::Root::IO');
 	use_ok('Bio::SeqIO');
 	use_ok('Bio::AlignIO');
+	use_ok('Bio::Factory::EMBOSS');
 }
 
 my $compseqoutfile = test_output_file();
@@ -26,13 +27,15 @@ my $verbose = test_debug();
 ## the print "1..x\n" in the BEGIN block to reflect the
 ## total number of tests that will be run.
 
-my $factory = Bio::Factory::EMBOSS->new(-verbose => $verbose);
+my $factory = Bio::Factory::EMBOSS->new();
 ok($factory);
 
 SKIP: {
 	my $compseqapp = $factory->program('compseq');
 	
-	skip('EMBOSS not installed',17) if !$compseqapp;
+    $factory->verbose($verbose);
+    
+	skip('EMBOSS not installed',27) if !$compseqapp;
 	
 	my $version = $factory->version;
 	
@@ -116,12 +119,10 @@ SKIP: {
 	}
 	ok(-e $consoutfile);
 	
-	
 	# testing acd parsing and EMBOSSacd methods
 	
 	$compseqapp = $factory->program('compseq');
 	
-	exit unless $compseqapp->acd;
 	ok my $acd = $compseqapp->acd;
 	is $compseqapp->acd->name, 'compseq';
 	ok my $compseq_mand_acd = $compseqapp->acd->mandatory;
@@ -130,31 +131,31 @@ SKIP: {
 	is $acd->qualifier('-ppppppp'), 0;
 	ok $acd->qualifier('-reverse');
 	is $acd->category('-reverse'), 'optional';
-	like $acd->values('-reverse'), qr/Yes\/No/;
-	is $acd->descr('-reverse'), 'Set this to be true if you also wish to also count words in the reverse complement of a nucleic sequence.';
+	like $acd->values('-reverse'), qr/(?:Yes\/No|true)/;
+	like $acd->descr('-reverse'), qr/(?:boolean|true)/;
 	is $acd->unnamed('-reverse'), 0;
-	is $acd->default('-reverse'), 'No';
+	like $acd->default('-reverse'), qr/(?:Yes\/No|true)/;
 }
 
-	__END__
-	
-	## comparing input and ACD qualifiers
-	## commented out because verbose > 1 prints error messages
-	## that would confuse users running tests
-	
-	$compseqapp->verbose(1);
-	%input = ( '-word' => 4,
-		   '-outfile' => $compseqoutfile);
-	eval {
-		my $a = $compseqapp->run(\%input);
-	};
-	ok 1 if $@; # '-sequence' missing
-	
-	 %input = ( '-word' => 4,
-		   '-incorrect_option' => 'no value',
-		   '-sequence' => test_input_file('dna1.fa'),
-		   '-outfile' => $compseqoutfile);
-	eval {
-		$compseqapp->run(\%input);
-	};
-	ok 1 if $@; # -incorrect_option is incorrect	
+__END__
+
+## comparing input and ACD qualifiers
+## commented out because verbose > 1 prints error messages
+## that would confuse users running tests
+
+$compseqapp->verbose(1);
+%input = ( '-word' => 4,
+       '-outfile' => $compseqoutfile);
+eval {
+    my $a = $compseqapp->run(\%input);
+};
+ok 1 if $@; # '-sequence' missing
+
+ %input = ( '-word' => 4,
+       '-incorrect_option' => 'no value',
+       '-sequence' => test_input_file('dna1.fa'),
+       '-outfile' => $compseqoutfile);
+eval {
+    $compseqapp->run(\%input);
+};
+ok 1 if $@; # -incorrect_option is incorrect	

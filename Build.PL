@@ -8,21 +8,22 @@ use warnings;
 use Module::Build;
 
 my $build = Module::Build->new(
-    module_name         => 'Bio::Run',
     dist_name           => 'BioPerl-Run',
-    dist_version        => '1.006000_001',
+    dist_version        => '1.006900',
+    module_name         => 'Bio::Run',
     dist_author         => 'BioPerl Team <bioperl-l@bioperl.org>',
     dist_abstract       => 'BioPerl-Run - wrapper toolkit',
     license             => 'perl',
     requires            => {
                             'perl'               => '5.6.1',
-                            'Bio::Root::Version' => '1.006001'
+                            'Bio::Root::Version' => '1.006900'
                            },
     recommends          => {
                             'Algorithm::Diff'    => 0, # generating consensus protein family descriptions: Bio::Tools::Run::TribeMCL
                             'IPC::Run'           => 0, # Glimmer and Genemark application wrappers: Bio::Tools::Run::Glimmer Bio::Tools::Run::Genemark
                             'IO::String'         => 0, # generating Bio::Tree::Tree from strings: Bio::Tools::Run::Phylo::Phylip::Consense
-                            'XML::Twig'          => 0  # processing XML data: Bio::Tools::Run::EMBOSSacd
+                            'XML::Twig'          => 0,  # processing XML data: Bio::Tools::Run::EMBOSSacd
+                            'File::Sort'         => 0  # BEDTools
                            },
     get_options         => {
                             accept  => { },
@@ -35,7 +36,7 @@ my $build = Module::Build->new(
                                        }
                            },
     dynamic_config      => 1,
-    create_makefile_pl  => 'passthrough'
+    #create_makefile_pl  => 'passthrough'
 );
 
 my $accept = $build->args->{accept};
@@ -66,9 +67,15 @@ if ($build->args('network')) {
 elsif ($build->feature('Network')) {
     $do_network_tests = $accept ? 0 : $build->y_n("Do you want to run tests that require connection to servers across the internet\n(likely to cause some failures)? y/n", 'n');
 }
+
 if ($do_network_tests) {
     $build->notes(network => 1);
     $build->log_info("  - will run internet-requiring tests\n");
+    my $use_email = $build->y_n("Do you want to run tests requiring a valid email address? y/n",'n');
+    if ($use_email) {
+        my $address = $build->prompt("Enter email address:");
+        $build->notes(email => $address);
+    }
 }
 else {
     $build->notes(network => 0);

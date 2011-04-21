@@ -1,6 +1,6 @@
 # -*-Perl-*-
 ## Bioperl Test Harness Script for Modules
-## $Id: ProtPars.t 15337 2009-01-12 00:31:05Z sendu $
+## $Id$
 
 use vars qw($DEBUG );
 $DEBUG = test_debug();
@@ -53,7 +53,7 @@ SKIP: {
 	is ($nodes[2]->id, 'SINFRUP002', 
 		"creating tree by protpars");
 	
-	$inputfilename = test_input_file("cysprot.fa");
+	$inputfilename = test_input_file("cysprot1a.fa");
 	@params = ('ktuple' => 2, 'matrix' => 'BLOSUM', 
 		   -verbose => -1);
 	my  $align_factory = Bio::Tools::Run::Alignment::Clustalw->new(@params);
@@ -67,7 +67,7 @@ SKIP: {
 		$tree = $tree_factory->create_tree($aln);
 		
 		@nodes = sort { defined $a->id && defined $b->id && $a->id cmp $b->id } $tree->get_nodes();
-		is (scalar(@nodes),13,
+		is (scalar(@nodes),5,
 			"creating tree by protpars");
 		
 		# test name preservation and restoration:

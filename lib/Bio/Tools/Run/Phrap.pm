@@ -1,4 +1,4 @@
-# $Id: Phrap.pm 16221 2009-09-30 04:30:42Z cjfields $
+# $Id$
 #
 # Phrap wraper module
 #
@@ -19,26 +19,32 @@ Bio::Tools::Run::Phrap - a wrapper for running Phrap
 =head1 SYNOPSIS
 
   use Bio::Tools::Run::Phrap;
-  use Bio::SeqIO;
+  # Run Phrap using an input FASTA file
+  my $factory = Bio::Tools::Run::Phrap->new( -penalty => -2, -raw => 1 );
+  my $asm_obj = $factory->run($fasta_file, $qual_file);
+  # An assembly object is returned by default
+  for my $contig ($assembly->all_contigs) {
+    ... do something ...
+  }
 
-  my $sio = Bio::SeqIO->new(-file=>$ARGV[0],-format=>'fasta');
-  my @seq;
-  while(my $seq = $sio->next_seq()){
-    push @seq,$seq;
+  # Read some sequences
+  use Bio::SeqIO;
+  my $sio = Bio::SeqIO->new(-file => $fasta_file, -format => 'fasta');
+  my @seqs;
+  while (my $seq = $sio->next_seq()) {
+    push @seqs,$seq;
   }
-  my $prun =Bio::Tools::Run::Phrap->new(arguments=>'-penalty -3 -minmatch 10');
-  my $assembly = $prun->run(\@seq);
-  foreach my $contig($assembly->all_contigs){
-    my $collection = $contig->get_features_collection;
-    foreach my $sf($collection->get_all_features){
-      print $sf->primary_id."\t".$sf->start."\t".$sf->end."\n";
-    }
-  }
+
+  # Run Phrap using input sequence objects and returning an assembly file
+  my $asm_file = 'results.phrap';
+  $factory->out_type($asm_file);
+  $factory->run(\@seqs);
+
 
 =head1 DESCRIPTION
 
-  Wrapper module for Phrap program
-  Phrap available at: http://www.phrap.org/
+  Wrapper module for the Phrap assembly program
+  Phrap is available at: http://www.phrap.org/
 
 =head1 FEEDBACK
 
@@ -68,7 +74,7 @@ Report bugs to the Bioperl bug tracking system to help us keep track
 the bugs and their resolution.  Bug reports can be submitted via the
 web:
 
-  http://bugzilla.open-bio.org/
+  http://redmine.open-bio.org/projects/bioperl/
 
 =head1 AUTHOR - Shawn Hoon
 
@@ -83,230 +89,338 @@ web:
 
 package Bio::Tools::Run::Phrap;
 
-use vars qw($AUTOLOAD @ISA $PROGRAMDIR
-            $PROGRAMNAME @PHRAP_PARAMS %OK_FIELD);
 use strict;
-use Bio::Assembly::IO;
-use Bio::Root::Root;
-use Bio::Root::IO;
-use Bio::Factory::ApplicationFactoryI;
-use Bio::Tools::Run::WrapperBase;
+use File::Copy;
 
-@ISA = qw(Bio::Root::Root Bio::Tools::Run::WrapperBase 
-	  Bio::Factory::ApplicationFactoryI);
+use base qw(Bio::Root::Root Bio::Tools::Run::AssemblerBase);
 
-BEGIN { 
-    $PROGRAMNAME= 'phrap';
-    @PHRAP_PARAMS=qw(PENALTY GAP_INIT GAP_EXT INS_GAP_EXT
-		     DEL_GAP_EXT MATRIX RAW MINMATCH MAX_GROUP_SIZE 
-		     WORD_RAW BANDWIDTH MINSCORE VECTOR_BOUND MASKLEVEL 
-		     DEFAULT_QUAL SUBCLONE_DELIM N_DELIM GROUP_DELIM TRIM_START
-		     FORCELEVEL BYPASSLEVEL MAXGAP REPEAT_STRINGENCY
-		     REVISE_GREEDYSHATTER_GREEDY PREASSEMBLE 
-		     FORCE_HIGH NODE_SEG NODE_SPACE RETAIN_DUPLICATES 
-		     MAX_SUBCLONE_SIZE TRIM_PENALTY TRIM_SCORE
-		     TRIM_QUAL CONFIRM_LENGTH CONFIRM_TRIM CONFIRM_SCORE
-		     INDEXWORDSIZE); 
-    
-    foreach my $attr ( @PHRAP_PARAMS) {
-	$OK_FIELD{$attr}++; 
-    } 
-}
+our $program_name   = 'phrap';
+our @program_params   = (qw(penalty gap_init gap_ext ins_gap_ext del_gap_ext
+  matrix minmatch maxmatch max_group_size bandwidth minscore vector_bound masklevel
+  default_qual subclone_delim n_delim group_delim trim_start forcelevel
+  bypasslevel maxgap repeat_stringency node_seg node_space max_subclone_size
+  trim_penalty trim_score trim_qual confirm_length confirm_trim confirm_penalty
+  confirm_score indexwordsize));
+our @program_switches = (qw(raw word_raw revise_greedy shatter_greedy preassemble
+  force_high retain_duplicates));
+our %param_translation;
+our $qual_param;
+our $use_dash = 1;
+our $join = ' ';
+our $asm_format = 'phrap';
 
-=head2 program_name
-
- Title   : program_name
- Usage   : $factory>program_name()
- Function: holds the program name
- Returns:  string
- Args    : None
-
-=cut
-
-sub program_name {
-    return $PROGRAMNAME;
-}
-
-=head2 program_dir
-
- Title   : program_dir
- Usage   : $factory->program_dir(@params)
- Function: returns the program directory, obtained from ENV variable.
- Returns:  string
- Args    :
-
-=cut
-
-sub program_dir {
-    return Bio::Root::IO->catfile($ENV{'PhrapDIR'}) if $ENV{'PhrapDIR'};
-    return $PROGRAMDIR; # you can then define this if you don't use env var
-}
-
-sub AUTOLOAD {
-       my $self = shift;
-       my $attr = $AUTOLOAD;
-       $attr =~ s/.*:://;
-       $attr = uc $attr;
-       $self->throw("Unallowed parameter: $attr !") unless $OK_FIELD{$attr};
-       $self->{$attr} = shift if @_;
-       return $self->{$attr};
-}
 
 =head2 new
 
  Title   : new
- Usage   : my $factory= Bio::Tools::Run::Phrap->new();
- Function: creates a new Phrap factory
- Returns:  Bio::Tools::Run::Phrap
- Args    :
+ Usage   : $factory = Bio::Tools::Run::Phrap->new(
+             -penalty => -2, # parameter option and value
+             -raw     =>  1  # flag (1=yes, 0=no)
+           );
+ Function: Create a new Phrap factory
+ Returns : A Bio::Tools::Run::Phrap object
+ Args    : Phrap options available in this module:
+
+Option names & default values taken from the PHRAP manual:
+
+1. Scoring of pairwise alignments
+
+ -penalty -2
+Mismatch (substitution) penalty for SWAT comparisons.
+
+ -gap_init penalty-2
+Gap initiation penalty for SWAT comparisons.
+
+ -gap_ext  penalty-1
+Gap extension penalty for SWAT comparisons.
+
+ -ins_gap_ext gap_ext
+ Insertion gap extension penalty for SWAT comparisons (insertion in
+subject relative to query).
+
+ -del_gap_ext gap_ext
+ Deletion gap extension penalty for SWAT comparisons (deletion in
+subject relative to query).
+
+ -matrix [None]
+ Score matrix for SWAT comparisons (if present, supersedes -penalty)
+
+ -raw *
+ Use raw rather than complexity-adjusted Smith-Waterman scores.
+
+2. Banded search
+
+ -maxmatch 30
+ Maximum length of matching word. For cross_match, the default value
+is equal to minmatch, instead of 30.
+
+ -max_group_size 20
+ Group size (query file, forward strand words)
+
+ -word_raw *
+ Use raw rather than complexity-adjusted word length, in testing
+against minmatch (N.B. maxmatch always refer to raw lengths).  (The
+default is to adjust word length to reflect complexity of matching
+sequence).
+
+ -bandwidth 14
+ 1/2 band width for banded SWAT searches (full width is 2 times
+bandwidth + 1). Decreasing bandwidth also decreases running time at
+the expense of sensitivity. Phrap assemblies of clones containing long
+tandem repeats of a short repeat unit (< 30 bp) may be more accurately
+assembled by decreasing -bandwidth; -bandwidth should be set such that
+2 bandwidth + 1 is less than the length of a repeat unit. -bandwidth 0
+can be used to find gap-free alignments.
+
+3. Filtering of matches
+
+ -minscore 30
+ Minimum alignment score.
+
+ -vector_bound 80
+ Number of potential vector bases at beginning of each read.  Matches
+that lie entirely within this region are assumed to represent vector
+matches and are ignored.  For cross_match, the default value is 0
+instead of 80.
+
+ -masklevel 80
+ (cross_match only). A match is reported only if at least (100 -
+masklevel)% of the bases in its "domain" (the part of the query that
+is aligned) are not contained within the domain of any higher-scoring
+match.
+ Special cases:
+    -masklevel 0     report only the single highest scoring match for each query
+    -masklevel 100   report any match whose domain is not completely contained
+                         within a higher scoring match
+    -masklevel 101   report all matches
+
+4. Input data interpretation
+
+ -default_qual 15
+ Quality value to be used for each base, when no input .qual file is
+provided. Note that a quality value of 15 corresponds to an error rate
+of approximately 1 in 30 bases, i.e. relatively accurate sequence. If
+you are using sequence that is substantially less accurate than this
+and do not have phred-generated quality values you should be sure to
+decrease the value of this parameter.
+
+ -subclone_delim .
+ (phrap only). Subclone name delimiter: Character used to indicate end
+of that part of the read name that corresponds to the subclone name
+
+ -n_delim 1
+ (phrap only). Indicates which occurrence of the subclone delimiter
+character denotes the end of the subclone name (so for example
+     -subclone_delim _ -n_delim 2
+means that the end of the subclone name occurs at the
+second occurrence of the character '_'). Must be the same for all
+reads!
+
+ -group_delim _
+ (phrap only). Group name delimiter: Character used to indicate end of
+that part of the read name that corresponds to the group name
+(relevant only if option -preassemble is used); this character must
+occur before the subclone delimiter (else it has no effect, and the
+read is not assigned to a group).
+
+ -trim_start 0
+ (phrap only). No. of bases to be removed at beginning of each read.
+
+5. Assembly
+
+ -forcelevel 0
+ (phrap only). Relaxes stringency to varying degree during final
+contig merge pass.  Allowed values are integers from 0 (most
+stringent) to 10 (least stringent), inclusive.
+
+ -bypasslevel 1
+ (phrap only). Controls treatment of inconsistent reads in merge.
+Currently allowed values are 0 (no bypasses allowed; most stringent)
+and 1 (a single conflicting read may be bypassed).
+
+ -maxgap 30
+ (phrap only). Maximum permitted size of an unmatched region in
+merging contigs, during first (most stringent) merging pass.
+
+ -repeat_stringency .95
+ (phrap only). Controls stringency of match required for joins.  Must
+be less than 1 (highest stringency), and greater than 0 (lowest
+stringency).
+
+ -revise_greedy *
+ (phrap only). Splits initial greedy assembly into pieces at "weak
+joins", and then tries to reattach them to give higher overall score.
+Use of this option should correct some types of missassembly.
+
+ -shatter_greedy *
+ (phrap only). Breaks assembly at weak joins (as with -revise_greedy)
+but does not try to reattach pieces.
+
+ -preassemble *
+ (phrap only). Preassemble reads within groups, prior to merging with
+other groups. This is useful for example when the input data set
+consists of reads from two distinct but overlapping clones, and it is
+desired to assemble the reads from each clone separately before
+merging in order to reduce the risk of incorrect joins due to
+repeats. The preassemble merging pass is relatively stringent and not
+guaranteed to merge all of the reads from a group.
+ Groups are indicated by the first part of the read name, up to the
+character specified by -group_delim.
+
+ -force_high *
+ (phrap only). Causes edited high-quality discrepancies to be ignored
+during final contig merge pass.  This option may be useful when it is
+suspected that incorrect edits are causing a misassembly.
+
+6. Consensus sequence construction
+
+ -node_seg 8
+ (phrap only). Minimum segment size (for purposes of traversing
+weighted directed graph).
+
+ -node_space 4
+ (phrap only). Spacing between nodes (in weighted directed graph).
+
+7. Output
+
+ Not implemented in this Perl module.
+
+8. Miscellaneous
+
+ -retain_duplicates *
+ (phrap only). Retain exact duplicate reads, rather than eliminating
+them.
+
+ -max_subclone_size 5000
+ (phrap only). Maximum subclone size -- for forward-reverse read pair
+consistency checks.
+
+ -trim_penalty -2
+ (phrap only). Penalty used for identifying degenerate sequence at
+beginning & end of read.
+
+ -trim_score 20
+ (phrap only). Minimum score for identifying degenerate sequence at
+beginning & end of read.
+
+ -trim_qual 13
+ (phrap only). Quality value used in to define the "high-quality" part
+of a read, (the part which should overlap; this is used to adjust
+qualities at ends of reads.
+
+ -confirm_length 8
+ (phrap only). Minimum size of confirming segment (segment starts at
+3d distinct nuc following discrepancy).
+
+ -confirm_trim 1
+ (phrap only). Amount by which confirming segments are trimmed at
+edges.
+
+ -confirm_penalty -5
+ (phrap only). Penalty used in aligning against "confirming" reads.
+
+ -confirm_score 30
+ (phrap only). Minimum alignment score for a read to be allowed to
+"confirm" part of another read.
+
+ -indexwordsize 10
+ Size of indexing (hashing) words, used in finding word matches
+between sequences.  The value of this parameter has a generally minor
+effect on run time and memory usage.
 
 =cut
 
 sub new {
-       my ($class,@args) = @_;
-       my $self = $class->SUPER::new(@args);
- 
-       my ($attr, $value);
-       while (@args)  {
-           $attr =   shift @args;
-           $value =  shift @args;
-           next if( $attr =~ /^-/ ); # don't want named parameters
-           if ($attr =~/PROGRAM/i) {
-              $self->executable($value);
-              next;
-           }
-           $self->$attr($value);
-       }
-       return $self;
+  my ($class,@args) = @_;
+  my $self = $class->SUPER::new(@args);
+  $self->_set_program_options(\@args, \@program_params, \@program_switches, \%param_translation,
+    $qual_param, $use_dash, $join);
+  $self->program_name($program_name) if not defined $self->program_name();
+  $self->_assembly_format($asm_format);
+  return $self;
 }
+
+=head2 out_type
+
+ Title   : out_type
+ Usage   : $assembler->out_type('Bio::Assembly::ScaffoldI')
+ Function: Get/set the desired type of output
+ Returns : The type of results to return
+ Args    : Desired type of results to return (optional):
+                 'Bio::Assembly::IO' object
+                 'Bio::Assembly::ScaffoldI' object (default)
+                 The name of a file to save the results in
+
+=cut
+
 
 =head2 run
 
- Title   :   run()
- Usage   :   my $feats = $factory->run($seq)
- Function:   Runs Phrap 
- Returns :   An array of Bio::SeqFeature::Generic objects
- Args    :   A Bio::PrimarySeqI
-
+ Title   :   run
+ Usage   :   $asm = $factory->run($fasta_file)
+ Function:   Run Phrap
+ Returns :   Assembly results (file, IO object or assembly object)
+ Args    :   - sequence input (FASTA file or sequence object arrayref)
+             - optional quality score input (QUAL file or quality score object
+               arrayref)
 =cut
 
-sub run {
-    my ($self,$seq) = @_;
-    my @feats;
-
-    my ($fh,$infile1);
-    if (ref($seq) =~ /ARRAY/i) {
-      my @infilearr;
-      ($fh, $infile1) = $self->io->tempfile();
-      my $temp = Bio::SeqIO->new( -file => ">$infile1",
-                                  -format => 'Fasta' );
-      foreach my $seq1 (@$seq) {
-        unless ($seq1->isa("Bio::PrimarySeqI")) {
-          return 0;
-        }
-        $temp->write_seq($seq1);
-        push @infilearr, $infile1;
-      }
-    }
-    else {
-      $infile1 = $seq;
-    }
-	  $self->_input($infile1);
-	  my $assembly = $self->_run();
-
-    return $assembly;
-}
-
-=head2 _input
-
- Title   :   _input
- Usage   :   $factory->_input($seqFile)
- Function:   get/set for input file
- Returns :
- Args    :
-
-=cut
-
-sub _input() {
-     my ($self,$infile1) = @_;
-     $self->{'input'} = $infile1 if(defined $infile1);
-     return $self->{'input'};
- }
 
 =head2 _run
 
  Title   :   _run
  Usage   :   $factory->_run()
- Function:   Makes a system call and runs Phrap
- Returns :   An array of Bio::SeqFeature::Generic objects
- Args    :
+ Function:   Make a system call and run Phrap
+ Returns :   An assembly file
+ Args    :   - FASTA file
+             - optional QUAL file
 
 =cut
 
 sub _run {
-     my ($self)= @_;
+  my ($self, $fasta_file, $qual_file) = @_;
 
-     my ($tfh1,$outfile) = $self->io->tempfile(-dir=>$self->tempdir());
-     my $param_str = ($self->_setparams || '')." ".($self->arguments || '');
-     my $str =$self->executable." $param_str ".$self->_input()." 1> ".$outfile. " 2> /dev/null";
-     $self->debug($str. "\n");
-     my $status = system($str);
-     $self->throw( "Phrap call ($str) crashed: $? \n") unless $status==0;
-     my $filehandle;
-     my $parser = Bio::Assembly::IO->new(-file=>"$outfile",-format=>"phrap");
-     my $assembly =  $parser->next_assembly;
-     close($tfh1);
-     undef $tfh1;    
-     unlink $outfile;
-     
-     return $assembly;
-}
+  # Move quality file to proper place
+  my $tmp_qual_file = "$fasta_file.qual";
+  if ($qual_file && not -f $tmp_qual_file) {
+    $tmp_qual_file = "$fasta_file.qual"; # by Cap3 convention
+    link ($qual_file, $tmp_qual_file) or copy ($qual_file, $tmp_qual_file) or
+      $self->throw("Could not copy file '$qual_file' to '$tmp_qual_file': $!");
+  }
 
+  # Setup needed files and filehandles
+  my ($output_fh, $output_file)   = $self->_prepare_output_file( );
 
-=head2 _writeSeqFile
+  # Get program executable
+  my $exe = $self->executable;
 
- Title   :   _writeSeqFile
- Usage   :   $factory->_writeSeqFile($seq)
- Function:   Creates a file from the given seq object
- Returns :   A string(filename)
- Args    :   Bio::PrimarySeqI
+  # Get command-line options
+  my $options = join ' ', @{$self->_translate_params()};
 
-=cut
+  # Usage: phrap seq_file1 [seq_file2 ...] [-option value] [-option value] ...
+  my $str = "$exe $options $fasta_file 1> $output_file 2> /dev/null";
+  if ($self->verbose() >= 0) {
+    $self->debug( "$exe command = $str\n" );
+  };
+  my $status = system($str);
+  $self->throw( "Phrap call ($str) crashed: $? \n") unless $status==0;
+  close($output_fh);
 
-sub _writeSeqFile{
-    my ($self,$seq) = @_;
-    my ($tfh,$inputfile) = $self->io->tempfile(-dir=>$self->tempdir());
-    my $in  = Bio::SeqIO->new(-fh => $tfh , '-format' => 'fasta');
-    $in->write_seq($seq);
-    $in->close();
-    close($tfh);
-    undef $tfh;
-    return $inputfile;
+  # Result files
+  my $log_file = "$fasta_file.log";
+  my $contigs_file = "$fasta_file.contigs";
+  my $problems_file = "$fasta_file.problems";
+  my $problems_qual_file = "$fasta_file.problems.qual";
+  my $contigs_qual_file = "$fasta_file.contigs.qual";
+  my $singlets_file = "$fasta_file.singlets";
 
-}
+  # Remove all files except for the PHRAP file
+  for my $file ($log_file, $contigs_file, $problems_file, $problems_qual_file,
+    $contigs_qual_file, $singlets_file, $tmp_qual_file) {
+    unlink $file;
+  }
 
-=head2 _setparams
-
- Title   :  _setparams
- Usage   :  Internal function, not to be called directly
- Function:  creates a string of params to be used in the command string
- Example :
- Returns :  string of params
- Args    :  
-
-=cut
-
-sub _setparams {
-    my ($self) = @_;
-    my $param_string;
-    foreach my $attr(@PHRAP_PARAMS){
-        next if($attr=~/PROGRAM/);
-        my $value = $self->$attr();
-        next unless (defined $value);
-        my $attr_key = ' -'.(lc $attr);
-        $param_string .= $attr_key.' '.$value;
-    }
-    return $param_string;
+  return $output_file;
 }
 
 1;

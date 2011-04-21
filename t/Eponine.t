@@ -1,5 +1,5 @@
 # -*-Perl-*-
-# $Id: Eponine.t 15337 2009-01-12 00:31:05Z sendu $
+# $Id$
 ## Bioperl Test Harness Script for Modules
 
 use strict;

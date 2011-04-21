@@ -47,11 +47,11 @@ Report bugs to the Bioperl bug tracking system to help us keep track
 of the bugs and their resolution. Bug reports can be submitted via the
 web:
 
-  http://bugzilla.open-bio.org/
+  http://redmine.open-bio.org/projects/bioperl/
 
 =head1 AUTHOR
 
-  Mauricio Herrera Cuadra <arareko-at-campus.iztacala.unam.mx>
+  Mauricio Herrera Cuadra <mauricio-at-open-bio.org>
 
 =cut
 

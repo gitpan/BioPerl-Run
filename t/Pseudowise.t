@@ -1,4 +1,4 @@
-# $Id: Pseudowise.t 15337 2009-01-12 00:31:05Z sendu $
+# $Id$
 # -*-Perl-*-
 ## Bioperl Test Harness Script for Modules
 

@@ -1,4 +1,4 @@
-# $Id: soap.pm 16221 2009-09-30 04:30:42Z cjfields $
+# $Id$
 #
 # BioPerl module Bio::Tools::Run::Analysis::soap.pm
 #
@@ -59,7 +59,7 @@ Report bugs to the Bioperl bug tracking system to help us keep track
 of the bugs and their resolution. Bug reports can be submitted via the
 web:
 
-  http://bugzilla.open-bio.org/
+  http://redmine.open-bio.org/projects/bioperl/
 
 =head1 AUTHOR
 
@@ -124,7 +124,7 @@ use SOAP::Lite
 @ISA = qw(Bio::Tools::Run::Analysis);
 
 BEGIN { 
-    $Revision = q[$Id: soap.pm 16221 2009-09-30 04:30:42Z cjfields $];
+    $Revision = q[$Id$];
 
     # where to go
     $DEFAULT_LOCATION = 'http://www.ebi.ac.uk/soaplab/services';

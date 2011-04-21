@@ -1,4 +1,4 @@
-# $Id: Yn00.pm 16221 2009-09-30 04:30:42Z cjfields $
+# $Id$
 #
 # BioPerl module for Bio::Tools::Run::Phylo::PAML::Yn00
 #

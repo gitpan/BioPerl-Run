@@ -1,4 +1,4 @@
-# $Id: DBA.pm 16221 2009-09-30 04:30:42Z cjfields $
+# $Id$
 #
 # BioPerl module for Bio::Tools::Run::Alignment::DBA
 #
@@ -83,7 +83,7 @@ Report bugs to the Bioperl bug tracking system to help us keep track
 the bugs and their resolution.  Bug reports can be submitted via the
 web:
 
-  http://bugzilla.open-bio.org/
+  http://redmine.open-bio.org/projects/bioperl/
 
 =head1 AUTHOR - Shawn Hoon 
 

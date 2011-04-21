@@ -27,8 +27,8 @@ Bio::Tools::Run::Phylo::Phylip::Base - Base object for Phylip modules
 This module is just a base object for Bioperl Phylip wrappers.
 
 IMPORTANT PHYLIP VERSION ISSUES
-By default we assume you have Phylip 3.5 installed, if you
-have installed Phylip 3.6 you need to set the environment variable
+By default we assume you have Phylip 3.6 installed, if you
+have installed Phylip 3.5 you need to set the environment variable
 PHYLIPVERSION
 
 
@@ -60,7 +60,7 @@ Report bugs to the Bioperl bug tracking system to help us keep track
 of the bugs and their resolution. Bug reports can be submitted via the
 web:
 
-  http://bugzilla.open-bio.org/
+  http://redmine.open-bio.org/projects/bioperl/
 
 =head1 AUTHOR - Jason Stajich
 

@@ -9,24 +9,38 @@
 =head1 NAME
 
 Bio::Tools::Run::TigrAssembler - Wrapper for local execution of TIGR Assembler
- v2.0
+ v2
 
 =head1 SYNOPSIS
 
   use Bio::Tools::Run::TigrAssembler;
-  my $assembler = Bio::Tools::Run::TigrAssembler->new();
-
-  # Pass the factory a Bio::Seq object array reference
-  # Returns a Bio::Assembly::Scaffold object array reference
-  my $asms = $assembler->run(\@seqs);
-
-  for my $asm (@$asms) {
-    # do something with assembled sequences
+  # Run TIGR Assembler using an input FASTA file
+  my $factory = Bio::Tools::Run::TigrAssembler->new( -minimum_overlap_length => 35 );
+  my $asm_obj = $factory->run($fasta_file, $qual_file);
+  # An assembly object is returned by default
+  for my $contig ($assembly->all_contigs) {
+    ... do something ...
   }
 
-  # Look at what command was run and what the intermediary files were using:
-  $assembler->verbose(2);
-  $assembler->save_tempfiles(1);
+  # Read some sequences
+  use Bio::SeqIO;
+  my $sio = Bio::SeqIO->new(-file => $fasta_file, -format => 'fasta');
+  my @seqs;
+  while (my $seq = $sio->next_seq()) {
+    push @seqs,$seq;
+  }
+
+  # Run TIGR Assembler with input sequence objects and return an assembly file
+  my $asm_file = 'results.tigr';
+  $factory->out_type($asm_file);
+  $factory->run(\@seqs);
+
+  # Use LIGR Assembler instead
+  my $ligr = Bio::Tools::Run::TigrAssembler->new(
+    -program_name => 'LIGR_Assembler',
+    -trimmed_seq  => 1
+  );
+  $ligr->run(\@seqs);
 
 =head1 DESCRIPTION
 
@@ -34,15 +48,10 @@ Bio::Tools::Run::TigrAssembler - Wrapper for local execution of TIGR Assembler
   Assembler v2.0. TIGR Assembler is open source software under The Artistic
   License and available at: http://www.tigr.org/software/assembler/
 
-  The description enables to runs TIGR Assembler by feeding it sequence objects
-  and returning assembly objects. The input could be an array of Bio::PrimarySeq
-  or maybe Bio::Seq::Quality, in which case, the quality scores will
-  automatically be used during assembly. Sequences less than 39 bp long are
-  filtered out since they are not supported by TIGR Assembler. The
-  amount of memory in your machine may prevent you to assemble large sequence
-  datasets, but this module offers a way to split your dataset in smaller
-  datasets to be assembled _independently_. An array of Bio::Assembly::Scaffold
-  objects is returned.
+  This module runs TIGR Assembler by feeding it a FASTA file or sequence objects
+  and returning an assembly file or assembly and IO objects. When the input is
+  Bioperl object, sequences less than 39 bp long are filtered out since they are
+  not supported by TIGR Assembler.
 
   If provided in the following way, TIGR Assembler will use additional
   information present in the sequence descriptions for assembly:
@@ -53,6 +62,9 @@ Bio::Tools::Run::TigrAssembler - Wrapper for local execution of TIGR Assembler
      clear_end5 clear_end3
     e.g.
     >GHIBF57F 500 3000 1750 33 587
+
+  This module also supports LIGR Assembler, a variant of TIGR Assembler:
+    http://sourceforge.net/projects/ligr-assembler/
 
 =head1 FEEDBACK
 
@@ -81,7 +93,7 @@ with code and data examples if at all possible.
 Report bugs to the Bioperl bug tracking system to help us keep track the bugs
 and their resolution.  Bug reports can be submitted via the web:
 
-  http://bugzilla.open-bio.org/
+  http://redmine.open-bio.org/projects/bioperl/
 
 =head1 AUTHOR - Florent E Angly
 
@@ -99,20 +111,15 @@ package Bio::Tools::Run::TigrAssembler;
 
 use strict;
 use IPC::Run;
-use Bio::Root::Root;
-use Bio::Tools::Run::WrapperBase;
-use Bio::Assembly::IO;
 
-use base qw(Bio::Root::Root Bio::Tools::Run::WrapperBase);
+use base qw( Bio::Root::Root Bio::Tools::Run::AssemblerBase );
 
-our $program = 'TIGR_Assembler';
-our $program_name = 'TIGR_Assembler';
-our @params = (qw( program max_nof_seqs ));
-our @tasm_params = (qw( minimum_percent minimum_length max_err_32 quality_file
+our $program_name = 'TIGR_Assembler'; # name of the executable
+our @program_params = (qw( minimum_percent minimum_length max_err_32 quality_file
   maximum_end resort_after ));
-our @tasm_switches = (qw( include_singlets consider_low_scores safe_merging_stop
-  ignore_tandem_32mers use_tandem_32mers not_random ));
-our %tasm_options = (
+our @program_switches = (qw( include_singlets consider_low_scores safe_merging_stop
+  ignore_tandem_32mers use_tandem_32mers not_random incl_bad_seq trimmed_seq ));
+our %param_translation = (
   'quality_file'         => 'q',
   'minimum_percent'      => 'p',
   'minimum_length'       => 'l',
@@ -124,78 +131,37 @@ our %tasm_options = (
   'use_tandem_32mers'    => 'u',
   'safe_merging_stop'    => 'X',
   'not_random'           => 'N',
-  'resort_after'         => 'r'
+  'resort_after'         => 'r',
+  'incl_bad_seq'         => 'b',
+  'trimmed_seq'          => 'i'
 );
-
-
-=head2 program_name
-
- Title   : program_name
- Usage   : $assembler>program_name()
- Function: get/set the program name
- Returns:  string
- Args    : string
-
-=cut
-
-sub program_name {
-    my ($self, $val) = @_;
-    $self->program($val) if $val;
-    return $self->program();
-}
-
-
-=head2 program_dir
-
- Title   : program_dir
- Usage   : $assembler->program_dir()
- Function: get/set the program dir
- Returns:  string
- Args    : string
-
-=cut
-
-sub program_dir {
-    my ($self, $val) = @_;
-    $self->{'_program_dir'} = $val if $val;
-    return $self->{'_program_dir'};
-}
-
-
-=head2 max_nof_seqs
-
- Title   : max_nof_seqs
- Usage   : $assembler->max_nof_seqs()
- Function: get/set the maximum number number of sequences to assemble at once
- Returns:  string
- Args    : string
-
-=cut
-
-sub max_nof_seqs {
-  my ($self, $val) = @_;
-  $self->{'_max_nof_seq'} = $val if $val;
-  return $self->{'_max_nof_seq'};
-}
+our $qual_param = 'quality_file';
+our $use_dash = 1;
+our $join = ' ';
+our $asm_format = 'tigr';
+our $min_len = 39;
 
 
 =head2 new
 
  Title   : new
- Usage   : $assembler->new( -minimum_percent  => 95,
-                            -minimum_length   => 50,
-                            -include_singlets => 1);
- Function: Creates a TIGR Assembler factory
- Returns : Bio::Tools::Run::TigrAssembler object
- Args    : TIGR Assembler options available in this module:
-  minimum_percent: the minimum percent identity that two DNA fragments must
-    achieve over their entire region of overlap in order to be considered as a
-    possible assembly. Adjustments are made by the program to take into account
-    that the ends of sequences are lower quality and doubled base calls are the
-    most frequent sequencing error.
-  minimum_length: the minimum length two DNA fragments must overlap to be
-    considered as a possible assembly (warning: in tests I did, this option
-    did not work as expected...)
+ Usage   : $factory->new( -minimum_percent  => 95,
+                          -minimum_length   => 50,
+                          -include_singlets => 1  );
+ Function: Create a TIGR Assembler factory
+ Returns : A Bio::Tools::Run::TigrAssembler object
+ Args    :
+
+TIGR Assembler options available in this module:
+
+  minimum_percent / minimum_overlap_similarity: the minimum percent identity
+    that two DNA fragments must achieve over their entire region of overlap in
+    order to be considered as a possible assembly. Adjustments are made by the
+    program to take into account that the ends of sequences are lower quality
+    and doubled base calls are the most frequent sequencing error.
+  minimum_length / minimum_overlap_length: the minimum length two DNA fragments
+    must overlap to be considered as a possible assembly (warning: this option
+    is not strictly respected by TIGR Assembler...)
   include_singlets: a flag which indicates that singletons (assemblies made up
     of a single DNA fragment) should be included in the lassie output_file - the
     default is to not include singletons.
@@ -218,233 +184,106 @@ sub max_nof_seqs {
     comparison opposite of the -t flag which is now the default).
   safe_merging_stop: a flag which causes merging to stop when only sequences
     which appear to be repeats are left and these cannot be merged based on
-    clone length constraints. not_random: a flag which indicates the DNA
-    fragments in the input_file should not be treated as random genomic
-    fragments for the purpose of determining repeat regions.
+    clone length constraints.
+  not_random: a flag which indicates that the DNA fragments in the input_file
+    should not be treated as random genomic fragments for the purpose of
+    determining repeat regions.
   resort_after: specifies how many sequences should be merged before resorting
     the possible merges based on clone constraints.
+
+LIGR Assembler has the same options as TIGR Assembler, and the following:
+
+  incl_bad_seq: keep all sequences including potential chimeras and splice variants
+  trimmed_seq: indicates that the sequences are trimmed. High quality scores will be
+    given on the whole sequence length instead of just in the middle)
 
 =cut
 
 sub new {
   my ($class,@args) = @_;
   my $self = $class->SUPER::new(@args);
-  $self->io->_initialize_io();
-  $self->_set_from_args(
-    \@args,
-    -methods => [
-      @params,
-      @tasm_params,
-      @tasm_switches,
-    ],
-    -create =>  1,
-  );
-  $self->program($program_name) if not defined $self->program();
+  $self->_set_program_options(\@args, \@program_params, \@program_switches,
+    \%param_translation, $qual_param, $use_dash, $join);
+  *minimum_overlap_length = \&minimum_length;
+  *minimum_overlap_similarity = \&minimum_percent;
   $self->program_name($program_name) if not defined $self->program_name();
+  $self->_assembly_format($asm_format);
   return $self;
 }
+
+
+=head2 out_type
+
+ Title   : out_type
+ Usage   : $factory->out_type('Bio::Assembly::ScaffoldI')
+ Function: Get/set the desired type of output
+ Returns : The type of results to return
+ Args    : Desired type of results to return (optional):
+                 'Bio::Assembly::IO' object
+                 'Bio::Assembly::ScaffoldI' object (default)
+                 The name of a file to save the results in
+
+=cut
 
 
 =head2 run
 
  Title   :   run
- Usage   :   $obj->run(\@seqs, \@quals);
- Function:   Runs TIGR Assembler
- Returns :   a Bio::Assembly::ScaffoldI object array reference, or undef if all
-             sequences were too small to be usable
- Args    :   - sequences as a Bio::PrimarySeqI or Bio::SeqI arrayref (e.g. can
-               be Bio::Seq::Quality for sequences and quality scores in a same
-               object)
-             - optional Bio::Seq::PrimaryQual arrayref of quality scores if
-               you have your scores in different objects from your sequences.
-               Must have same ID as sequences and same order
-
+ Usage   :   $factory->run($fasta_file);
+ Function:   Run TIGR Assembler
+ Returns :   - a Bio::Assembly::ScaffoldI object, a Bio::Assembly::IO
+               object, a filename, or undef if all sequences were too small to
+               be usable
+ Returns :   Assembly results (file, IO object or assembly object)
+ Args    :   - sequence input (FASTA file or sequence object arrayref)
+             - optional quality score input (QUAL file or quality score object
+               arrayref)
 =cut
-
-sub run {
-  my ($self, $seqs, $quals) = @_;
-  # Sanity check
-  unless ($seqs) {
-    $self->throw("Must supply a Bio::PrimarySeqI or Bio::SeqI object array reference");
-  }
-  for my $seq (@$seqs) {
-    unless ($seq->isa('Bio::PrimarySeqI') || $seq->isa('Bio::SeqI')) {
-      $self->throw("Not a valid Bio::PrimarySeqI or Bio::SeqI object");
-    }
-  }
-  if ($quals) {
-    for my $qual (@$quals) {
-      unless ($qual->isa('Bio::Seq::QualI')) {
-        $self->throw("Not a valid Bio::Seq::QualI object");
-      }
-    }
-  }
-  # Assemble
-  $self->save_tempfiles(0);
-  $self->tempdir();
-  my @asms;
-  my $tot_nof_seqs = scalar @$seqs;
-  my $max_nof_seqs = $self->max_nof_seqs || $tot_nof_seqs;
-  for (my $i = 0 ; $i < $tot_nof_seqs ; $i += $max_nof_seqs) {
-    my $first = $i;
-    my $last = $i+$max_nof_seqs-1;
-    $last = $tot_nof_seqs-1 if $last > $tot_nof_seqs-1;
-    my @seq_subset = @$seqs[$first..$last];
-    my @qual_subset = @$quals[$first..$last] if $quals;
-    # Write temp FASTA and QUAL input files, removing sequences less than 39bp
-    my ($fasta_file, $qual_file) = $self->_write_seq_file(\@seq_subset, \@qual_subset);
-    # Assemble
-    next if not defined $fasta_file;
-    my ($asm_obj, $asm_file) = $self->_run($fasta_file, $qual_file);
-    push @asms, $asm_obj
-  }
-  $self->cleanup();
-  return \@asms;
-}
-
-
-=head2 _write_seq_file
-
- Title   :   _write_seq_file
- Usage   :   $assembler->_write_seq_file(\@seqs, \@quals)
- Function:   Write temporary FASTA and QUAL files on disk
- Returns :   name of FASTA file
-             name of QUAL file (undef if no quality scoress)
- Args    :   Bio::PrimarySeq object array reference
-             optional quality objects array reference
-
-=cut
-
-sub _write_seq_file {
-  my ($self, $seqs, $quals) = @_;
-  # Store the sequences in temporary FASTA files
-  my $tmpdir = $self->tempdir();
-  my ($fasta_h, $fasta_file) = $self->io->tempfile( -dir => $tmpdir );
-  my ($qual_h,  $qual_file ) = $self->io->tempfile( -dir => $tmpdir );
-  my $fasta_out = Bio::SeqIO->new( -fh => $fasta_h , -format => 'fasta');
-  my $qual_out  = Bio::SeqIO->new( -fh => $qual_h  , -format => 'qual' );
-  my $use_qual_file = 0;
-  my $size = scalar @$seqs;
-  for ( my $i = 0 ; $i < $size ; $i++ ) {
-    my $seq = $$seqs[$i];
-    # Make sure that all sequences have an ID (to prevent TIGR Assembler crash)
-    if (not defined $seq->id) {
-      my $newid = 'tmp'.$i;
-      print $newid."\n";
-      $seq->id($newid);
-      $self->warn("A sequence had no ID. Its ID is now $newid");
-    }
-    my $seqid = $seq->id;
-    # Remove sequences less than 39bp because they make TIGR_Assembler crash.
-    # To reproduce this bug, take 2 identical sequences, trim one below 39bp,
-    # run TIGR_Assembler with its default parameters, and watch the backtrace
-    my $min_length = 39;
-    if ($seq->length < $min_length) {
-      splice @$seqs, $i, 1;
-      $i--;
-      $size--;
-      $self->warn("Sequence $seqid skipped: can not be assembled because its ".
-        "size is less than $min_length bp");
-      next;
-    }
-    # Write the FASTA entries in files (and QUAL if appropriate)
-    $fasta_out->write_seq($seq);
-    if ($seq->isa('Bio::Seq::Quality')) {
-      # Quality scores embedded in seq object
-      if (scalar @{$seq->qual} > 0) {
-        $qual_out->write_seq($seq);
-        $use_qual_file = 1;
-      }
-    } else {
-      # Quality score in a different object from the sequence object
-      my $qual = $$quals[$i];
-      if (defined $qual) {
-        my $qualid = $qual->id;
-        if ($qualid eq $seqid) {
-          # valid quality score information
-          $qual_out->write_seq($qual);
-          $use_qual_file = 1;
-        } else {
-          # ID mismatch between sequence and quality score
-          $self->warn("Sequence object with ID $seqid does not match quality ".
-            "score object with ID $qualid");
-        }
-      }
-    }
-  }
-  close($fasta_h);
-  close($qual_h);
-  $fasta_out->close();
-  $qual_out->close();
-  return undef if scalar @$seqs <= 0;
-  $qual_file = undef if $use_qual_file == 0;
-  return $fasta_file, $qual_file;
-}
 
 
 =head2 _run
 
  Title   :   _run
  Usage   :   $assembler->_run()
- Function:   Assembly step
- Returns :   Bio::Assembly::Scaffold object
-             assembly file location
- Args    :   FASTA file location
-             QUAL file location [optional]
+ Function:   Make a system call and run Newbler
+ Returns :   An assembly file
+ Args    :   - FASTA file, SFF file and MID, or analysis dir and MID
+             - optional QUAL file
 
 =cut
 
 sub _run {
   my ($self, $fasta_file, $qual_file) = @_;
-  
-  # Usage: TIGR_Assembler [options] scratch_file < input_file > output_file
-
-  $self->throw("Need a FASTA file as input") if not defined $fasta_file;
 
   # Setup needed files and filehandles first
-  my $tmpdir = $self->tempdir(); # retrieve existing temporary dir
-  my ($scratch_fh, $scratch_file) = $self->io->tempfile( -dir => $tmpdir );
-  my ($output_fh,  $output_file ) = $self->io->tempfile( -dir => $tmpdir );
-  my ($stderr_fh,  $stderr_file ) = $self->io->tempfile( -dir => $tmpdir );
-  
-  # Use quality files if possible
-  $self->quality_file($qual_file) if defined $qual_file;
-  
+  my ($output_fh,  $output_file ) = $self->_prepare_output_file( );
+  my ($scratch_fh, $scratch_file) = $self->io->tempfile( -dir => $self->tempdir() );
+  my ($stderr_fh,  $stderr_file ) = $self->io->tempfile( -dir => $self->tempdir() );
+
+  # Get program executable
+  my $exe = $self->executable;
+
   # Get command-line options
-  my @options = split(/\s+/, $self->_setparams(
-    -params   => \@tasm_params,
-    -switches => \@tasm_switches,
-    -join     => ' ',
-    -dash     => 1
-  ));
-  for ( my $i = 0 ; $i < scalar @options ; $i++) {
-    splice @options, $i, 1 if $options[$i] =~ m/^\s*$/;
-    $options[$i] =~ s/-(.+)/-$tasm_options{$1}/x;
-  }
-  
-  # Build command to run
-  my $exe = $self->executable();
-  $self->throw("Could not find TIGR Assembler executable") if not defined $exe;
-  my @tasm_args;
-  if ( scalar @params > 0 ) {
-    @tasm_args = ( $exe, @options, $scratch_file );
-  } else {
-    @tasm_args = ( $exe, $scratch_file);
-  }
-  my @ipc_args = (
-    \@tasm_args,
-    '<',  $fasta_file,
-    '>',  $output_file,
-    '2>', $stderr_file
-  );
-  
+  my $options = $self->_translate_params();
+
+  # Usage: TIGR_Assembler [options] scratch_file < input_file > output_file
+  my @program_args = ( $exe, @$options, $scratch_file );
+  my $stdin  = $fasta_file;
+  my $stdout = $output_file;
+  my $stderr = $stderr_file;
+
+  my @ipc_args = ( \@program_args,
+                   '<',  $fasta_file,
+                   '>',  $output_file,
+                   '2>', $stderr_file  );
+
   # Print command for debugging
   if ($self->verbose() >= 0) {
     my $cmd = '';
-    $cmd .= join ( ' ', @tasm_args );
+    $cmd .= join ( ' ', @program_args );
     for ( my $i = 1 ; $i < scalar @ipc_args ; $i++ ) {
       my $element = $ipc_args[$i];
-      my $ref = ref $element;
+      my $ref = ref($element);
       my $value;
       if ( $ref && $ref eq 'SCALAR') {
         $value = $$element;
@@ -453,18 +292,17 @@ sub _run {
       }
       $cmd .= " $value";
     }
-    $self->debug( "TIGR Assembler command = $cmd" );
+    $self->debug( "$exe command = $cmd\n" );
   }
-  
+
   # Execute command
   eval {
-    IPC::Run::run(@ipc_args) || die("problem: $!");
+    IPC::Run::run(@ipc_args) || die("There was a problem running $exe: $!");
   };
   if ($@) {
-    $self->throw("TIGR Assembler call crashed: $@");
+    $self->throw("$exe call crashed: $@");
   }
-  $self->debug(join("\n", 'TIGR Assembler STDERR:', $stderr_file))
-    if $stderr_file;
+  $self->debug(join("\n", "$exe STDERR", $stderr_file)) if $stderr_file;
     # TIGR Assembler's stderr reports a lot more than just errors
  
   # Close filehandles
@@ -473,14 +311,52 @@ sub _run {
   close($stderr_fh);
  
   # Import assembly
-  my $asm_io = Bio::Assembly::IO->new(
-    -file   => "<$output_file",
-    -format => 'tigr' );
-  my $asm = $asm_io->next_assembly();
-  $asm_io->close;
-
-  return $asm, $output_file;
+  return $output_file;
 }
 
+
+=head2 _remove_small_sequences
+
+ Title   :   _remove_small_sequences
+ Usage   :   $assembler->_remove_small_sequences(\@seqs, \@quals)
+ Function:   Remove sequences below a threshold length
+ Returns :   a new sequence object array reference
+             a new quality score object array reference
+ Args    :   sequence object array reference
+             quality score object array reference (optional)
+
+=cut
+
+# Aliasing function _prepare_input_sequences to _remove_small_sequences
+*_prepare_input_sequences = \&_remove_small_sequences;
+
+sub _remove_small_sequences {
+  my ($self, $seqs, $quals) = @_;
+  # The threshold length, $min_len, has been registered as a global variable
+  my @new_seqs;
+  my @new_quals;
+
+  if (ref($seqs) =~ m/ARRAY/i) {
+    my @removed;
+    my $nof_seqs = scalar @$seqs;
+    for my $i (1 .. $nof_seqs) {
+      my $seq = $$seqs[$i-1];
+      if ($seq->length >= $min_len) {
+        push @new_seqs, $seq;
+        if ($quals) {
+          my $qual = $$quals[$i-1];
+          push @new_quals, $qual;
+        }
+      } else {
+        push @removed, $seq->id;
+      }
+    }
+    if (scalar @removed > 0) {
+      $self->warn("The following sequences were removed because they are smaller".
+        " than $min_len bp: @removed\n");
+    }
+  }
+  return \@new_seqs, \@new_quals;
+}
 
 1;

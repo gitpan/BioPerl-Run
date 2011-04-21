@@ -27,7 +27,7 @@ my $outfile = test_output_file();
 
 # setup global objects that are to be used in more than one test
 # Also test they were initialised correctly
-my @params = ('ktuple' => 3, 'quiet'  => 1);
+my @params = ('ktuple' => 2, 'quiet'  => 1);
 
 my $factory = Bio::Tools::Run::Alignment::Clustalw->new(@params);
 isa_ok( $factory, 'Bio::Tools::Run::Alignment::Clustalw');
@@ -44,10 +44,10 @@ is( $factory->program_name(), 'clustalw',                'Correct exe default na
 
 SKIP: {
   test_skip(-requires_executable => $factory,
-            -tests => 19);  
+            -tests => 19);
   
   # test all factory methods dependent on finding the executable
-  # TODO: isnt( $factory->program_dir, undef,               'Found program in an ENV variable' );
+  # TODO: isnt( $factory->program_dir, undef,'Found program in an ENV variable' );
   my $ver = $factory->version || 0;
   
   # remove last bit 
@@ -55,12 +55,8 @@ SKIP: {
   
   # clustalw2 isn't supported yet.
   if ($ver < 1.8) {
-    diag("ClustalW version $ver not supported");
-    skip("ClustalW version $ver not supported", 19);
-  }
-  if ($ver >= 2.0) {
-    diag("Warning: ClustalW version $ver not supported yet.");
-    skip("ClustalW version $ver not supported yet", 19);
+        diag("ClustalW version $ver not supported");
+        skip("ClustalW version $ver not supported", 19);
   }
   
   ok( $ver, "Supported program version $ver" );
@@ -74,7 +70,7 @@ SKIP: {
   
   # now test its output
   isa_ok( $aln, 'Bio::SimpleAlign');
-  is( $aln->no_sequences, 7,                               'Correct number of seqs returned' );
+  is( $aln->num_sequences, 7,                               'Correct number of seqs returned' );
   is $aln->score, 16047, 'Score';
   
   # test execution using an array of Seq objects
@@ -86,7 +82,7 @@ SKIP: {
   $aln = $factory->align(\@seq_array);
   # now test its output
   isa_ok( $aln, 'Bio::SimpleAlign');
-  is( $aln->no_sequences, 7,                            'Correct number of seqs returned' );
+  is( $aln->num_sequences, 7,'Correct number of seqs returned' );
 
   # Use this alignment to fully test the methods
   {
@@ -99,13 +95,14 @@ SKIP: {
   }
 
   # test doing a bootstrap tree
+
   my $tree = $factory->tree($aln);
   isa_ok( $tree, 'Bio::Tree::Tree' );
   
   # now test doing profile alignments
   $aln = $factory->profile_align($profile1,$profile2);
   isa_ok( $aln, 'Bio::SimpleAlign' );
-  is( $aln->no_sequences, 7,                            'Correct number of seqs returned' );
+  is( $aln->num_sequences, 7,'Correct number of seqs returned' );
   
   # test the run method
   ($aln, $tree) = $factory->run(\@seq_array);
@@ -127,14 +124,15 @@ SKIP: {
 	      Bio::Seq->new(-seq => 'AACCTGGGCAATTGGCAAATTGGACGTACGTACGT', -id => 'baboon'),
 	      Bio::Seq->new(-seq => 'AACCTGGCTAATTGGTCAATTGGACGTACGTACGT', -id => 'rhesus'),
 	      Bio::Seq->new(-seq => 'AACCTGGCCGATTGGCCAATTGGACGTACGTACGT', -id => 'squirrelmonkey'));
-  my @results = $factory->footprint(\@seqs);
-  @results = map { $_->consensus_string } @results;
-  is_deeply(\@results, [qw(ATTGG TACGT)], 'footprinting worked');
+  
+    my @results = $factory->footprint(\@seqs);
+    @results = map { $_->consensus_string } @results;
+    is_deeply(\@results, [qw(ATTGG TACGT)], 'footprinting worked');
   
   SKIP: {
 	# TODO: Is this needed, or should min version be bumped to > 1.82. Discuss with module author
     # keeping this to be compatible with older t/Clustalw.t
-    skip("clustalw 1.81 & 1.82 contain a profile align bug", 2) unless $factory->version > 1.82;
+    skip("clustalw 1.81 & 1.82 contain a profile align bug", 2) unless $ver > 1.82;
 	
 	my $str1 = Bio::AlignIO->new(-file=> $profile1);
     my $aln1 = $str1->next_aln();

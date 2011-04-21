@@ -1,4 +1,4 @@
-# $Id: Analysis.pm 16221 2009-09-30 04:30:42Z cjfields $
+# $Id$
 #
 # BioPerl module for Bio::Tools::Run::Analysis
 #
@@ -171,7 +171,7 @@ Report bugs to the Bioperl bug tracking system to help us keep track
 of the bugs and their resolution. Bug reports can be submitted via the
 web:
 
-  http://bugzilla.open-bio.org/
+  http://redmine.open-bio.org/projects/bioperl/
 
 =head1 AUTHOR
 
@@ -218,7 +218,7 @@ use Bio::AnalysisI;
 @ISA = qw(Bio::Root::Root Bio::AnalysisI);
 
 BEGIN {
-    $Revision = q[$Id: Analysis.pm 16221 2009-09-30 04:30:42Z cjfields $];
+    $Revision = q[$Id$];
 }
 
 # -----------------------------------------------------------------------------

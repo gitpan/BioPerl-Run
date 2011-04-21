@@ -1,11 +1,26 @@
-$Id: Changes 16221 2009-09-30 04:30:42Z cjfields $
+$Id$
 Revision history for bioperl-run modules
 
 Full details of changes between all versions are available online at:
 http://www.bioperl.org/wiki/Change_log
 
-1.6.2 Release
+1.6.900
 
+* Bowtie and BWA wrappers for NGS [maj, Ben Bimber, Dan Kortschak]
+* ClustalW v2 support [cjfields]
+* tRNAscanSE support [Mark Johnson, cjfields]
+* Glimmer v2 updates [Mark Johnson, cjfields]
+* PAML codeml wrapper updated to work with PAML 4.4d [DaveMessina]
+* Phyml updates [hyphaltip]
+* Repeatmasker updates [cjfields]
+* Initial BLAST+ modules (Bio::Tools::Run::BlastPlus/StandAloneBlastPlus) [maj]
+* Improved Bio::Tools::Run::AssemblerBase module and update of the wrappers
+  that use it [fangly, maj]
+* Support for running new de novo and comparative assemblers: 454 Newbler
+  [fangly], Minimo [fangly], Maq [maj], Samtools [maj], Bowtie [maj]
+* [bug 2728] add support to Bio::Tools::Run::Alignment::ClustalW for ClustalW2
+  [cjfields]
+* [RT 50363] make a bit more Windows friendly with file paths
 * [bug 2713] - Bio::Tools::Run::Infernal now works with Infernal 1.0 (older
   versions deprecated) [cjfields]
 * Bio::Tools::Run::Alignment::Gmap added [hartzell]
